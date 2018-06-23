@@ -10,6 +10,7 @@
 #define CBankOfTasks_hpp
 
 #include <vector>
+#include <atomic>
 
 #include "../ThreadTask/CThreadTask.hpp"
 

@@ -32,3 +32,7 @@
 *.app
 
 .DS_Store
+
+*.sln
+*.vcxproj*
+x64/

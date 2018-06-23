@@ -18,7 +18,7 @@ CLogTracker::CLogTracker(const std::string& logFileName, bool rewriteFile): _log
 void  CLogTracker::operator() (const std::string& logString) {
 	if(writeInFile) {
 		if(_logFile) {
-			_logFile << logString << std::endl;
+			_logFile << logString.c_str() << std::endl;
 		}
 		else {
 			throw ( "Couldn't open on write log file \'" + _logFileName + "\'" );

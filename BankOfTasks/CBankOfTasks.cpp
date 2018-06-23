@@ -7,7 +7,12 @@
 //
 
 #include "CBankOfTasks.hpp"
+#ifdef __APPLE__
 #include <unistd.h>
+#else
+#include<Windows.h>
+#define sleep(ms) Sleep(ms)
+#endif
 
 CBankOfTasks::CBankOfTasks(const unsigned int numberOfThreads):
 _numberOfThreads(numberOfThreads)
@@ -44,7 +49,7 @@ const std::vector<CThreadTask> CBankOfTasks::getVectorOfTasks(const unsigned int
 			--_numberOfThreadsWithoutWork;
 		}
 		
-		size_t tasksToGive = std::min(maxTasksToGive, _allTasks.size());
+		size_t tasksToGive = maxTasksToGive < _allTasks.size() ? maxTasksToGive : _allTasks.size();
 		tasks = std::vector<CThreadTask>(_allTasks.end() - tasksToGive, _allTasks.end());
 		_allTasks.resize(_allTasks.size() - tasksToGive);
 	}

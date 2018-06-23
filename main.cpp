@@ -10,10 +10,12 @@
 #include "request/CRequest.hpp"
 #include "log/CLogTracker.hpp"
 #include "ThreadsLord/CThreadLord.hpp"
+#include <experimental/filesystem>
 
-
+namespace efs = std::experimental::filesystem;
 int main(int argc, const char * argv[]) {
-	
+
+	efs::path p;
 	try {
 		
 		// parsing arguments into CRequest

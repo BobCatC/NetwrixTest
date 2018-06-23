@@ -8,7 +8,12 @@
 
 #include "ThreadSearcher.hpp"
 #include <vector>
+#ifdef __APPLE__
 #include <unistd.h>
+#else
+#include<Windows.h>
+#define sleep(ms) Sleep(ms)
+#endif
 #include <atomic>
 
 void threadSearcher(CBankOfTasks& tasksBank, const unsigned int threadID) {
