@@ -11,15 +11,13 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <boost/filesystem.hpp>
 #include <regex>
 #include <set>
 #include <stdio.h>
 #include <iostream>
-namespace bfs = boost::filesystem;
 
 #include "../PathString.hpp"
-
+#include "../FileSystem.hpp"
 
 class ThreadTask {
 	
@@ -33,11 +31,14 @@ public:
 	
 	void doTask(const size_t cbMaxBufSize, char* buf, std::vector<ThreadTask>& newTasksFiles, std::vector<ThreadTask>& newTasksDirectories, const PathString& patternFileName, const regex& regexMask, std::vector<std::string>& result, std::vector<std::vector<std::set<int32_t>>>& entries);
 	
-	const PathString& getFileName() const { return _path.native(); }
+	const PathString& getFileName() const { 
+		
+		return std::string(_path.native().begin(), _path.native().end());
+	}
 	
 	const PathString& getFilePath() const {
 		
-#ifdef __APPLE__
+#ifndef __APPLE__
 		return _path.string(); 
 #else
 		return _path.wstring();

@@ -27,7 +27,8 @@ enum BoolExpand {
 
 BoolExpand isRegular(const bfs::path& path) {
 	try {
-		if(bfs::is_regular(path)) {
+		
+		if(bfs::is_regular_file(path)) {
 			return True;
 		}
 		else {
@@ -58,6 +59,13 @@ void ThreadTask::doTask(const size_t cbMaxBufSize, char* buf, std::vector<Thread
 	_result = &result;
 	_entries = &entries;
 	
+	const auto i1 = _path.string();
+	const auto i2 = _path.wstring();
+	const auto i3 = _path.u8string();
+	const auto i4 = _path.u16string();
+
+	_path.
+
 	if(!canBeOpened(getStringOfPath(_path))) {
 		return;
 	}
@@ -86,7 +94,7 @@ void ThreadTask::processDirectory(std::vector<ThreadTask> &newTasksFiles, std::v
 //		printf("New task %s\n", it->path().c_str());
 		
 		const auto& path = it->path();
-		const PathString& name = path.native();
+		const PathString& name = std::string(path.native().begin(), path.native().end());
 		BoolExpand isFile = isRegular(path);
 		
 		if(isFile == Undeterminacy) {
@@ -158,9 +166,9 @@ void ThreadTask::searchInFile(const size_t cbMaxBufSize, char* buf, const PathSt
 	numberOfFragmentsOfTextWithImposition = 1 + (((long long)textLen - (long long)patternFragmentLen - 1) / (long long)(textFragmentLen - patternFragmentLen));
 	
 	_entries->resize(numberOfFragmentsOfPattern);
-	for(int i = 0; i < numberOfFragmentsOfPattern; ++i) {
+	for(size_t i = 0; i < numberOfFragmentsOfPattern; ++i) {
 		(*_entries)[i].resize(numberOfFragmentsOfTextWithImposition);
-		for(int j = 0; j < numberOfFragmentsOfTextWithImposition; ++j) {
+		for(size_t j = 0; j < numberOfFragmentsOfTextWithImposition; ++j) {
 			(*_entries)[i][j].clear();
 		}
 	}
@@ -168,14 +176,13 @@ void ThreadTask::searchInFile(const size_t cbMaxBufSize, char* buf, const PathSt
 //	entries = std::vector<std::vector<std::set<int32_t>>>(numberOfFragmentsOfPattern, std::vector<std::set<int32_t>>(numberOfFragmentsOfTextWithImposition));
 
 
-	FILE* textFile = fopen( getCString(getStringOfPath(_path)) , "rb");
-	FILE* patternFile = fopen(getCString(patternFileName), "rb");
+	FILE* textFile = fopen( getString(getStringOfPath(_path)).c_str() , "rb");
+	FILE* patternFile = fopen(getString(patternFileName).c_str(), "rb");
 	
-	assert(textFile != nullptr && patternFile != nullptr);
 	
-	for(int iPatternFragment = 0; iPatternFragment < numberOfFragmentsOfPattern; ++iPatternFragment) {
+	for(size_t iPatternFragment = 0; iPatternFragment < numberOfFragmentsOfPattern; ++iPatternFragment) {
 		
-		for(int iTextFragment = 0; iTextFragment < numberOfFragmentsOfTextWithImposition; ++iTextFragment) {
+		for(size_t iTextFragment = 0; iTextFragment < numberOfFragmentsOfTextWithImposition; ++iTextFragment) {
 			
 			size_t realPatternFragmentLen;
 			size_t realTextFramgentLen;
@@ -212,14 +219,14 @@ void ThreadTask::searchInFile(const size_t cbMaxBufSize, char* buf, const PathSt
 	fclose(textFile);
 	fclose(patternFile);
 	
-
-	for(int iTextFramgent = 0; iTextFramgent < numberOfFragmentsOfTextWithImposition; ++iTextFramgent) {
+	
+	for(size_t iTextFramgent = 0; iTextFramgent < numberOfFragmentsOfTextWithImposition; ++iTextFramgent) {
 		
 		for(const auto& entryOfFirstFragmentOfPattern : _entries[0][0][iTextFramgent]) {
 			
 			const int startPositionOfPatternFragment = entryOfFirstFragmentOfPattern;
 			
-			int positionOfNextPatternFragment = startPositionOfPatternFragment + patternFragmentLen;
+			size_t positionOfNextPatternFragment = startPositionOfPatternFragment + patternFragmentLen;
 			
 			size_t nextTextFragment;
 			if(positionOfNextPatternFragment < textFragmentLen - patternFragmentLen) {
@@ -291,12 +298,25 @@ inline bool fileFitsMask(const PathString& name, const regex& regexMask) {
 }
 
 bool canBeOpened(const PathString& name) {
+
+#if defined(_WIN32) || defined(_WIN64)
+	FILE* file;
+	
+	const std::string nameString = getString(name);
+	fopen_s(&file, nameString.c_str(), "r");
+	bool res = (file != NULL);
+	if (file != NULL) {
+		fclose(file);
+	}
+	return res;
+#else
 	FILE* file = fopen( getCString(name) , "r");
 	bool res = (file != NULL);
 	if(file != NULL) {
 		fclose(file);
 	}
 	return res;
+#endif
 }
 
 

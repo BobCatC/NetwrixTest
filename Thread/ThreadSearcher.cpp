@@ -64,7 +64,7 @@ void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const s
 			
 			if(!result.empty()) {
 				
-				fout << "*** In File " << getCString(tasks[iTask].getFileName()) << std::endl;
+				fout << "*** In File " << getString(tasks[iTask].getFileName()).c_str() << std::endl;
 				for(const auto& str: result) {
 					fout << "\t" << str;
 				}

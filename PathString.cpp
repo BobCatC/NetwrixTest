@@ -8,19 +8,21 @@
 
 #include "PathString.hpp"
 
-const char* getCString(const std::string& s) {
-	return s.c_str();
+const std::string getString(const std::string& s) {
+	return s;
+} 
+
+const std::string getString(const std::wstring& ws) {
+	//std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+	//const auto str = converter.to_bytes(ws.c_str());
+	//return converter.to_bytes(ws.c_str());
+	return std::string(ws.begin(), ws.end());
 }
 
-const char* getCString(const std::wstring& ws) {
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	
-	return converter.to_bytes(ws.c_str()).c_str();
-}
 
 const PathString& getStringOfPath(const bfs::path& path) {
 	
-#ifdef __APPLE__
+#ifndef __APPLE__
 	return path.string();
 #else
 	return path.wstring();
@@ -30,10 +32,10 @@ const PathString& getStringOfPath(const bfs::path& path) {
 
 PathString getPathStringFromCString(const char* s) {
 
-#ifdef __APPLE
+#ifndef __APPLE
 	return PathString(s);
 #else
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 
 	return converter.from_bytes(s);
 #endif

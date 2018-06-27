@@ -40,10 +40,11 @@ void Request::parseArguments(const int argc, const PathChar **argv) {
 void Request::parsePairsOfArguments(const int argc, const PathChar** argv) {
 	
 	for(int iPairOfArg = 0; iPairOfArg < argc / 2; ++iPairOfArg) {
+
 		const PathString key( argv[1 + iPairOfArg * 2] );
 		const PathString value( argv[2 + iPairOfArg * 2] );
-		const PathString runtimeDirectory(argv[0]);
-
+		const PathString runtimeDirectory = bfs::current_path().string();
+		
 		
 		if( key == getPathStringFromCString("-p") ) {
 
@@ -93,12 +94,17 @@ void Request::checkForEmpty() const {
 
 PathString Request::makeAbsolute(const PathString & path, const PathString& runtimeDIrectory) {
 
-#if defined(__APPLE__)
-	return runtimeDIrectory + getPathStringFromCString("/") + path;
-#else
-	return runtimeDIrectory + getPathStringFromCString("\\") + path;
-#endif
+	if (!isAbsolute(path)) {
 
+#if defined(__APPLE__)
+		return runtimeDIrectory + getPathStringFromCString("/") + path;
+#else
+		return runtimeDIrectory + getPathStringFromCString("\\") + path;
+#endif
+	}
+	else {
+		return path;
+	}
 }
 
 bool Request::isAbsolute(const PathString & path) {

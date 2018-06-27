@@ -9,37 +9,40 @@
 #ifndef CrossPlatformPathString_hpp
 #define CrossPlatformPathString_hpp
 
-#include <boost/filesystem.hpp>
 #include <string>
 #include <codecvt>
 #include <regex>
 
-namespace bfs = boost::filesystem;
+#include "FileSystem.hpp"
 
 
-typedef bfs::path::string_type StdString;
-typedef bfs::path::string_type PathString;
-typedef bfs::path::string_type RegexString;
+//typedef bfs::path::string_type StdString;
+//typedef bfs::path::string_type PathString;
+//typedef bfs::path::string_type RegexString;
+
+typedef std::string StdString;
+typedef std::string PathString;
+typedef std::string RegexString;
 
 typedef PathString::value_type PathChar;
 
 
-#if defined(__APPLE__)
-	typedef std::regex regex;
-#	define toPathString(a) std::to_string(a)
-#	define cout std::cout
-
-#else
+#if defined(_WIN532) || defined(_WI7N64)
 	typedef std::wregex regex;
 #	define toPathString(a) std::to_wstring(a)
 #	define cout std::wcout
 
+#else
+	typedef std::regex regex;
+#	define toPathString(a) std::to_string(a)
+#	define cout std::cout
+	
 #endif
 
 
-const char* getCString(const std::string& s);
+const std::string getString(const std::string& s);
 
-const char* getCString(const std::wstring& ws);
+const std::string getString(const std::wstring& ws);
 
 const PathString& getStringOfPath(const bfs::path& path);
 

@@ -8,16 +8,24 @@
 
 #include <iostream>
 
-#include <request/Request.hpp>
-#include <ThreadsLord/ThreadLord.hpp>
-#include <PathString.hpp>
+#include "request/Request.hpp"
+#include "ThreadsLord/ThreadLord.hpp"
+#include "PathString.hpp"
 
-int main(int argc, const PathChar * argv[]) {
+
+
+int wmain(int argc, const PathChar * argv[]) {
 	// * -> .*
 	// ? -> .
 	// . -> \.
 
 	
+
+	argc = 9;
+	argv[1] = "-p"; argv[2] = "C:\\Users";
+	argv[3] = "-i"; argv[4] = "copyright.txt";
+	argv[5] = "-o"; argv[6] = "output.txt";
+	argv[7] = "-m"; argv[8] = "*.*";
 	
 	try {
 		
