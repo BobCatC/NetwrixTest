@@ -22,8 +22,8 @@ _tasks(numberOfThreads, request)
 	
 }
 
-void ThreadLord::initRegexMask(const std::string &mask) {
-	std::string result;
+void ThreadLord::initRegexMask(const RegexString& mask) {
+	RegexString result;
 	for(size_t i = 0; i < mask.size(); ++i) {
 		switch (mask[i]) {
 			case '*':
@@ -40,7 +40,7 @@ void ThreadLord::initRegexMask(const std::string &mask) {
 				break;
 		}
 	}
-	regexMask = std::regex(result);
+	regexMask = regex(result);
 }
 
 

@@ -15,8 +15,7 @@
 
 #include "../ThreadTask/ThreadTask.hpp"
 #include "../request/Request.hpp"
-
-#include "MyVector.hpp"
+#include "../PathString.hpp"
 
 class BankOfTasks {
 	
@@ -28,7 +27,7 @@ public:
 	
 	
 	std::vector<ThreadTask> getVectorOfTasks(const unsigned int threadID);
-	void appendTasks(const MyVector<ThreadTask>& newTasksFiles, const MyVector<ThreadTask>& newTasksDirectories);
+	void appendTasks(const std::vector<ThreadTask>& newTasksFiles, const std::vector<ThreadTask>& newTasksDirectories);
 	
 	bool isAllWorkDone();
 	
@@ -37,8 +36,7 @@ private:
 	
 	const unsigned int _numberOfThreads;
 	
-//	std::vector<const std::string> _allTasksFiles, _allTasksDirectories;
-	MyVector<bfs::path::string_type> _allTasksFiles, _allTasksDirectories;
+	std::vector<PathString> _allTasksFiles, _allTasksDirectories;
 	
 	unsigned int _numberOfThreadsWithoutWork;
 	std::vector<bool> _threadsWithoutWork;

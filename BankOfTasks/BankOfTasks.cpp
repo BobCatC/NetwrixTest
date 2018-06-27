@@ -9,9 +9,7 @@
 #include "BankOfTasks.hpp"
 
 BankOfTasks::BankOfTasks(const unsigned int numberOfThreads, const Request& request):
-_numberOfThreads(numberOfThreads),
-_allTasksFiles("All Tasks Files"),
-_allTasksDirectories("All Tasks Directories")
+_numberOfThreads(numberOfThreads)
 {
 	
 	_numberOfThreadsWithoutWork = 0;
@@ -21,9 +19,8 @@ _allTasksDirectories("All Tasks Directories")
 }
 
 void BankOfTasks::initFirstTask(const Request& request) {
-//	const ThreadTask firstTask(request.startDirectory);
 	
-	_allTasksDirectories.push_back(bfs::path::string_type(request.startDirectory.begin(), request.startDirectory.end()));
+	_allTasksDirectories.push_back(request.startDirectory);
 }
 
 
@@ -45,7 +42,7 @@ std::vector<ThreadTask> BankOfTasks::getVectorOfTasks(const unsigned int threadI
 	std::vector<ThreadTask> tasks;
 	const size_t maxTasksToGive = 20;
 	
-	MyVector<bfs::path::string_type>& tasksBank = _allTasksFiles.empty() ? _allTasksDirectories : _allTasksFiles;
+	std::vector<PathString>& tasksBank = _allTasksFiles.empty() ? _allTasksDirectories : _allTasksFiles;
 	
 	
 	
@@ -97,11 +94,11 @@ void BankOfTasks::waitForFlag() {
 }
 
 
-void BankOfTasks::appendTasks(const MyVector<ThreadTask> &newTasksFiles, const MyVector<ThreadTask>& newTasksDirectories) {
+void BankOfTasks::appendTasks(const std::vector<ThreadTask> &newTasksFiles, const std::vector<ThreadTask>& newTasksDirectories) {
 	bool f = true;
 	if(!newTasksFiles.empty()) {
 		
-		for(const auto& task : newTasksFiles.vec()) {
+		for(const auto& task : newTasksFiles) {
 			if(true)
 				_allTasksFiles.push_back(task.getFilePath());
 			f = !f;
@@ -110,7 +107,7 @@ void BankOfTasks::appendTasks(const MyVector<ThreadTask> &newTasksFiles, const M
 	
 	if(!newTasksDirectories.empty()) {
 		
-		for(const auto& task : newTasksDirectories.vec()) {
+		for(const auto& task : newTasksDirectories) {
 			if(true)
 				_allTasksDirectories.push_back(task.getFilePath());
 			f = !f;

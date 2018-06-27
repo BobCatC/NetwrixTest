@@ -9,64 +9,65 @@
 #include <iostream>
 #include "Request.hpp"
 
-const std::string __exampleRequest = "MyApp.exe -p C:\\Temp -m *.* -i String.txt -o Result.txt";
+const PathString __exampleRequest = CHAR_TYPE"MyApp.exe -p C:\\Temp -m *.* -i String.txt -o Result.txt";
 
-Request::Request(const int argc, const char** argv) {
+Request::Request(const int argc, const PathChar** argv) {
 	parseArguments(argc, argv);
 }
 
-void Request::parseArguments(const int argc, const char **argv) {
+void Request::parseArguments(const int argc, const PathChar **argv) {
 		
 	try {
 		
 		if(argc != 9) {
 			for(int i = 0; i < argc; ++i) {
-				std::cout << argv[i] << std::endl;
+				cout << argv[i] << std::endl;
 			}
-			throw std::string(std::to_string(argc) + " Is Too Few Arguments!");
+			throw std::string(toPathString(argc) + " Is Too Few Arguments!");
 		}
 		
 		parsePairsOfArguments(argc, argv);
 		
 		checkForEmpty();
 		
-	} catch (const std::string& s) {
-		throw ( "Error In Parsing Input Arguments\n" + s + "\nEXAMPLE:\n" + __exampleRequest );
+	} catch (const PathString& s) {
+		throw ( CHAR_TYPE"Error In Parsing Input Arguments\n" + s + CHAR_TYPE"\nEXAMPLE:\n" + __exampleRequest );
 	}
 	
 	
 }
 
-void Request::parsePairsOfArguments(const int argc, const char **argv) {
+void Request::parsePairsOfArguments(const int argc, const PathChar** argv) {
 	
 	for(int iPairOfArg = 0; iPairOfArg < argc / 2; ++iPairOfArg) {
-		const std::string key( argv[1 + iPairOfArg * 2] );
-		const std::string value( argv[2 + iPairOfArg * 2] );
-		const std::string runtimeDirectory(argv[0]);
+		const PathString key( argv[1 + iPairOfArg * 2] );
+		const PathString value( argv[2 + iPairOfArg * 2] );
+		const PathString runtimeDirectory(argv[0]);
+
 		
-		if( key == "-p" ) {
+		if( key == CHAR_TYPE"-p" ) {
 			_startDirectory = value;
 			if(_startDirectory[0] != '/') {
 				_startDirectory = runtimeDirectory + "/" + _startDirectory;
 			}
 		}
-		else if( key == "-m" ) {
+		else if( key == CHAR_TYPE"-m" ) {
 			_mask = value;
 		}
-		else if( key == "-i" ) {
+		else if( key == CHAR_TYPE"-i" ) {
 			_patternFileName = value;
 			if(_patternFileName[0] != '/') {
 				_patternFileName = runtimeDirectory + "/" + _patternFileName;
 			}
 		}
-		else if( key == "-o") {
+		else if( key == CHAR_TYPE"-o") {
 			_outputFileName = value;
 			if(_outputFileName[0] != '/') {
 				_outputFileName = runtimeDirectory + "/" + _outputFileName;
 			}
 		}
 		else {
-			throw std::string( "Unknown Key : " + key );
+			throw PathString( CHAR_TYPE"Unknown Key : " + key );
 		}
 	}
 }
@@ -74,19 +75,19 @@ void Request::parsePairsOfArguments(const int argc, const char **argv) {
 void Request::checkForEmpty() const {
 	
 	if(_startDirectory.empty()) {
-		throw "Not Found Start Directory Value";
+		throw CHAR_TYPE"Not Found Start Directory Value";
 	}
 	
 	if(_mask.empty()) {
-		throw "Not Found Mask Value";
+		throw CHAR_TYPE"Not Found Mask Value";
 	}
 	
 	if(_patternFileName.empty()) {
-		throw "Not Found Pattern File Name";
+		throw CHAR_TYPE"Not Found Pattern File Name";
 	}
 	
 	if(_outputFileName.empty()) {
-		throw "Not Found Output File Name";
+		throw CHAR_TYPE"Not Found Output File Name";
 	}
 }
 

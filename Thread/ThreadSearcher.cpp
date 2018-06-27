@@ -7,27 +7,22 @@
 //
 
 #include "ThreadSearcher.hpp"
-#include <vector>
-#include <atomic>
-#include <iostream>
-#include <regex>
-#include <fstream>
 
-#include "MyVector.hpp"
+
 
 extern size_t numberOfFiles, fileDoneSize;
 
-void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const size_t cbMaxBufSize, const std::string& patternFileName, const std::regex& regexMask) {
+void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const size_t cbMaxBufSize, const PathString& patternFileName, const regex& regexMask) {
 	
-	MyVector<ThreadTask> newTasksFiles("New Tasks Files"), newTasksDirectories("New Tasks Directories");
+	std::vector<ThreadTask> newTasksFiles, newTasksDirectories;
 	
 	std::vector<ThreadTask> tasks;
 	
 	std::ofstream fout("output.txt");
 	
-	MyVector<std::string> result("Result");
+	std::vector<std::string> result;
 	
-	MyVector<std::vector<std::set<int32_t>>> entries("Entries");
+	std::vector<std::vector<std::set<int32_t>>> entries;
 	
 	size_t numberOfDoneTasks = 0;
 	
@@ -70,7 +65,7 @@ void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const s
 			if(!result.empty()) {
 				
 				fout << "*** In File " << tasks[iTask].getFileName() << std::endl;
-				for(const auto& str: result.vec()) {
+				for(const auto& str: result) {
 					fout << "\t" << str;
 				}
 			}

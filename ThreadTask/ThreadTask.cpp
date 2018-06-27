@@ -7,10 +7,7 @@
 //
 
 #include "ThreadTask.hpp"
-#include <stdio.h>
-#include <set>
-#include <iostream>
-#include <MemoryKeeper.h>
+
 
 
 void prefixFunction(const char* s, int32_t* pi, const int len);
@@ -22,6 +19,7 @@ void prefixFunction(const char* s, int32_t* pi, const size_t len);
 
 size_t fileDoneSize = 0;
 size_t numberOfFiles = 0;
+
 
 enum BoolExpand {
 	True, False, Undeterminacy
@@ -55,12 +53,12 @@ ThreadTask::~ThreadTask() {
 }
 
 
-void ThreadTask::doTask(const size_t cbMaxBufSize, char* buf, MyVector<ThreadTask> &newTasksFiles, MyVector<ThreadTask> &newTasksDirectories, const std::string& patternFileName, const std::regex& regexMask, MyVector<std::string>& result, MyVector<std::vector<std::set<int32_t>>>& entries) {
+void ThreadTask::doTask(const size_t cbMaxBufSize, char* buf, std::vector<ThreadTask> &newTasksFiles, std::vector<ThreadTask> &newTasksDirectories, const PathString& patternFileName, const regex& regexMask, std::vector<std::string>& result, std::vector<std::vector<std::set<int32_t>>>& entries) {
 
 	_result = &result;
 	_entries = &entries;
 	
-	if(!canBeOpened(_path.string())) {
+	if(!canBeOpened(getStringOfPath(_path))) {
 		return;
 	}
 	
@@ -79,7 +77,7 @@ void ThreadTask::doTask(const size_t cbMaxBufSize, char* buf, MyVector<ThreadTas
 }
 
 
-void ThreadTask::processDirectory(MyVector<ThreadTask> &newTasksFiles, MyVector<ThreadTask> &newTasksDirectories, const std::regex& regexMask) {
+void ThreadTask::processDirectory(std::vector<ThreadTask> &newTasksFiles, std::vector<ThreadTask> &newTasksDirectories, const regex& regexMask) {
 	
 	const auto endIt = bfs::directory_iterator();
 	
@@ -88,7 +86,7 @@ void ThreadTask::processDirectory(MyVector<ThreadTask> &newTasksFiles, MyVector<
 //		printf("New task %s\n", it->path().c_str());
 		
 		const auto& path = it->path();
-		const auto& name = path.native();
+		const PathString& name = path.native();
 		BoolExpand isFile = isRegular(path);
 		
 		if(isFile == Undeterminacy) {
@@ -104,28 +102,20 @@ void ThreadTask::processDirectory(MyVector<ThreadTask> &newTasksFiles, MyVector<
 		else {
 			newTasksDirectories.push_back(path);
 		}
-//		if(isFile == true && !fileFitsMask(name, regexMask))) {
-//			continue;
-//		}
-//		if(name.empty() || name[0] == '\0') {
-//			continue;
-//		}
-		
-		
-		
+
 	}
 }
 
-void ThreadTask::processFile(const size_t cbMaxBufSize, char* buf, const bfs::path::string_type& patternFileName) {
+void ThreadTask::processFile(const size_t cbMaxBufSize, char* buf, const PathString& patternFileName) {
 	
-	const std::string& textFileNativeName = _path.filename().native();
+//	const PathString& textFileNativeName = _path.filename().native();
 
 	searchInFile(cbMaxBufSize, buf, patternFileName);
 }
 
 
 
-void ThreadTask::searchInFile(const size_t cbMaxBufSize, char* buf, const bfs::path::string_type &patternFileName) {
+void ThreadTask::searchInFile(const size_t cbMaxBufSize, char* buf, const PathString &patternFileName) {
 	size_t patternLen;
 	size_t textLen;
 	
@@ -133,11 +123,11 @@ void ThreadTask::searchInFile(const size_t cbMaxBufSize, char* buf, const bfs::p
 	textLen 	= bfs::file_size(_path);
 	
 	if(textLen > 1024 * 1024 * 10) {
-		std::cout << _path.string() << " More Than 10MB size == " << textLen / (1024 * 1024) << " MB" << std::endl;
+		cout << getStringOfPath(_path) << CHAR_TYPE" More Than 10MB size == " << textLen / (1024 * 1024) << CHAR_TYPE" MB" << std::endl;
 	}
 	
 	if(textLen > 1024 * 1024 * 128) {
-		std::cout << "! ! ! " << _path.string() << " Is TOO HUGE" << std::endl;
+		cout << "! ! ! " << getStringOfPath(_path) << CHAR_TYPE" Is TOO HUGE" << std::endl;
 		return;
 	}
 	
@@ -178,8 +168,8 @@ void ThreadTask::searchInFile(const size_t cbMaxBufSize, char* buf, const bfs::p
 //	entries = std::vector<std::vector<std::set<int32_t>>>(numberOfFragmentsOfPattern, std::vector<std::set<int32_t>>(numberOfFragmentsOfTextWithImposition));
 
 
-	FILE* textFile = fopen_keep(_path.c_str(), "rb");
-	FILE* patternFile = fopen_keep(patternFileName.c_str(), "rb");
+	FILE* textFile = fopen( getCString(getStringOfPath(_path)) , "rb");
+	FILE* patternFile = fopen(getCString(patternFileName), "rb");
 	
 	assert(textFile != nullptr && patternFile != nullptr);
 	
@@ -219,8 +209,8 @@ void ThreadTask::searchInFile(const size_t cbMaxBufSize, char* buf, const bfs::p
 //	delete [] pi;
 //	delete [] s;
 	
-	fclose_keep(textFile);
-	fclose_keep(patternFile);
+	fclose(textFile);
+	fclose(patternFile);
 	
 
 	for(int iTextFramgent = 0; iTextFramgent < numberOfFragmentsOfTextWithImposition; ++iTextFramgent) {
@@ -254,8 +244,6 @@ void ThreadTask::downloadFragment(FILE *file, size_t fromPosition, size_t size, 
 	fread(buf, 1, size, file);
 }
 
-double middle = 1;
-size_t counter = 1;
 
 void ThreadTask::find(size_t crtPatternFragment, size_t iTextFragmentInWhichToFind, size_t iPositionWhereToFind, size_t startPatternPosition) {
 	
@@ -298,15 +286,15 @@ void ThreadTask::find(size_t crtPatternFragment, size_t iTextFragmentInWhichToFi
 }
 
 
-inline bool fileFitsMask(const std::string& name, const std::regex& regexMask) {
+inline bool fileFitsMask(const PathString& name, const regex& regexMask) {
 	return std::regex_match(name, regexMask);
 }
 
-bool canBeOpened(const std::string& name) {
-	FILE* file = fopen_keep(name.c_str(), "r");
+bool canBeOpened(const PathString& name) {
+	FILE* file = fopen( getCString(name) , "r");
 	bool res = (file != NULL);
 	if(file != NULL) {
-		fclose_keep(file);
+		fclose(file);
 	}
 	return res;
 }

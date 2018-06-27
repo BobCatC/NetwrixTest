@@ -9,8 +9,16 @@
 #ifndef ThreadSearcher_hpp
 #define ThreadSearcher_hpp
 
-#include "../BankOfTasks/BankOfTasks.hpp"
 
-void threadSearcher(BankOfTasks& tasks, const unsigned int threadID, const size_t cbBufSize, const std::string& patternFileName, const std::regex& regexMask);
+#include <vector>
+#include <atomic>
+#include <iostream>
+#include <regex>
+#include <fstream>
+
+#include "../BankOfTasks/BankOfTasks.hpp"
+#include "../PathString.hpp"
+
+void threadSearcher(BankOfTasks& tasks, const unsigned int threadID, const size_t cbBufSize, const PathString& patternFileName, const regex& regexMask);
 
 #endif /* ThreadSearcher_hpp */

@@ -11,27 +11,30 @@
 
 #include <string>
 
+#include "../PathString.hpp"
+
+
 class Request {
 	
 public:
-	Request(const int argc, const char** argv);
+	Request(const int argc, const PathChar** argv);
 	
 	
 	// getters
-	const std::string& startDirectory = _startDirectory;
-	const std::string& mask = _mask;
-	const std::string& patternFileName = _patternFileName;
-	const std::string& outputFileName = _outputFileName;
+	const PathString& startDirectory = _startDirectory;
+	const RegexString& mask = _mask;
+	const PathString& patternFileName = _patternFileName;
+	const PathString& outputFileName = _outputFileName;
 	
 private:
-	std::string _startDirectory;
-	std::string _mask;
-	std::string _patternFileName;
-	std::string _outputFileName;
+	PathString _startDirectory;
+	RegexString _mask;
+	PathString _patternFileName;
+	PathString _outputFileName;
 
 	
-	void parseArguments(const int argc, const char** argv);
-	void parsePairsOfArguments(const int argc, const char** argv);
+	void parseArguments(const int argc, const PathChar** argv);
+	void parsePairsOfArguments(const int argc, const PathChar** argv);
 	void checkForEmpty() const;
 	
 };

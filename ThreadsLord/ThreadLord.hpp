@@ -16,6 +16,8 @@
 #include "../BankOfTasks/BankOfTasks.hpp"
 #include "../Thread/ThreadSearcher.hpp"
 #include "../request/Request.hpp"
+#include "../PathString.hpp"
+
 
 class ThreadLord {
 	
@@ -32,10 +34,10 @@ private:
 	
 	BankOfTasks _tasks;
 	
-	std::regex regexMask;
+	regex regexMask;
 	
 	
-	void initRegexMask(const std::string& mask);
+	void initRegexMask(const RegexString& mask);
 
 	void startThreads(const Request& request);
 	void waitThreads();
