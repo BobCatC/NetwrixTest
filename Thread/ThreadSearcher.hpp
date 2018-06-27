@@ -9,8 +9,8 @@
 #ifndef ThreadSearcher_hpp
 #define ThreadSearcher_hpp
 
-#include "../BankOfTasks/CBankOfTasks.hpp"
+#include "../BankOfTasks/BankOfTasks.hpp"
 
-void threadSearcher(CBankOfTasks& tasks, const unsigned int threadID);
+void threadSearcher(BankOfTasks& tasks, const unsigned int threadID, const size_t cbBufSize, const std::string& patternFileName, const std::regex& regexMask);
 
 #endif /* ThreadSearcher_hpp */
