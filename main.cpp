@@ -9,11 +9,10 @@
 #include <iostream>
 #include "request/Request.hpp"
 #include "ThreadsLord/ThreadLord.hpp"
-#include <MemoryKeeper.h>
+#include "MemoryKeeper.h"
 #include "MyVector.hpp"
 
 #include <stdio.h>
-#include <sys/sysctl.h>
 
 void specialThread(const Request& request, const unsigned int nThreads) {
 	int* p = (int*)malloc(1024 * 1024 * 2);

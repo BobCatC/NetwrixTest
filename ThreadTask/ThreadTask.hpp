@@ -15,6 +15,8 @@
 namespace bfs = boost::filesystem;
 #include "MyVector.hpp"
 
+
+
 class ThreadTask {
 	
 public:
@@ -27,9 +29,15 @@ public:
 	
 	void doTask(const size_t cbMaxBufSize, char* buf, MyVector<ThreadTask>& newTasksFiles, MyVector<ThreadTask>& newTasksDirectories, const std::string& patternFileName, const std::regex& regexMask, MyVector<std::string>& result, MyVector<std::vector<std::set<int32_t>>>& entries);
 	
-	const std::string& getFileName() const { return _path.native(); }
+	const bfs::path::string_type& getFileName() const { return _path.native(); }
 	
-	const std::string& getFilePath() const { return _path.string(); }
+	const bfs::path::string_type& getFilePath() const {
+#ifdef __APPLE__
+		return _path.string(); 
+#else
+		return _path.wstring();
+#endif
+	}
 	
 private:
 	const bfs::path _path;

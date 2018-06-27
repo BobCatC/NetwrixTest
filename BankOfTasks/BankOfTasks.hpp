@@ -38,7 +38,7 @@ private:
 	const unsigned int _numberOfThreads;
 	
 //	std::vector<const std::string> _allTasksFiles, _allTasksDirectories;
-	MyVector<const std::string> _allTasksFiles, _allTasksDirectories;
+	MyVector<bfs::path::string_type> _allTasksFiles, _allTasksDirectories;
 	
 	unsigned int _numberOfThreadsWithoutWork;
 	std::vector<bool> _threadsWithoutWork;

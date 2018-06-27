@@ -22,7 +22,8 @@ _allTasksDirectories("All Tasks Directories")
 
 void BankOfTasks::initFirstTask(const Request& request) {
 //	const ThreadTask firstTask(request.startDirectory);
-	_allTasksDirectories.push_back(request.startDirectory);
+	
+	_allTasksDirectories.push_back(bfs::path::string_type(request.startDirectory.begin(), request.startDirectory.end()));
 }
 
 
@@ -44,7 +45,7 @@ std::vector<ThreadTask> BankOfTasks::getVectorOfTasks(const unsigned int threadI
 	std::vector<ThreadTask> tasks;
 	const size_t maxTasksToGive = 20;
 	
-	MyVector<const std::string>& tasksBank = _allTasksFiles.empty() ? _allTasksDirectories : _allTasksFiles;
+	MyVector<bfs::path::string_type>& tasksBank = _allTasksFiles.empty() ? _allTasksDirectories : _allTasksFiles;
 	
 	
 	

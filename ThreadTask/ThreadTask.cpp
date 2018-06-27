@@ -116,7 +116,7 @@ void ThreadTask::processDirectory(MyVector<ThreadTask> &newTasksFiles, MyVector<
 	}
 }
 
-void ThreadTask::processFile(const size_t cbMaxBufSize, char* buf, const std::string& patternFileName) {
+void ThreadTask::processFile(const size_t cbMaxBufSize, char* buf, const bfs::path::string_type& patternFileName) {
 	
 	const std::string& textFileNativeName = _path.filename().native();
 
@@ -125,7 +125,7 @@ void ThreadTask::processFile(const size_t cbMaxBufSize, char* buf, const std::st
 
 
 
-void ThreadTask::searchInFile(const size_t cbMaxBufSize, char* buf, const std::string &patternFileName) {
+void ThreadTask::searchInFile(const size_t cbMaxBufSize, char* buf, const bfs::path::string_type &patternFileName) {
 	size_t patternLen;
 	size_t textLen;
 	
@@ -176,8 +176,8 @@ void ThreadTask::searchInFile(const size_t cbMaxBufSize, char* buf, const std::s
 	}
 	
 //	entries = std::vector<std::vector<std::set<int32_t>>>(numberOfFragmentsOfPattern, std::vector<std::set<int32_t>>(numberOfFragmentsOfTextWithImposition));
-	
-	
+
+
 	FILE* textFile = fopen_keep(_path.c_str(), "rb");
 	FILE* patternFile = fopen_keep(patternFileName.c_str(), "rb");
 	
