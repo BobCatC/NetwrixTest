@@ -27,3 +27,14 @@ const PathString& getStringOfPath(const bfs::path& path) {
 #endif
 	
 }
+
+PathString getPathStringFromCString(const char* s) {
+
+#ifdef __APPLE
+	return PathString(s);
+#else
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
+	return converter.from_bytes(s);
+#endif
+}

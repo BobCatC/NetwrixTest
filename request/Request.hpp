@@ -37,6 +37,8 @@ private:
 	void parsePairsOfArguments(const int argc, const PathChar** argv);
 	void checkForEmpty() const;
 	
+	PathString makeAbsolute(const PathString& path, const PathString& runtimeDirectory);
+	bool isAbsolute(const PathString& path);
 };
 
 #endif /* CRequest_h */

@@ -27,13 +27,13 @@ void ThreadLord::initRegexMask(const RegexString& mask) {
 	for(size_t i = 0; i < mask.size(); ++i) {
 		switch (mask[i]) {
 			case '*':
-				result.append(".*");
+				result.append(getPathStringFromCString(".*"));
 				break;
 			case '?':
-				result.push_back('.');
+				result.append(getPathStringFromCString("."));
 				break;
 			case '.':
-				result.push_back('\.');
+				result.append(getPathStringFromCString("\."));
 				break;
 			default:
 				result.push_back(mask[i]);
@@ -52,7 +52,7 @@ void ThreadLord::startThreads(const Request& request) {
 	}
 	
 	
-	size_t cbBufSize = (1024 * 4000) * _numberOfThreads;
+	size_t cbBufSize = (1024 * 400) * _numberOfThreads;
 	
 	for(unsigned int iThread = 0; iThread < _numberOfThreads; ++iThread) {
 		

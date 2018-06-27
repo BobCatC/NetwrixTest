@@ -10,9 +10,9 @@
 
 
 
-void prefixFunction(const char* s, int32_t* pi, const int len);
-bool canBeOpened(const std::string& name);
-inline bool fileFitsMask(const std::string& name, const std::regex& regexMask);
+void prefixFunction(const char* s, int32_t* pi, const size_t len);
+bool canBeOpened(const PathString& name);
+inline bool fileFitsMask(const PathString& name, const regex& regexMask);
 
 void searchWithPrefixFunc(const size_t patternLen, const char* s, int32_t* pi, const size_t len, std::set<int>& result);
 void prefixFunction(const char* s, int32_t* pi, const size_t len);
@@ -123,11 +123,11 @@ void ThreadTask::searchInFile(const size_t cbMaxBufSize, char* buf, const PathSt
 	textLen 	= bfs::file_size(_path);
 	
 	if(textLen > 1024 * 1024 * 10) {
-		cout << getStringOfPath(_path) << CHAR_TYPE" More Than 10MB size == " << textLen / (1024 * 1024) << CHAR_TYPE" MB" << std::endl;
+		cout << getStringOfPath(_path) << " More Than 10MB size == " << textLen / (1024 * 1024) << " MB" << std::endl;
 	}
-	
+	L"asd";
 	if(textLen > 1024 * 1024 * 128) {
-		cout << "! ! ! " << getStringOfPath(_path) << CHAR_TYPE" Is TOO HUGE" << std::endl;
+		cout << "! ! ! " << getStringOfPath(_path) << " Is TOO HUGE" << std::endl;
 		return;
 	}
 	

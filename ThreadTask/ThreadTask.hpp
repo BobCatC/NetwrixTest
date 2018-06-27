@@ -9,6 +9,8 @@
 #ifndef CThreadTask_hpp
 #define CThreadTask_hpp
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <boost/filesystem.hpp>
 #include <regex>
 #include <set>
@@ -53,10 +55,10 @@ private:
 	std::vector<std::string>* _result;
 	std::vector<std::vector<std::set<int32_t>>>* _entries;
 	
-	void processDirectory(std::vector<ThreadTask>& newTasksFiles, std::vector<ThreadTask> &newTasksDirectories, const std::regex& regexMask);
+	void processDirectory(std::vector<ThreadTask>& newTasksFiles, std::vector<ThreadTask> &newTasksDirectories, const regex& regexMask);
 	
-	void processFile(const size_t cbMaxBufSize, char* buf, const std::string& patternFileName);
-	void searchInFile(const size_t cbMaxBufSize, char* buf, const std::string& patternFileName);
+	void processFile(const size_t cbMaxBufSize, char* buf, const PathString& patternFileName);
+	void searchInFile(const size_t cbMaxBufSize, char* buf, const PathString& patternFileName);
 	void downloadFragment(FILE* file, size_t fromPosition, size_t size, char* buf) const;
 	void find(size_t crtPatternFragment, size_t iTextFragmentInWhichToFind, size_t iPositionWhereToFind, size_t startPatternPosition);
 	

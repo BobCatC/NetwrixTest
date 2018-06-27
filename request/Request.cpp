@@ -9,7 +9,7 @@
 #include <iostream>
 #include "Request.hpp"
 
-const PathString __exampleRequest = CHAR_TYPE"MyApp.exe -p C:\\Temp -m *.* -i String.txt -o Result.txt";
+const PathString __exampleRequest = getPathStringFromCString("MyApp.exe -p C:\\Temp -m *.* -i String.txt -o Result.txt");
 
 Request::Request(const int argc, const PathChar** argv) {
 	parseArguments(argc, argv);
@@ -23,7 +23,7 @@ void Request::parseArguments(const int argc, const PathChar **argv) {
 			for(int i = 0; i < argc; ++i) {
 				cout << argv[i] << std::endl;
 			}
-			throw std::string(toPathString(argc) + " Is Too Few Arguments!");
+			throw ( toPathString(argc) + getPathStringFromCString(" Is Too Few Arguments!") );
 		}
 		
 		parsePairsOfArguments(argc, argv);
@@ -31,7 +31,7 @@ void Request::parseArguments(const int argc, const PathChar **argv) {
 		checkForEmpty();
 		
 	} catch (const PathString& s) {
-		throw ( CHAR_TYPE"Error In Parsing Input Arguments\n" + s + CHAR_TYPE"\nEXAMPLE:\n" + __exampleRequest );
+		throw (getPathStringFromCString("Error In Parsing Input Arguments\n") + s + getPathStringFromCString("\nEXAMPLE:\n") + __exampleRequest );
 	}
 	
 	
@@ -45,29 +45,29 @@ void Request::parsePairsOfArguments(const int argc, const PathChar** argv) {
 		const PathString runtimeDirectory(argv[0]);
 
 		
-		if( key == CHAR_TYPE"-p" ) {
+		if( key == getPathStringFromCString("-p") ) {
+
 			_startDirectory = value;
-			if(_startDirectory[0] != '/') {
-				_startDirectory = runtimeDirectory + "/" + _startDirectory;
-			}
+
+			makeAbsolute(_startDirectory, runtimeDirectory);
 		}
-		else if( key == CHAR_TYPE"-m" ) {
+		else if( key == getPathStringFromCString("-m") ) {
 			_mask = value;
 		}
-		else if( key == CHAR_TYPE"-i" ) {
+		else if( key == getPathStringFromCString("-i") ) {
+
 			_patternFileName = value;
-			if(_patternFileName[0] != '/') {
-				_patternFileName = runtimeDirectory + "/" + _patternFileName;
-			}
+			
+			makeAbsolute(_patternFileName, runtimeDirectory);
 		}
-		else if( key == CHAR_TYPE"-o") {
+		else if( key == getPathStringFromCString("-o")) {
+
 			_outputFileName = value;
-			if(_outputFileName[0] != '/') {
-				_outputFileName = runtimeDirectory + "/" + _outputFileName;
-			}
+			
+			makeAbsolute(_outputFileName, runtimeDirectory);
 		}
 		else {
-			throw PathString( CHAR_TYPE"Unknown Key : " + key );
+			throw PathString(getPathStringFromCString("Unknown Key : ") + key );
 		}
 	}
 }
@@ -75,20 +75,40 @@ void Request::parsePairsOfArguments(const int argc, const PathChar** argv) {
 void Request::checkForEmpty() const {
 	
 	if(_startDirectory.empty()) {
-		throw CHAR_TYPE"Not Found Start Directory Value";
+		throw "Not Found Start Directory Value";
 	}
 	
 	if(_mask.empty()) {
-		throw CHAR_TYPE"Not Found Mask Value";
+		throw "Not Found Mask Value";
 	}
 	
 	if(_patternFileName.empty()) {
-		throw CHAR_TYPE"Not Found Pattern File Name";
+		throw "Not Found Pattern File Name";
 	}
 	
 	if(_outputFileName.empty()) {
-		throw CHAR_TYPE"Not Found Output File Name";
+		throw "Not Found Output File Name";
 	}
+}
+
+PathString Request::makeAbsolute(const PathString & path, const PathString& runtimeDIrectory) {
+
+#if defined(__APPLE__)
+	return runtimeDIrectory + getPathStringFromCString("/") + path;
+#else
+	return runtimeDIrectory + getPathStringFromCString("\\") + path;
+#endif
+
+}
+
+bool Request::isAbsolute(const PathString & path) {
+
+#if defined(__APPLE__)
+	return (path[0] == '/');
+#else
+	return (path[1] == L':');
+#endif
+
 }
 
 
