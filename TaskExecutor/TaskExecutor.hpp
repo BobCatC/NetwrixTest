@@ -9,6 +9,8 @@
 #ifndef TaskExecutor_hpp
 #define TaskExecutor_hpp
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <vector>
 #include <stdio.h>
 

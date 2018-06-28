@@ -8,7 +8,7 @@
 
 #include "PathString.hpp"
 
-StdString getStringFromNative(const NativeString& ns) {
+StdString getStringFromNative(const NativeString& ws) {
 	
 #if defined(_WIN32) || defined(_WIN64)
 	
@@ -17,7 +17,7 @@ StdString getStringFromNative(const NativeString& ns) {
 	return str;
 	
 #else
-	return ns;
+	return ws;
 #endif
 }
 

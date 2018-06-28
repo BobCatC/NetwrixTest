@@ -20,7 +20,7 @@ const std::string ThreadTask::getFileName() const
 	return _path.filename().string();
 }
 
-const std::string& ThreadTask::getFilePath() const
+const std::string ThreadTask::getFilePath() const
 {
 	return _path.string();
 }

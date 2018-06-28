@@ -9,6 +9,8 @@
 #ifndef FileSystem_h
 #define FileSystem_h
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <string>
 #include <regex>
 

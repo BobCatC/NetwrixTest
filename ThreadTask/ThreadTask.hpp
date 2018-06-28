@@ -32,7 +32,7 @@ public:
 	
 	const std::string getFileName() const;
 	
-	const std::string& getFilePath() const;
+	const std::string getFilePath() const;
 	
 	const bfs::path& getPath() const;
 	

@@ -13,7 +13,7 @@
 #include <codecvt>
 #include <regex>
 
-#include "FileSystem.hpp"
+#include "FileSystem/FileSystem.hpp"
 
 typedef std::string StdString;
 typedef bfs::path::string_type NativeString;

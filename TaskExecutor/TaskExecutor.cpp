@@ -67,7 +67,6 @@ void TaskExecutor::countTextMetrics()
 void TaskExecutor::countFirstFragmentOfPattern()
 {
 	downloadFragment(_patternFile, 0, _patternFragmentLen, _s);
-	prefixFunction(_s, _pi, _patternFragmentLen, 1);
 }
 
 TaskExecutor::~TaskExecutor()
@@ -113,6 +112,8 @@ void TaskExecutor::processDirectory(std::vector<std::string> &newTasksFiles, std
 {
 	const auto endIt = bfs::directory_iterator();
 	
+	
+
 	for(auto it = bfs::directory_iterator(_path); it != endIt; ++it) {
 		
 		const bfs::path& newFilePath = it->path();
@@ -123,15 +124,27 @@ void TaskExecutor::processDirectory(std::vector<std::string> &newTasksFiles, std
 			continue;
 		}
 		
-		if(isFile == True) {
-			if(!fileFitsMask(nativeName, _regexMask)) {
-				continue;
+		std::string newFilePathString;
+		try
+		{
+			newFilePathString = newFilePath.string();
+
+			if (isFile == True) {
+				if (!fileFitsMask(nativeName, _regexMask)) {
+					continue;
+				}
+				newTasksFiles.push_back(newFilePath.string());
 			}
-			newTasksFiles.push_back(newFilePath.string());
+			else {
+				newTasksDirectories.push_back(newFilePath.string());
+			}
 		}
-		else {
-			newTasksDirectories.push_back(newFilePath.string());
+		catch (const std::exception& e)
+		{
+			continue;
 		}
+
+		
 		
 	}
 }
