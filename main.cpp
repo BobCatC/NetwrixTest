@@ -39,7 +39,7 @@ int main(int argc, const char * argv[]) {
 		std::cout << "Parse done" << std::endl;
 		
 		
-		const unsigned int nThreads = 1;
+		const unsigned int nThreads = 4;
 		ThreadLord lord(request, nThreads);
 		
 	} catch (const std::string& s) {

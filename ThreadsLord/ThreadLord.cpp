@@ -54,7 +54,7 @@ void ThreadLord::startThreads(const Request& request)
 	}
 	
 	
-	size_t cbBufSize = (1 * 1024 * 1024) / _numberOfThreads;
+	size_t cbBufSize = (4 * 1024 * 1024) / _numberOfThreads;
 	
 	for(unsigned int iThread = 0; iThread < _numberOfThreads; ++iThread) {
 		
