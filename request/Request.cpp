@@ -9,71 +9,75 @@
 #include <iostream>
 #include "Request.hpp"
 
-const PathString __exampleRequest = getPathStringFromCString("MyApp.exe -p C:\\Temp -m *.* -i String.txt -o Result.txt");
+const std::string __exampleRequest = "MyApp.exe -p C:\\Temp -m *.* -i String.txt -o Result.txt";
 
-Request::Request(const int argc, const PathChar** argv) {
+Request::Request(const int argc, const char** argv)
+{
 	parseArguments(argc, argv);
 }
 
-void Request::parseArguments(const int argc, const PathChar **argv) {
+void Request::parseArguments(const int argc, const char **argv)
+{
 		
 	try {
 		
 		if(argc != 9) {
 			for(int i = 0; i < argc; ++i) {
-				cout << argv[i] << std::endl;
+				std::cout << argv[i] << std::endl;
 			}
-			throw ( toPathString(argc) + getPathStringFromCString(" Is Too Few Arguments!") );
+			throw ( std::to_string(argc) + " Is Too Few Arguments!" );
 		}
 		
 		parsePairsOfArguments(argc, argv);
 		
 		checkForEmpty();
 		
-	} catch (const PathString& s) {
-		throw (getPathStringFromCString("Error In Parsing Input Arguments\n") + s + getPathStringFromCString("\nEXAMPLE:\n") + __exampleRequest );
+	} catch (const std::string& s) {
+		throw ( "Error In Parsing Input Arguments\n" + s + "\nEXAMPLE:\n" + __exampleRequest );
 	}
 	
 	
 }
 
-void Request::parsePairsOfArguments(const int argc, const PathChar** argv) {
+void Request::parsePairsOfArguments(const int argc, const char** argv)
+{
 	
 	for(int iPairOfArg = 0; iPairOfArg < argc / 2; ++iPairOfArg) {
 
-		const PathString key( argv[1 + iPairOfArg * 2] );
-		const PathString value( argv[2 + iPairOfArg * 2] );
-		const PathString runtimeDirectory = bfs::current_path().string();
+		const std::string key( argv[1 + iPairOfArg * 2] );
+		const std::string value( argv[2 + iPairOfArg * 2] );
+		const std::string runtimeDirectory = bfs::current_path().string();
 		
 		
-		if( key == getPathStringFromCString("-p") ) {
+		if( key == "-p" ) {
 
 			_startDirectory = value;
 
 			makeAbsolute(_startDirectory, runtimeDirectory);
 		}
-		else if( key == getPathStringFromCString("-m") ) {
+		else if( key == "-m" ) {
 			_mask = value;
 		}
-		else if( key == getPathStringFromCString("-i") ) {
+		else if( key == "-i" ) {
 
 			_patternFileName = value;
 			
 			makeAbsolute(_patternFileName, runtimeDirectory);
 		}
-		else if( key == getPathStringFromCString("-o")) {
+		else if( key == "-o" ) {
 
 			_outputFileName = value;
 			
 			makeAbsolute(_outputFileName, runtimeDirectory);
 		}
 		else {
-			throw PathString(getPathStringFromCString("Unknown Key : ") + key );
+			throw ( "Unknown Key : " + key );
 		}
 	}
 }
 
-void Request::checkForEmpty() const {
+void Request::checkForEmpty() const
+{
 	
 	if(_startDirectory.empty()) {
 		throw "Not Found Start Directory Value";
@@ -92,14 +96,15 @@ void Request::checkForEmpty() const {
 	}
 }
 
-PathString Request::makeAbsolute(const PathString & path, const PathString& runtimeDIrectory) {
+std::string Request::makeAbsolute(const std::string & path, const std::string& runtimeDIrectory)
+{
 
 	if (!isAbsolute(path)) {
 
 #if defined(__APPLE__)
-		return runtimeDIrectory + getPathStringFromCString("/") + path;
+		return runtimeDIrectory + "/" + path;
 #else
-		return runtimeDIrectory + getPathStringFromCString("\\") + path;
+		return runtimeDIrectory + "\\" + path;
 #endif
 	}
 	else {
@@ -107,7 +112,8 @@ PathString Request::makeAbsolute(const PathString & path, const PathString& runt
 	}
 }
 
-bool Request::isAbsolute(const PathString & path) {
+bool Request::isAbsolute(const std::string & path)
+{
 
 #if defined(__APPLE__)
 	return (path[0] == '/');

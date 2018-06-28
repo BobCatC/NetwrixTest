@@ -17,28 +17,28 @@
 class Request {
 	
 public:
-	Request(const int argc, const PathChar** argv);
+	Request(const int argc, const char** argv);
 	
 	
 	// getters
-	const PathString& startDirectory = _startDirectory;
-	const RegexString& mask = _mask;
-	const PathString& patternFileName = _patternFileName;
-	const PathString& outputFileName = _outputFileName;
+	const std::string& startDirectory = _startDirectory;
+	const std::string& mask = _mask;
+	const std::string& patternFileName = _patternFileName;
+	const std::string& outputFileName = _outputFileName;
 	
 private:
-	PathString _startDirectory;
-	RegexString _mask;
-	PathString _patternFileName;
-	PathString _outputFileName;
+	std::string _startDirectory;
+	std::string _mask;
+	std::string _patternFileName;
+	std::string _outputFileName;
 
 	
-	void parseArguments(const int argc, const PathChar** argv);
-	void parsePairsOfArguments(const int argc, const PathChar** argv);
+	void parseArguments(const int argc, const char** argv);
+	void parsePairsOfArguments(const int argc, const char** argv);
 	void checkForEmpty() const;
 	
-	PathString makeAbsolute(const PathString& path, const PathString& runtimeDirectory);
-	bool isAbsolute(const PathString& path);
+	std::string makeAbsolute(const std::string& path, const std::string& runtimeDirectory);
+	bool isAbsolute(const std::string& path);
 };
 
 #endif /* CRequest_h */

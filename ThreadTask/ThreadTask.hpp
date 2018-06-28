@@ -15,9 +15,11 @@
 #include <set>
 #include <stdio.h>
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 #include "../PathString.hpp"
-#include "../FileSystem.hpp"
+#include "../FileSystem/FileSystem.hpp"
 
 class ThreadTask {
 	
@@ -25,25 +27,14 @@ public:
 	
 	ThreadTask(const bfs::path& path = bfs::path());
 	ThreadTask(const ThreadTask& other);
-//	ThreadTask(ThreadTask& other) = delete;
 	
 	~ThreadTask();
 	
-	void doTask(const size_t cbMaxBufSize, char* buf, std::vector<ThreadTask>& newTasksFiles, std::vector<ThreadTask>& newTasksDirectories, const PathString& patternFileName, const regex& regexMask, std::vector<std::string>& result, std::vector<std::vector<std::set<int32_t>>>& entries);
+	const std::string getFileName() const;
 	
-	const PathString& getFileName() const { 
-		
-		return std::string(_path.native().begin(), _path.native().end());
-	}
+	const std::string& getFilePath() const;
 	
-	const PathString& getFilePath() const {
-		
-#ifndef __APPLE__
-		return _path.string(); 
-#else
-		return _path.wstring();
-#endif
-	}
+	const bfs::path& getPath() const;
 	
 private:
 	const bfs::path _path;
@@ -52,16 +43,6 @@ private:
 	size_t textFragmentLen;
 	size_t numberOfFragmentsOfPattern;
 	size_t numberOfFragmentsOfTextWithImposition;
-	
-	std::vector<std::string>* _result;
-	std::vector<std::vector<std::set<int32_t>>>* _entries;
-	
-	void processDirectory(std::vector<ThreadTask>& newTasksFiles, std::vector<ThreadTask> &newTasksDirectories, const regex& regexMask);
-	
-	void processFile(const size_t cbMaxBufSize, char* buf, const PathString& patternFileName);
-	void searchInFile(const size_t cbMaxBufSize, char* buf, const PathString& patternFileName);
-	void downloadFragment(FILE* file, size_t fromPosition, size_t size, char* buf) const;
-	void find(size_t crtPatternFragment, size_t iTextFragmentInWhichToFind, size_t iPositionWhereToFind, size_t startPatternPosition);
 	
 };
 

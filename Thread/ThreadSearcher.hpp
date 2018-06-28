@@ -18,7 +18,8 @@
 
 #include "../BankOfTasks/BankOfTasks.hpp"
 #include "../PathString.hpp"
+#include "../TaskExecutor/TaskExecutor.hpp"
 
-void threadSearcher(BankOfTasks& tasks, const unsigned int threadID, const size_t cbBufSize, const PathString& patternFileName, const regex& regexMask);
+void threadSearcher(BankOfTasks& tasks, const unsigned int threadID, const size_t cbBufSize, const std::string& patternFileName, const std::regex& regexMask);
 
 #endif /* ThreadSearcher_hpp */

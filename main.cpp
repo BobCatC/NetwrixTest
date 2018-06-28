@@ -6,6 +6,8 @@
 //  Copyright © 2018 Александр Пахомов. All rights reserved.
 //
 
+#include "MemTrack.hpp"
+
 #include <iostream>
 
 #include "request/Request.hpp"
@@ -13,33 +15,32 @@
 #include "PathString.hpp"
 
 
-
-int wmain(int argc, const PathChar * argv[]) {
+int main(int argc, const char * argv[]) {
 	// * -> .*
 	// ? -> .
 	// . -> \.
 
 	
 
-	argc = 9;
-	argv[1] = "-p"; argv[2] = "C:\\Users";
-	argv[3] = "-i"; argv[4] = "copyright.txt";
-	argv[5] = "-o"; argv[6] = "output.txt";
-	argv[7] = "-m"; argv[8] = "*.*";
-	
+//	argc = 9;
+//	argv[1] = "-p"; argv[2] = "C:\\Users";
+//	argv[3] = "-i"; argv[4] = "copyright.txt";
+//	argv[5] = "-o"; argv[6] = "output.txt";
+//	argv[7] = "-m"; argv[8] = "*.*";
+//
 	try {
 		
 		// parsing arguments into CRequest
-		cout << "Parsing" << std::endl;
+		std::cout << "Parsing" << std::endl;
 		Request request(argc, argv);
-		cout << "Parse done" << std::endl;
+		std::cout << "Parse done" << std::endl;
 		
 		
 		const unsigned int nThreads = 1;
 		ThreadLord lord(request, nThreads);
 		
-	} catch (const PathChar& s) {
-		cout << s;
+	} catch (const std::string& s) {
+		std::cout << s;
 	}
 	
 	return 0;

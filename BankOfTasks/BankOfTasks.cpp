@@ -40,10 +40,13 @@ std::vector<ThreadTask> BankOfTasks::getVectorOfTasks(const unsigned int threadI
 	waitForFlag();
 	
 	std::vector<ThreadTask> tasks;
-	const size_t maxTasksToGive = 20;
+	size_t maxTasksToGive = 8;
 	
-	std::vector<PathString>& tasksBank = _allTasksFiles.empty() ? _allTasksDirectories : _allTasksFiles;
+	std::vector<std::string>& tasksBank = _allTasksFiles.empty() ? _allTasksDirectories : _allTasksFiles;
 	
+	if(!_allTasksFiles.empty()) {
+		maxTasksToGive *= 10;
+	}
 	
 	
 	if(!tasksBank.empty()) {
@@ -62,9 +65,7 @@ std::vector<ThreadTask> BankOfTasks::getVectorOfTasks(const unsigned int threadI
 //		tasks.reserve(tasksToGive);
 		
 		for(int i = 0; i < tasksToGive; ++i) {
-			if(tasksBank[crtTasksCount - 1 - i].empty() || tasksBank[crtTasksCount - 1 - i][0] == '\0') {
-				int a = 0;
-			}
+			
 			tasks.push_back(ThreadTask(bfs::path(tasksBank[crtTasksCount - 1 - i])));
 			tasksBank.pop_back();
 		}
@@ -94,27 +95,25 @@ void BankOfTasks::waitForFlag() {
 }
 
 
-void BankOfTasks::appendTasks(const std::vector<ThreadTask> &newTasksFiles, const std::vector<ThreadTask>& newTasksDirectories) {
-	bool f = true;
+void BankOfTasks::appendTasks(const std::vector<std::string> &newTasksFiles, const std::vector<std::string>& newTasksDirectories) {
+	
+	waitForFlag();
+	
 	if(!newTasksFiles.empty()) {
 		
 		for(const auto& task : newTasksFiles) {
-			if(true)
-				_allTasksFiles.push_back(task.getFilePath());
-			f = !f;
+			_allTasksFiles.push_back(task);
 		}
 	}
 	
 	if(!newTasksDirectories.empty()) {
 		
 		for(const auto& task : newTasksDirectories) {
-			if(true)
-				_allTasksDirectories.push_back(task.getFilePath());
-			f = !f;
+			_allTasksDirectories.push_back(task);
 		}
 	}
 	
-//	_allTasks.insert(_allTasks.end(), newTasks.begin(), newTasks.end());
+	_flag.clear();
 	
 }
 

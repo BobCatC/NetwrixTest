@@ -34,10 +34,10 @@ private:
 	
 	BankOfTasks _tasks;
 	
-	regex regexMask;
+	std::regex regexMask;
 	
 	
-	void initRegexMask(const RegexString& mask);
+	void initRegexMask(const std::string& mask);
 
 	void startThreads(const Request& request);
 	void waitThreads();

@@ -22,29 +22,31 @@ _tasks(numberOfThreads, request)
 	
 }
 
-void ThreadLord::initRegexMask(const RegexString& mask) {
-	RegexString result;
+void ThreadLord::initRegexMask(const std::string& mask)
+{
+	std::string result;
 	for(size_t i = 0; i < mask.size(); ++i) {
 		switch (mask[i]) {
 			case '*':
-				result.append(getPathStringFromCString(".*"));
+				result.append(".*");
 				break;
 			case '?':
-				result.append(getPathStringFromCString("."));
+				result.append(".");
 				break;
 			case '.':
-				result.append(getPathStringFromCString("\."));
+				result.append("\.");
 				break;
 			default:
 				result.push_back(mask[i]);
 				break;
 		}
 	}
-	regexMask = regex(result);
+	regexMask = std::regex(result);
 }
 
 
-void ThreadLord::startThreads(const Request& request) {
+void ThreadLord::startThreads(const Request& request)
+{
 	
 	const unsigned int maxNumberOfThreads = 100;
 	if(_numberOfThreads == 0 || _numberOfThreads > maxNumberOfThreads) {
@@ -52,7 +54,7 @@ void ThreadLord::startThreads(const Request& request) {
 	}
 	
 	
-	size_t cbBufSize = (1024 * 400) * _numberOfThreads;
+	size_t cbBufSize = (5 * 1024 * 1024) / _numberOfThreads;
 	
 	for(unsigned int iThread = 0; iThread < _numberOfThreads; ++iThread) {
 		
@@ -61,7 +63,8 @@ void ThreadLord::startThreads(const Request& request) {
 	}
 }
 
-void ThreadLord::waitThreads() {
+void ThreadLord::waitThreads()
+{
 	
 	for(unsigned int iThread = 0; iThread < _numberOfThreads; ++iThread) {
 		_threads[iThread].join();

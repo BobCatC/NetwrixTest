@@ -27,7 +27,7 @@ public:
 	
 	
 	std::vector<ThreadTask> getVectorOfTasks(const unsigned int threadID);
-	void appendTasks(const std::vector<ThreadTask>& newTasksFiles, const std::vector<ThreadTask>& newTasksDirectories);
+	void appendTasks(const std::vector<std::string>& newTasksFiles, const std::vector<std::string>& newTasksDirectories);
 	
 	bool isAllWorkDone();
 	
@@ -36,7 +36,7 @@ private:
 	
 	const unsigned int _numberOfThreads;
 	
-	std::vector<PathString> _allTasksFiles, _allTasksDirectories;
+	std::vector<std::string> _allTasksFiles, _allTasksDirectories;
 	
 	unsigned int _numberOfThreadsWithoutWork;
 	std::vector<bool> _threadsWithoutWork;

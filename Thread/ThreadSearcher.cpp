@@ -5,87 +5,85 @@
 //  Created by Александр Пахомов on 23.06.2018.
 //  Copyright © 2018 Александр Пахомов. All rights reserved.
 //
+#define NO_MEM_TRACK
 
 #include "ThreadSearcher.hpp"
-
+#include "../MemTrack.hpp"
 
 
 extern size_t numberOfFiles, fileDoneSize;
 
-void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const size_t cbMaxBufSize, const PathString& patternFileName, const regex& regexMask) {
+void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const size_t cbMaxBufSize, const std::string& patternFileName, const std::regex& regexMask) {
 	
-	std::vector<ThreadTask> newTasksFiles, newTasksDirectories;
-	
+	std::vector<std::string> newTasksFiles, newTasksDirectories;
 	std::vector<ThreadTask> tasks;
 	
-	std::ofstream fout("output.txt");
-	
-	std::vector<std::string> result;
-	
-	std::vector<std::vector<std::set<int32_t>>> entries;
+	std::ofstream fout("output_" + std::to_string(threadID) + ".txt");
 	
 	size_t numberOfDoneTasks = 0;
+	int c = 0;
 	
-	
-	char* buf = new char[cbMaxBufSize];
-	
-	
-	while(true) {
+	try
+	{
+		TaskExecutor executor(threadID, cbMaxBufSize, patternFileName, regexMask);
 		
-		tasks = tasksBank.getVectorOfTasks(threadID);
-		
-		if(tasks.size() == 0) {
+		while(true) {
 			
-			if(tasksBank.isAllWorkDone()) {
-				break;
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
-			continue;
-		}
-		numberOfDoneTasks += tasks.size();
-		
-		newTasksFiles.clear();
-		newTasksDirectories.clear();
-		
-		for(size_t iTask = 0; iTask < tasks.size(); ++iTask) {
+			tasks = tasksBank.getVectorOfTasks(threadID);
 			
-//			std::cout << "\t" << threadID << "\t" << tasks[iTask].getFileName() << std::endl;
-			
-//			if(std::regex_match(tasks[iTask].getFileName(), std::regex(".*README.*"))) {
-//				int i = 0;
-//			}
-			
-			result.clear();
-			
-			
-			tasks[iTask].doTask(cbMaxBufSize, buf, newTasksFiles, newTasksDirectories, patternFileName, regexMask, result, entries);
-			
-//			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-			
-			if(!result.empty()) {
+			if(tasks.size() == 0) {
 				
-				fout << "*** In File " << getString(tasks[iTask].getFileName()).c_str() << std::endl;
-				for(const auto& str: result) {
-					fout << "\t" << str;
+				if(tasksBank.isAllWorkDone()) {
+					break;
+				}
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				continue;
+			}
+			
+			numberOfDoneTasks += tasks.size();
+			
+			newTasksFiles.clear();
+			newTasksDirectories.clear();
+			
+			for(size_t iTask = 0; iTask < tasks.size(); ++iTask) {
+				
+				const std::vector<std::string>& result = executor.doTask(tasks[iTask], newTasksFiles, newTasksDirectories);
+				
+				if(!result.empty()) {
+					
+					fout << "*** In File " << tasks[iTask].getFilePath()<< std::endl;
+					
+					fout << "\tNumber Of Entries : " << result.size() << std::endl;
+					
+					for(const auto& str: result) {
+						fout << "\t" << str << std::endl;
+					}
 				}
 			}
-
 			
+			if(c == 0) {
+				c = 1000;
+				MemTrack::TrackListMemoryUsage();
+				
+			}
+			--c;
+			
+			tasksBank.appendTasks(newTasksFiles, newTasksDirectories);
 			
 		}
 		
-		
-		tasksBank.appendTasks(newTasksFiles, newTasksDirectories);
-		
-		
+		fout << "*** DONE: " << numberOfDoneTasks << std::endl;
+		fout << "*** FILES NUMBER: " << executor.doneFiles << std::endl;
+		fout << "*** SIZE OF FILES: " << executor.doneSize << std::endl;
 		
 	}
+	catch(const std::string& err)
+	{
+		std::cout << "! ! ! Thread " << threadID << " Error" << std::endl << err << std::endl;
+		return;
+	}
 	
-	delete [] buf;
 	
-	fout << "*** DONE: " << numberOfDoneTasks << std::endl;
-	fout << "*** FILES NUMBER: " << numberOfFiles << std::endl;
-	fout << "*** SIZE OF FILES: " << fileDoneSize << std::endl;
 	
 	return;
 }
