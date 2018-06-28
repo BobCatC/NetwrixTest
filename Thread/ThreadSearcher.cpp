@@ -8,7 +8,7 @@
 #define NO_MEM_TRACK
 
 #include "ThreadSearcher.hpp"
-#include "../MemTrack.hpp"
+//#include "../MemTrack.hpp"
 
 
 extern size_t numberOfFiles, fileDoneSize;
@@ -47,7 +47,7 @@ void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const s
 			
 			for(size_t iTask = 0; iTask < tasks.size(); ++iTask) {
 				
-				const std::vector<std::string>& result = executor.doTask(tasks[iTask], newTasksFiles, newTasksDirectories);
+				const std::vector<FirstFragmentEntry>& result = executor.doTask(tasks[iTask], newTasksFiles, newTasksDirectories);
 				
 				if(!result.empty()) {
 					
@@ -55,19 +55,19 @@ void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const s
 					
 					fout << "\tNumber Of Entries : " << result.size() << std::endl;
 					
-					for(const auto& str: result) {
-						fout << "\t" << str << std::endl;
+					for(const auto& position: result) {
+						fout << "\tposition : " << position << std::endl;
 					}
 				}
 			}
 			
-			if(c == 0) {
-				c = 1000;
-				MemTrack::TrackListMemoryUsage();
-				
-			}
-			--c;
-			
+//			if(c == 0) {
+//				c = 1000;
+////				MemTrack::TrackListMemoryUsage();
+//				
+//			}
+//			--c;
+//			
 			tasksBank.appendTasks(newTasksFiles, newTasksDirectories);
 			
 		}
@@ -75,7 +75,7 @@ void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const s
 		fout << "*** DONE: " << numberOfDoneTasks << std::endl;
 		fout << "*** FILES NUMBER: " << executor.doneFiles << std::endl;
 		fout << "*** SIZE OF FILES: " << executor.doneSize << std::endl;
-		
+		std::cout << "Prefix function time" << executor.allTimePrefix / (1000 * 1000) << std::endl;
 	}
 	catch(const std::string& err)
 	{

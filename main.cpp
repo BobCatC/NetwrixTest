@@ -6,7 +6,7 @@
 //  Copyright © 2018 Александр Пахомов. All rights reserved.
 //
 
-#include "MemTrack.hpp"
+//#include "MemTrack.hpp"
 
 #include <iostream>
 
@@ -28,6 +28,9 @@ int main(int argc, const char * argv[]) {
 //	argv[5] = "-o"; argv[6] = "output.txt";
 //	argv[7] = "-m"; argv[8] = "*.*";
 //
+	
+	const auto timeStart = std::chrono::system_clock::now();
+	
 	try {
 		
 		// parsing arguments into CRequest
@@ -42,6 +45,12 @@ int main(int argc, const char * argv[]) {
 	} catch (const std::string& s) {
 		std::cout << s;
 	}
+	
+	const auto timeEnd = std::chrono::system_clock::now();
+	
+	const int time = std::chrono::duration_cast<std::chrono::seconds>(timeEnd - timeStart).count();
+	
+	std::cout << std::endl << time << std::endl;
 	
 	return 0;
 }

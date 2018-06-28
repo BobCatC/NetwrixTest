@@ -50,13 +50,16 @@ void TaskExecutor::countPatternMetrics()
 {
 	_patternLen = bfs::file_size(bfs::path(_patternFileName));
 	_patternFragmentLen = ((_sArrayLen - 1) * 1) / 7;
+	if(_patternLen < _patternFragmentLen) {
+		_patternFragmentLen = _patternLen;
+	}
 	_numberOfFragmentsOfPattern = (_patternLen + _patternFragmentLen - 1) / (_patternFragmentLen);
 }
 
 void TaskExecutor::countTextMetrics()
 {
 	_textLen = bfs::file_size(_path);
-	_textFragmentLen = ((_sArrayLen - 1) * 6) / 7;
+	_textFragmentLen = _sArraySize - 1 - _patternFragmentLen;
 	_textFragmentWithImpositionLen = _textFragmentLen - _patternFragmentLen;
 	_numberOfFragmentsOfTextWithImposition = 1 + (((long long)_textLen - (long long)_patternFragmentLen - 1) / (long long)(_textFragmentLen - _patternFragmentLen));
 }
@@ -81,7 +84,7 @@ TaskExecutor::~TaskExecutor()
 
 //
 
-const std::vector<std::string>& TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories)
+const std::vector<FirstFragmentEntry>& TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories)
 {
 	_path = task.getPath();
 	_textFileNativeName = task.getFileName();
@@ -166,18 +169,19 @@ void TaskExecutor::processFile()
 	
 	fclose(_textFile);
 	
-	prefixFunctionDuration = std::chrono::duration_cast<std::chrono::milliseconds>(prefixEnd - prefixStart).count();
-	siftDuration = std::chrono::duration_cast<std::chrono::milliseconds>(siftEnd - siftStart).count();
+	prefixFunctionDuration = std::chrono::duration_cast<std::chrono::microseconds>(prefixEnd - prefixStart).count();
+	siftDuration = std::chrono::duration_cast<std::chrono::microseconds>(siftEnd - siftStart).count();
 	
 	if((_textLen + _patternLen) / (1024 * 1024) > 2){
 		std::cout << (_textLen + _patternLen) / (1024) << " KB\t";
-		std::cout << "Prefix Function Duration : " << (prefixFunctionDuration) << std::endl;
-		std::cout << "Sift Function Duration : " << (siftDuration) << std::endl;
+		std::cout << "Prefix Function Duration : " << (prefixFunctionDuration / 1000) << std::endl;
+		std::cout << "Sift Function Duration : " << (siftDuration / 1000) << std::endl;
 
 		std::cout << std::endl;
 //		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 	
+	allTimePrefix += prefixFunctionDuration;
 }
 
 void TaskExecutor::findEntriesOfFirstFragment(std::vector<std::vector<EntryPair> > &entries)
@@ -202,6 +206,7 @@ void TaskExecutor::findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>
 		
 		searchWithPrefixFunc(realPatternFragmentLen, iTextFragment, realPatternFragmentLen + 1 + realTextFragmentLen, entries[iTextFragment]);
 		
+//		entries[iTextFragment].shrink_to_fit();
 	}
 }
 
@@ -378,7 +383,7 @@ void TaskExecutor::fillResult(const std::vector<std::vector<EntryPair>>& entries
 		for(const auto& pair : entries[iTextFragment])
 		{
 			const size_t position = pair.first;
-			_result.push_back("On position : " + std::to_string(position));
+			_result.push_back(position);
 		}
 
 	}

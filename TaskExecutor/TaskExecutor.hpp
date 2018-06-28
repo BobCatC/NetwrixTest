@@ -34,9 +34,10 @@ public:
 	~TaskExecutor();
 	
 	
-	const std::vector<std::string>& doTask(const ThreadTask& task, std::vector<std::string>& newTasksFiles, std::vector<std::string>& newTasksDirectories);
+	const std::vector<FirstFragmentEntry>& doTask(const ThreadTask& task, std::vector<std::string>& newTasksFiles, std::vector<std::string>& newTasksDirectories);
 	size_t doneSize = 0;
 	size_t doneFiles = 0;
+	int allTimePrefix = 0;
 private:
 	
 	const unsigned int _threadID;
@@ -70,7 +71,7 @@ private:
 	size_t _textFragmentWithImpositionLen;
 	size_t _numberOfFragmentsOfTextWithImposition;
 	
-	std::vector<std::string> _result;
+	std::vector<FirstFragmentEntry> _result;
 
 	
 	
