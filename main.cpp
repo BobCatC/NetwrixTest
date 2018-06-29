@@ -22,11 +22,11 @@ int main(int argc, const char * argv[]) {
 
 	
 
-	argc = 9;
-	argv[1] = "-p"; argv[2] = "C:\\Users";
-	argv[3] = "-i"; argv[4] = "copyright.txt";
-	argv[5] = "-o"; argv[6] = "output.txt";
-	argv[7] = "-m"; argv[8] = "*.*";
+//	argc = 9;
+//	argv[1] = "-p"; argv[2] = "C:\\Users";
+//	argv[3] = "-i"; argv[4] = "copyright.txt";
+//	argv[5] = "-o"; argv[6] = "output.txt";
+//	argv[7] = "-m"; argv[8] = "*.*";
 
 	
 	const auto timeStart = std::chrono::system_clock::now();
@@ -39,7 +39,7 @@ int main(int argc, const char * argv[]) {
 		std::cout << "Parse done" << std::endl;
 		
 		
-		const unsigned int nThreads = 4;
+		const unsigned int nThreads = 1;
 		ThreadLord lord(request, nThreads);
 		
 	} catch (const std::string& s) {

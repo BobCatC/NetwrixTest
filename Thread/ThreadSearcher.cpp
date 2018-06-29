@@ -18,14 +18,14 @@ void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const s
 	std::vector<std::string> newTasksFiles, newTasksDirectories;
 	std::vector<ThreadTask> tasks;
 	
-	std::ofstream fout("output_" + std::to_string(threadID) + ".txt");
+	std::string outputFileName("output_" + std::to_string(threadID) + ".txt");
 	
 	size_t numberOfDoneTasks = 0;
 	int c = 0;
 	
 	try
 	{
-		TaskExecutor executor(threadID, cbMaxBufSize, patternFileName, regexMask);
+		TaskExecutor executor(threadID, outputFileName, cbMaxBufSize, patternFileName, regexMask);
 		
 		while(true) {
 			
@@ -47,18 +47,9 @@ void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const s
 			
 			for(size_t iTask = 0; iTask < tasks.size(); ++iTask) {
 				
-				const std::vector<FirstFragmentEntry>& result = executor.doTask(tasks[iTask], newTasksFiles, newTasksDirectories);
+				executor.doTask(tasks[iTask], newTasksFiles, newTasksDirectories);
 				
-				if(!result.empty()) {
-					
-					fout << "*** In File " << tasks[iTask].getFilePath()<< std::endl;
-					
-					fout << "\tNumber Of Entries : " << result.size() << std::endl;
-					
-					for(const auto& position: result) {
-						fout << "\tposition : " << position << std::endl;
-					}
-				}
+				
 			}
 			
 //			if(c == 0) {
@@ -72,10 +63,11 @@ void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const s
 			
 		}
 		
-		fout << "*** DONE: " << numberOfDoneTasks << std::endl;
-		fout << "*** FILES NUMBER: " << executor.doneFiles << std::endl;
-		fout << "*** SIZE OF FILES: " << executor.doneSize << std::endl;
-		std::cout << "Prefix function time" << executor.allTimePrefix / (1000 * 1000) << std::endl;
+//		fout << "*** DONE: " << numberOfDoneTasks << std::endl;
+//		fout << "*** FILES NUMBER: " << executor.doneFiles << std::endl;
+//		fout << "*** SIZE OF FILES: " << executor.doneSize << std::endl;
+//		fout << "*** DIRECTORIES NUMBER : " << executor.doneDirectories << std::endl;
+		std::cout << "Prefix function time " << executor.allTimePrefix / (1000) << " ms" << std::endl;
 	}
 	catch(const std::string& err)
 	{

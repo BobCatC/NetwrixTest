@@ -34,7 +34,7 @@ void ThreadLord::initRegexMask(const std::string& mask)
 				result.append(".");
 				break;
 			case '.':
-				result.append("\.");
+				result.append("[.]");
 				break;
 			default:
 				result.push_back(mask[i]);

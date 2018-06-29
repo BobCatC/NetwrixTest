@@ -29,20 +29,22 @@ class TaskExecutor {
 
 public:
 	
-	TaskExecutor(const unsigned int threadID, const size_t cbMaxBufSize, const std::string& patternFileName, const std::regex& regexMask);
+	TaskExecutor(const unsigned int threadID, const std::string& outputFileName, const size_t cbMaxBufSize, const std::string& patternFileName, const std::regex& regexMask);
 	TaskExecutor(const TaskExecutor& exe) = delete;
 	TaskExecutor(TaskExecutor& exe) = delete;
 
 	~TaskExecutor();
 	
 	
-	const std::vector<FirstFragmentEntry>& doTask(const ThreadTask& task, std::vector<std::string>& newTasksFiles, std::vector<std::string>& newTasksDirectories);
+	void doTask(const ThreadTask& task, std::vector<std::string>& newTasksFiles, std::vector<std::string>& newTasksDirectories);
 	size_t doneSize = 0;
 	size_t doneFiles = 0;
+	size_t doneDirectories = 0;
 	int allTimePrefix = 0;
 private:
 	
 	const unsigned int _threadID;
+	const std::string& _outputFileName;
 	const std::regex& _regexMask;
 	const size_t _cbMaxBufSize;
 	const std::string& _patternFileName;
@@ -74,7 +76,7 @@ private:
 	size_t _numberOfFragmentsOfTextWithImposition;
 	
 	std::vector<FirstFragmentEntry> _result;
-
+	FILE* _outputFile = nullptr;
 	
 	
 	void countDefaultMetrics();
@@ -103,6 +105,8 @@ private:
 	
 	size_t getRealPatternFragmentLen(const size_t iPatternFragment);
 	size_t getRealTextFragmentLen(const size_t iTextFragment);
+	
+	void printResult();
 };
 
 

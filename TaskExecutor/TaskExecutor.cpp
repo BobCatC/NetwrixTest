@@ -8,22 +8,30 @@
 
 #include "TaskExecutor.hpp"
 
+#include <string.h>
+
 void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from);
 
 size_t numberOfFiles = 0;
 size_t fileDoneSize = 0;
 
-TaskExecutor::TaskExecutor(const unsigned int threadID, const size_t cbMaxBufSize, const std::string& patternFileName, const std::regex& regexMask) :
+TaskExecutor::TaskExecutor(const unsigned int threadID, const std::string& outputFileName, const size_t cbMaxBufSize, const std::string& patternFileName, const std::regex& regexMask) :
 _threadID(threadID),
+_outputFileName(outputFileName),
 _cbMaxBufSize(cbMaxBufSize),
 _patternFileName(patternFileName),
 _regexMask(regexMask)
 {
 	_patternFile = fopen(_patternFileName.c_str(), "r");
+	_outputFile = fopen(_outputFileName.c_str(), "w");
 	
 	if(_patternFile == nullptr)
 	{
-		throw std::string( "Could't open pattern file" );
+		throw std::string( "Couldn't open pattern file" );
+	}
+	if(_outputFile == nullptr)
+	{
+		throw std::string( "Couldn't open output file \"" + _outputFileName + "\"" );
 	}
 	
 	_buf = new char[_cbMaxBufSize];
@@ -71,6 +79,13 @@ void TaskExecutor::countFirstFragmentOfPattern()
 
 TaskExecutor::~TaskExecutor()
 {
+	if(_patternFile != nullptr) {
+		fclose(_patternFile);
+	}
+	if(_outputFile != nullptr) {
+		fclose(_outputFile);
+	}
+	
 	
 	if(_buf != nullptr) {
 		delete [] _buf;
@@ -83,7 +98,7 @@ TaskExecutor::~TaskExecutor()
 
 //
 
-const std::vector<FirstFragmentEntry>& TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories)
+void TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories)
 {
 	_path = task.getPath();
 	_textFileNativeName = task.getFileName();
@@ -104,7 +119,7 @@ const std::vector<FirstFragmentEntry>& TaskExecutor::doTask(const ThreadTask& ta
 		}
 	}
 	
-	return _result;
+	printResult();
 }
 
 
@@ -113,7 +128,7 @@ void TaskExecutor::processDirectory(std::vector<std::string> &newTasksFiles, std
 	const auto endIt = bfs::directory_iterator();
 	
 	
-
+	++doneDirectories;
 	for(auto it = bfs::directory_iterator(_path); it != endIt; ++it) {
 		
 		const bfs::path& newFilePath = it->path();
@@ -442,7 +457,35 @@ void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from
 	}
 }
 
-
+void TaskExecutor::printResult()
+{
+	if(!_result.empty()) {
+		
+		const size_t cbMaxResultBufSize = _cbMaxBufSize - 128;
+		assert(_cbMaxBufSize > 128);
+		
+		size_t i = 0;
+		size_t size = _result.size();
+		size_t cbResultBufSize = sprintf(_s, "*** In File %s\n", _textFilePath.c_str());
+		
+		while(i < size)
+		{
+			
+			while(i < size && cbResultBufSize < cbMaxResultBufSize)
+			{
+				cbResultBufSize += sprintf(_s + cbResultBufSize, "\tposition : %i\n", _result[i]);
+				++i;
+			}
+			
+			fwrite(_s, 1, cbResultBufSize, _outputFile);
+			cbResultBufSize = 0;
+		}
+		
+		
+	}
+	
+	
+}
 
 
 
