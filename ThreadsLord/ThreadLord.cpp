@@ -8,7 +8,7 @@
 #include <iostream>
 
 #include "ThreadLord.hpp"
-#include "../Thread/ThreadSearcher.hpp"
+#include "../ThreadSearcher/ThreadSearcher.hpp"
 
 
 /* ---------------------------------------- ThreadLord Constructor */

@@ -29,6 +29,7 @@ class TaskExecutor {
 public:
 	
 	TaskExecutor(const unsigned int threadID, const std::string& outputFileName, const size_t cbMaxBufSize, const std::string& patternFileName, const std::regex& regexMask);
+	
 	TaskExecutor(const TaskExecutor& exe) = delete;
 	TaskExecutor(TaskExecutor& exe) = delete;
 
@@ -54,7 +55,7 @@ private:
 	FILE* _textFile = nullptr;
 	FILE* _outputFile = nullptr;
 	
-	bfs::path _path;
+	bfs::path _bfsTextFilePath;
 	std::string _textFileNativeName;
 	std::string _textFilePath;
 	

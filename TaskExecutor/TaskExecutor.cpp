@@ -83,7 +83,7 @@ void TaskExecutor::countPatternMetrics()
 
 void TaskExecutor::countTextMetrics()
 {
-	_textLen = bfs::file_size(_path);
+	_textLen = bfs::file_size(_bfsTextFilePath);
 	_textFragmentLen = _sArraySize - 1 - _patternFragmentLen;
 	_textFragmentWithImpositionLen = _textFragmentLen - _patternFragmentLen;
 	_numberOfFragmentsOfTextWithImposition = 1 + (((long long)_textLen - (long long)_patternFragmentLen - 1) / (long long)(_textFragmentLen - _patternFragmentLen));
@@ -114,15 +114,15 @@ TaskExecutor::~TaskExecutor()
 
 void TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories)
 {
-	_path = task.getFileBfsPath();
-	_textFileNativeName = task.getFileName();
+	_bfsTextFilePath = task.getFileBfsPath();
+	_textFileNativeName = task.getFileNativeName();
 	_textFilePath = task.getFilePath();
 	
 	_result.clear();
 	
 	try {
 		
-		if(bfs::is_directory(_path)) {
+		if(bfs::is_directory(_bfsTextFilePath)) {
 			processDirectory(newTasksFiles, newTasksDirectories);
 		}
 		else {
@@ -147,7 +147,7 @@ void TaskExecutor::processDirectory(std::vector<std::string> &newTasksFiles, std
 	const auto endIt = bfs::directory_iterator();
 	
 	++doneDirectories;
-	for(auto it = bfs::directory_iterator(_path); it != endIt; ++it) {
+	for(auto it = bfs::directory_iterator(_bfsTextFilePath); it != endIt; ++it) {
 		
 		const bfs::path& newFilePath = it->path();
 		

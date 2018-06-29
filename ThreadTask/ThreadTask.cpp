@@ -11,19 +11,19 @@
 
 /* ---------------------------------------- ThreadTask Constructor  */
 
-ThreadTask::ThreadTask(const bfs::path& path) : _path(path){ }
+ThreadTask::ThreadTask(const bfs::path& path) : _bfsPath(path){ }
 
 
 /* ---------------------------------------- ThreadTask Copy Constructor */
 
-ThreadTask::ThreadTask(const ThreadTask& other) : _path(other._path) { }
+ThreadTask::ThreadTask(const ThreadTask& other) : _bfsPath(other._bfsPath) { }
 
 
 /* ---------------------------------------- ThreadTask getFileName  */
 
-const std::string ThreadTask::getFileName() const
+const std::string ThreadTask::getFileNativeName() const
 {
-	return _path.filename().string();
+	return _bfsPath.filename().string();
 }
 
 
@@ -31,7 +31,7 @@ const std::string ThreadTask::getFileName() const
 
 const std::string ThreadTask::getFilePath() const
 {
-	return _path.string();
+	return _bfsPath.string();
 }
 
 
@@ -39,7 +39,7 @@ const std::string ThreadTask::getFilePath() const
 
 const bfs::path& ThreadTask::getFileBfsPath() const
 {
-	return _path;
+	return _bfsPath;
 }
 
 

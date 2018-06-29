@@ -13,11 +13,16 @@
 #include "FileSystem.hpp"
 
 
+/* ---------------------------------------- FileSystem   */
+
 void downloadFragment(FILE *file, size_t fromPositionInFile, size_t size, char *buf)
 {
 	fseek(file, fromPositionInFile, SEEK_SET);
 	fread(buf, 1, size, file);
 }
+
+
+/* ---------------------------------------- FileSystem   */
 
 void uploadFragment(FILE* file, size_t fromPositionInFile, size_t size, char* buf)
 {
@@ -25,11 +30,16 @@ void uploadFragment(FILE* file, size_t fromPositionInFile, size_t size, char* bu
 	fwrite(buf, 1, size, file);
 }
 
+
+/* ---------------------------------------- FileSystem   */
+
 bool fileFitsMask(const std::string& nativeName, const std::regex& regexMask)
 {
 	return std::regex_match(nativeName, regexMask);
 }
 
+
+/* ---------------------------------------- FileSystem   */
 
 bool fileWithNameExists(const std::string& path)
 {
