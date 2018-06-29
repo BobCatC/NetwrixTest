@@ -3,24 +3,36 @@
 //  NetwrixTest
 //
 //  Created by Александр Пахомов on 28.06.2018.
-//  Copyright © 2018 Александр Пахомов. All rights reserved.
+//  Copyright © 2018 Александр Пахомов. All rights reserved(no).
 //
+
+#include <string.h>
+#include <iostream>
 
 #include "TaskExecutor.hpp"
 
-#include <string.h>
 
 void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from);
 
-size_t numberOfFiles = 0;
-size_t fileDoneSize = 0;
 
-TaskExecutor::TaskExecutor(const unsigned int threadID, const std::string& outputFileName, const size_t cbMaxBufSize, const std::string& patternFileName, const std::regex& regexMask) :
+
+TaskExecutor::TaskExecutor(const unsigned int threadID,
+						   const std::string& outputFileName,
+						   const size_t cbMaxBufSize,
+						   const std::string& patternFileName,
+						   const std::regex& regexMask) :
 _threadID(threadID),
 _outputFileName(outputFileName),
 _cbMaxBufSize(cbMaxBufSize),
 _patternFileName(patternFileName),
 _regexMask(regexMask)
+{
+	openDefaultFiles();
+	
+	initBuffers();
+}
+
+void TaskExecutor::openDefaultFiles()
 {
 	_patternFile = fopen(_patternFileName.c_str(), "r");
 	_outputFile = fopen(_outputFileName.c_str(), "w");
@@ -33,16 +45,21 @@ _regexMask(regexMask)
 	{
 		throw std::string( "Couldn't open output file \"" + _outputFileName + "\"" );
 	}
-	
+}
+
+void TaskExecutor::initBuffers()
+{	
 	_buf = new char[_cbMaxBufSize];
+	
+	if(_buf == nullptr) {
+		throw "Memory Allocation Error";
+	}
 	
 	countDefaultMetrics();
 	countPatternMetrics();
 	
 	_s = _buf;
 	_pi = (int32_t*)(_buf + _sArraySize);
-	
-	countFirstFragmentOfPattern();
 }
 
 void TaskExecutor::countDefaultMetrics()
@@ -72,10 +89,7 @@ void TaskExecutor::countTextMetrics()
 	_numberOfFragmentsOfTextWithImposition = 1 + (((long long)_textLen - (long long)_patternFragmentLen - 1) / (long long)(_textFragmentLen - _patternFragmentLen));
 }
 
-void TaskExecutor::countFirstFragmentOfPattern()
-{
-	downloadFragment(_patternFile, 0, _patternFragmentLen, _s);
-}
+
 
 TaskExecutor::~TaskExecutor()
 {
@@ -100,26 +114,31 @@ TaskExecutor::~TaskExecutor()
 
 void TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories)
 {
-	_path = task.getPath();
+	_path = task.getFileBfsPath();
 	_textFileNativeName = task.getFileName();
 	_textFilePath = task.getFilePath();
 	
 	_result.clear();
 	
-	if(canBeOpened(_textFilePath)) {
-		switch (isRegular(_path)) {
-			case False:
-				processDirectory(newTasksFiles, newTasksDirectories);
-				break;
-			case True:
-				processFile();
-				break;
-			case Undeterminacy:
-				;
+	try {
+		
+		if(bfs::is_directory(_path)) {
+			processDirectory(newTasksFiles, newTasksDirectories);
 		}
+		else {
+			processFile();
+		}
+		
+	} catch (const bfs::filesystem_error& err) {
+		
+	} catch(const std::string& err) {
+		
+	} catch(const char* err) {
+		
 	}
 	
-	printResult();
+	
+	printResultToFile();
 }
 
 
@@ -127,41 +146,31 @@ void TaskExecutor::processDirectory(std::vector<std::string> &newTasksFiles, std
 {
 	const auto endIt = bfs::directory_iterator();
 	
-	
 	++doneDirectories;
 	for(auto it = bfs::directory_iterator(_path); it != endIt; ++it) {
 		
 		const bfs::path& newFilePath = it->path();
-		const std::string nativeName = newFilePath.filename().string();
-		BoolExtension isFile = isRegular(newFilePath);
 		
-		if(isFile == Undeterminacy) {
-			continue;
-		}
-		
-		std::string newFilePathString;
-		try
-		{
-			newFilePathString = newFilePath.string();
-
-			if (isFile == True) {
-				if (!fileFitsMask(nativeName, _regexMask)) {
-					continue;
-				}
-				newTasksFiles.push_back(newFilePath.string());
-			}
-			else {
-				newTasksDirectories.push_back(newFilePath.string());
-			}
-		}
-		catch (const std::exception& e)
-		{
-			continue;
-		}
-
-		
+		destributeNewPath(newFilePath, newTasksFiles, newTasksDirectories);
 		
 	}
+}
+
+void TaskExecutor::destributeNewPath(const bfs::path &newFilePath, std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories)
+{
+	
+	if(bfs::is_directory(newFilePath)) {
+		newTasksDirectories.push_back(newFilePath.string());
+	}
+	else {
+		const std::string nativeName = newFilePath.filename().string();
+		
+		if (fileFitsMask(nativeName, _regexMask)) {
+			
+			newTasksFiles.push_back(newFilePath.string());
+		}
+	}
+	
 }
 
 //	File
@@ -178,6 +187,10 @@ void TaskExecutor::processFile()
 	}
 	
 	_textFile = fopen(_textFilePath.c_str(), "r");
+	
+	if(_textFile == nullptr) {
+		throw ( "Couldn't open file \"" + _textFilePath + "\"");
+	}
 	
 	std::vector<std::vector<EntryPair>> entries(_numberOfFragmentsOfTextWithImposition);
 	
@@ -197,8 +210,8 @@ void TaskExecutor::processFile()
 	
 	fclose(_textFile);
 	
-	prefixFunctionDuration = std::chrono::duration_cast<std::chrono::microseconds>(prefixEnd - prefixStart).count();
-	siftDuration = std::chrono::duration_cast<std::chrono::microseconds>(siftEnd - siftStart).count();
+	prefixFunctionDuration = (int)std::chrono::duration_cast<std::chrono::microseconds>(prefixEnd - prefixStart).count();
+	siftDuration = (int)std::chrono::duration_cast<std::chrono::microseconds>(siftEnd - siftStart).count();
 	
 	if((_textLen + _patternLen) / (1024 * 1024) > 2){
 		std::cout << (_textLen + _patternLen) / (1024) << " KB\t";
@@ -234,7 +247,52 @@ void TaskExecutor::findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>
 		
 		searchWithPrefixFunc(realPatternFragmentLen, iTextFragment, realPatternFragmentLen + 1 + realTextFragmentLen, entries[iTextFragment]);
 		
-//		entries[iTextFragment].shrink_to_fit();
+	}
+}
+
+void TaskExecutor::searchWithPrefixFunc(const size_t realPatternFragmentLen, const size_t iTextFragment, const size_t len, std::vector<EntryPair>& result)
+{
+	_pi[0] = 0;
+	prefixFunction(_s, _pi, len, 1);
+	
+//	for(size_t i = 0; i < len; ++i){
+//		printf("%2i ", i);
+//	}
+//	std::cout << std::endl;
+//	for(size_t i = 0; i < len; ++i){
+//		printf("%2c ", _s[i]);
+//	}
+//	std::cout << std::endl;
+//	for(size_t i = 0; i < len; ++i){
+//		printf("%2i ", _pi[i]);
+//	}
+//	std::cout << std::endl << std::endl;
+//
+	
+	size_t i = 2 * realPatternFragmentLen;
+	while (i < len) {
+		
+		if(_pi[i] >= realPatternFragmentLen) {
+		
+			size_t j = i;
+			while(_pi[j] > realPatternFragmentLen) {
+				j = _pi[j] - 1;
+			}
+			_pi[i] = _pi[j];
+			
+			if(_pi[j] == realPatternFragmentLen) {
+			
+				CrtFragmentEntry position = (CrtFragmentEntry)(i - 2 * realPatternFragmentLen);
+				FirstFragmentEntry absolutePosition = (FirstFragmentEntry)(position + (iTextFragment * _textFragmentWithImpositionLen));
+				EntryPair pair(absolutePosition, position);
+			
+				if(firstPatternFragmentCanBeOnPosition(position, iTextFragment)) {
+					result.push_back(pair);
+				}
+			}
+		}
+		
+		++i;
 	}
 }
 
@@ -244,7 +302,7 @@ bool TaskExecutor::firstPatternFragmentCanBeOnPosition(size_t position, size_t i
 	size_t absolutePosition = position + (iTextFragment * _textFragmentWithImpositionLen);
 	const size_t maxSizeForPosition = _textLen - absolutePosition;
 	
-	return _patternLen <= maxSizeForPosition;
+	return ( _patternLen <= maxSizeForPosition );
 }
 
 void TaskExecutor::siftEntries(std::vector<std::vector<EntryPair> > &entries)
@@ -282,8 +340,10 @@ void TaskExecutor::siftEntries(std::vector<std::vector<EntryPair> > &entries)
 			nextTextFragment[realNextTextFragmentLen] = 0;
 			
 			std::vector<EntryPair> filteredEntries;
+			filteredEntries.reserve(entries[iTextFragment].size());
 			
-			for(const auto pair : entries[iTextFragment]) {
+			
+			for(const auto& pair : entries[iTextFragment]) {
 				
 				const unsigned long long startPositionOfPatternFragment = pair.second;
 				
@@ -390,8 +450,8 @@ void TaskExecutor::increasePositions(std::vector<std::vector<EntryPair>> &entrie
 			}
 			else {
 				EntryPair newPair(pair);
-				newPair.second = positionOfNextPatternFragment;
-
+				newPair.second = (CrtFragmentEntry)positionOfNextPatternFragment;
+				
 				filteredEntriesPointer->push_back(newPair);
 			}
 			
@@ -410,8 +470,8 @@ void TaskExecutor::fillResult(const std::vector<std::vector<EntryPair>>& entries
 	{
 		for(const auto& pair : entries[iTextFragment])
 		{
-			const size_t position = pair.first;
-			_result.push_back(position);
+			const FirstFragmentEntry position = pair.first;
+			_result.push_back((int)position);
 		}
 
 	}
@@ -419,29 +479,6 @@ void TaskExecutor::fillResult(const std::vector<std::vector<EntryPair>>& entries
 
 //	Prefix Function
 
-void TaskExecutor::searchWithPrefixFunc(const size_t realPatternFragmentLen, const size_t iTextFragment, const size_t len, std::vector<EntryPair>& result)
-{
-	_pi[0] = 0;
-	prefixFunction(_s, _pi, len, 1);
-	
-	size_t i = 2 * realPatternFragmentLen;
-	while (i < len)
-	{
-		
-		if(_pi[i] == realPatternFragmentLen)
-		{
-			CrtFragmentEntry position = (CrtFragmentEntry)(i - 2 * realPatternFragmentLen);
-			FirstFragmentEntry absolutePosition = (FirstFragmentEntry)(position + (iTextFragment * _textFragmentWithImpositionLen));
-			EntryPair pair(absolutePosition, position);
-			
-			if(firstPatternFragmentCanBeOnPosition(position, iTextFragment)) {
-				result.push_back(pair);
-			}
-		}
-		
-		++i;
-	}
-}
 
 void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from)
 {
@@ -457,7 +494,7 @@ void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from
 	}
 }
 
-void TaskExecutor::printResult()
+void TaskExecutor::printResultToFile()
 {
 	if(!_result.empty()) {
 		

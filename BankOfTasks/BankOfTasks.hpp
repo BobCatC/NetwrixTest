@@ -3,7 +3,7 @@
 //  NetwrixTest
 //
 //  Created by Александр Пахомов on 23.06.2018.
-//  Copyright © 2018 Александр Пахомов. All rights reserved.
+//  Copyright © 2018 Александр Пахомов. All rights reserved(no).
 //
 
 #ifndef BankOfTasks_hpp
@@ -14,8 +14,7 @@
 #include <thread>
 
 #include "../ThreadTask/ThreadTask.hpp"
-#include "../request/Request.hpp"
-#include "../PathString.hpp"
+#include "../Request/Request.hpp"
 
 class BankOfTasks {
 	
@@ -31,18 +30,25 @@ public:
 	
 	bool isAllWorkDone();
 	
+	void fatalErrorHappened();
 	
 private:
 	
+	std::atomic_flag _flag = ATOMIC_FLAG_INIT;
 	const unsigned int _numberOfThreads;
+	
+	bool _fatalError = false;
 	
 	std::vector<std::string> _allTasksFiles, _allTasksDirectories;
 	
 	unsigned int _numberOfThreadsWithoutWork;
-	std::vector<bool> _threadsWithoutWork;
+	std::vector<bool> _threadHasNotWork;
 	
-	std::atomic_flag _flag = ATOMIC_FLAG_INIT;
+	
+	void fillNewTasks(std::vector<ThreadTask>& tasksResult, std::vector<std::string>& tasksBank, size_t maxTasksToGive);
 
+	void markThreadAsWithoutWorkOne(unsigned int threadID);
+	void markThreadAsWorkingOne(unsigned int threadID);
 	
 	void initFirstTask(const Request& request);
 	

@@ -3,7 +3,7 @@
 //  NetwrixTest
 //
 //  Created by Александр Пахомов on 23.06.2018.
-//  Copyright © 2018 Александр Пахомов. All rights reserved.
+//  Copyright © 2018 Александр Пахомов. All rights reserved(no).
 //
 
 #ifndef CRequest_h
@@ -11,20 +11,16 @@
 
 #include <string>
 
-#include "../PathString.hpp"
-
-
 class Request {
 	
 public:
 	Request(const int argc, const char** argv);
 	
-	
 	// getters
-	const std::string& startDirectory = _startDirectory;
-	const std::string& mask = _mask;
-	const std::string& patternFileName = _patternFileName;
-	const std::string& outputFileName = _outputFileName;
+	const std::string& startDirectory = 	_startDirectory;
+	const std::string& mask = 				_mask;
+	const std::string& patternFileName = 	_patternFileName;
+	const std::string& outputFileName = 	_outputFileName;
 	
 private:
 	std::string _startDirectory;

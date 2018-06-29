@@ -3,25 +3,32 @@
 //  NetwrixTest
 //
 //  Created by Александр Пахомов on 23.06.2018.
-//  Copyright © 2018 Александр Пахомов. All rights reserved.
+//  Copyright © 2018 Александр Пахомов. All rights reserved(no).
 //
-#define NO_MEM_TRACK
+
+#include <vector>
+#include <iostream>
 
 #include "ThreadSearcher.hpp"
-//#include "../MemTrack.hpp"
+#include "../TaskExecutor/TaskExecutor.hpp"
 
-
-extern size_t numberOfFiles, fileDoneSize;
+void printThreadError(const unsigned int threadID, const std::string& err);
 
 void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const size_t cbMaxBufSize, const std::string& patternFileName, const std::regex& regexMask) {
+	
+	// Cycle:
+	// 1) init executor
+	//
+	// 2) get vector (tasks) of new tasks from Bank (tasksBank)
+	// 3) if size of tasks == 0, then go into cycle of checking for new tasks and end of work
+	// 4) do task in executor and get vectors of new files and directories to check
+	// 5) go to point (2)
+	
 	
 	std::vector<std::string> newTasksFiles, newTasksDirectories;
 	std::vector<ThreadTask> tasks;
 	
 	std::string outputFileName("output_" + std::to_string(threadID) + ".txt");
-	
-	size_t numberOfDoneTasks = 0;
-	int c = 0;
 	
 	try
 	{
@@ -33,6 +40,8 @@ void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const s
 			
 			if(tasks.size() == 0) {
 				
+				// isAllWorkDonw returns true only when all threads get here
+				// ( to prevent the situation when one thread in the start takes all the tasks and another threads end work because of no tasks )
 				if(tasksBank.isAllWorkDone()) {
 					break;
 				}
@@ -40,7 +49,6 @@ void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const s
 				continue;
 			}
 			
-			numberOfDoneTasks += tasks.size();
 			
 			newTasksFiles.clear();
 			newTasksDirectories.clear();
@@ -49,29 +57,23 @@ void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const s
 				
 				executor.doTask(tasks[iTask], newTasksFiles, newTasksDirectories);
 				
-				
 			}
 			
-//			if(c == 0) {
-//				c = 1000;
-////				MemTrack::TrackListMemoryUsage();
-//				
-//			}
-//			--c;
-//			
 			tasksBank.appendTasks(newTasksFiles, newTasksDirectories);
 			
 		}
-		
-//		fout << "*** DONE: " << numberOfDoneTasks << std::endl;
-//		fout << "*** FILES NUMBER: " << executor.doneFiles << std::endl;
-//		fout << "*** SIZE OF FILES: " << executor.doneSize << std::endl;
-//		fout << "*** DIRECTORIES NUMBER : " << executor.doneDirectories << std::endl;
-		std::cout << "Prefix function time " << executor.allTimePrefix / (1000) << " ms" << std::endl;
+	
 	}
 	catch(const std::string& err)
 	{
-		std::cout << "! ! ! Thread " << threadID << " Error" << std::endl << err << std::endl;
+		printThreadError(threadID, err);
+		tasksBank.fatalErrorHappened();
+		return;
+	}
+	catch(const char* s)
+	{
+		printThreadError(threadID, std::string(s));
+		tasksBank.fatalErrorHappened();
 		return;
 	}
 	
@@ -80,7 +82,10 @@ void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const s
 	return;
 }
 
-
+void printThreadError(const unsigned int threadID, const std::string& err)
+{
+	std::cout << "! ! ! Thread " << threadID << " Error" << std::endl << err << std::endl;
+}
 
 
 

@@ -1,32 +1,37 @@
 //
-//  CRequest.cpp
+//  Request.cpp
 //  NetwrixTest
 //
 //  Created by Александр Пахомов on 23.06.2018.
-//  Copyright © 2018 Александр Пахомов. All rights reserved.
+//  Copyright © 2018 Александр Пахомов. All rights reserved(no).
 //
 
 #include <iostream>
+
 #include "Request.hpp"
+#include "FileSystem.hpp"
+
+
+/* ---------------------------------------- Request Static Data */
 
 const std::string __exampleRequest = "MyApp.exe -p C:\\Temp -m *.* -i String.txt -o Result.txt";
+
+
+/* ---------------------------------------- Request Constructor */
 
 Request::Request(const int argc, const char** argv)
 {
 	parseArguments(argc, argv);
 }
 
+
+/* ---------------------------------------- Request Parse Arguments Of Command Line */
+
+
 void Request::parseArguments(const int argc, const char **argv)
 {
 		
 	try {
-		
-		if(argc != 9) {
-			for(int i = 0; i < argc; ++i) {
-				std::cout << argv[i] << std::endl;
-			}
-			throw ( std::to_string(argc) + " Is Too Few Arguments!" );
-		}
 		
 		parsePairsOfArguments(argc, argv);
 		
@@ -39,6 +44,9 @@ void Request::parseArguments(const int argc, const char **argv)
 	
 }
 
+
+/* ---------------------------------------- Request Parse Pairse of Arguments ( key - value ) */
+
 void Request::parsePairsOfArguments(const int argc, const char** argv)
 {
 	
@@ -50,7 +58,6 @@ void Request::parsePairsOfArguments(const int argc, const char** argv)
 		
 		
 		if( key == "-p" ) {
-
 			_startDirectory = value;
 
 			makeAbsolute(_startDirectory, runtimeDirectory);
@@ -59,13 +66,11 @@ void Request::parsePairsOfArguments(const int argc, const char** argv)
 			_mask = value;
 		}
 		else if( key == "-i" ) {
-
 			_patternFileName = value;
 			
 			makeAbsolute(_patternFileName, runtimeDirectory);
 		}
 		else if( key == "-o" ) {
-
 			_outputFileName = value;
 			
 			makeAbsolute(_outputFileName, runtimeDirectory);
@@ -75,6 +80,9 @@ void Request::parsePairsOfArguments(const int argc, const char** argv)
 		}
 	}
 }
+
+
+/* ---------------------------------------- Request Check If Any Field Is Empty */
 
 void Request::checkForEmpty() const
 {
@@ -96,6 +104,9 @@ void Request::checkForEmpty() const
 	}
 }
 
+
+/* ---------------------------------------- Request Make Path Absolute ( even if it's already abolute ) */
+
 std::string Request::makeAbsolute(const std::string & path, const std::string& runtimeDIrectory)
 {
 
@@ -111,6 +122,9 @@ std::string Request::makeAbsolute(const std::string & path, const std::string& r
 		return path;
 	}
 }
+
+
+/* ---------------------------------------- Request Check If Path Is Absolute */
 
 bool Request::isAbsolute(const std::string & path)
 {
