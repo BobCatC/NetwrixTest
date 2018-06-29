@@ -30,21 +30,25 @@ public:
 private:
 	
 	const Request& _request;
-	const size_t _cbMaxBufSizeForProgramm = 1024 * 1024 * 5;
+	const size_t _cbMaxBufSizeForProgramm = 1024 * 1024 * 8;
 	
 	// main output file, which name was got from command line
 	FILE* _outputFile = nullptr;
 	char* _buf = nullptr;
+	
+	std::string _OutputFileDirectory;
 	
 	const unsigned int _numberOfThreads;
 	std::vector<std::thread> _threads;
 	
 	// each thread has a link to synchronized bank
 	// each thread asks for tasks
-	// each thread return new tasks (if got it) back
+	// each thread return new tasks (if got it)
 	BankOfTasks _tasks;
 	
 	std::regex regexMask;
+	
+	
 	
 	void openOutputFile();
 	

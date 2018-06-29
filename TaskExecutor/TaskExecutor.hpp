@@ -20,7 +20,10 @@
 extern size_t numberOfFiles;
 extern size_t fileDoneSize;
 
+/*---- type of value, that indicates the position of first pattern fragment */
+/*---- (the start of the pattern in the text) */
 typedef unsigned int FirstFragmentEntry;
+/*---- type of value, which incicates the position of CURRENT searchable pattern fragment */
 typedef unsigned int CrtFragmentEntry;
 typedef std::pair<FirstFragmentEntry, CrtFragmentEntry> EntryPair;
 
@@ -28,7 +31,12 @@ class TaskExecutor {
 
 public:
 	
-	TaskExecutor(const unsigned int threadID, const std::string& outputFileName, const size_t cbMaxBufSize, const std::string& patternFileName, const std::regex& regexMask);
+	TaskExecutor(const unsigned int threadID,
+				 const std::string& outputFileName,
+				 const size_t cbMaxBufSize,
+				 const std::string& outputFileDirectory,
+				 const std::string& patternFileName,
+				 const std::regex& regexMask);
 	
 	TaskExecutor(const TaskExecutor& exe) = delete;
 	TaskExecutor(TaskExecutor& exe) = delete;
@@ -36,68 +44,130 @@ public:
 	~TaskExecutor();
 	
 	
-	void doTask(const ThreadTask& task, std::vector<std::string>& newTasksFiles, std::vector<std::string>& newTasksDirectories);
-	size_t doneSize = 0;
-	size_t doneFiles = 0;
-	size_t doneDirectories = 0;
-	int allTimePrefix = 0;
+	void doTask(const ThreadTask& task,
+				std::vector<std::string>& newTasksFiles,
+				std::vector<std::string>& newTasksDirectories);
+	
 	
 private:
-	
+	/*---- Initial thread data */
 	const unsigned int _threadID;
 	const std::string& _outputFileName;
-	const std::regex& _regexMask;
 	const size_t _cbMaxBufSize;
+	const std::string& _outputFileDirectory;
 	const std::string& _patternFileName;
-	
-	
+	const std::regex& _regexMask;
+
+	/*---- Pointers at files */
+	/*---- "_patternFile" and "_outputFile" are always opened (closed in destructor) */
+	/*---- "_textFile" is opened only while file processing */
 	FILE* _patternFile = nullptr;
+	FILE* _piForFirstPatternFragmentFile = nullptr;
 	FILE* _textFile = nullptr;
 	FILE* _outputFile = nullptr;
+	
+	/*----  */
+	std::string _piForFirstPatternFragmentFileName;
+	
 	
 	bfs::path _bfsTextFilePath;
 	std::string _textFileNativeName;
 	std::string _textFilePath;
 	
+	/*---- Dynamic memory for loading fragments of files */
+	/*---- "_s" for prefix function. _s : [pattern]#[text] */
+	/*---- "_pi" for prefix function. "_pi" containts result of prefix function */
+	/*---- "_buf" is allocated in constructor and deleted in destructor */
+	/*---- "_s" and "_pi" point to "_buf" memory (don't have own) */
 	char* _buf;
 	char* _s;
 	int32_t* _pi = nullptr;
 
-	
+	/*---- As we have too less memory, we have to destribute it */
+	/*---- 4/5 of "_buf" size is for "_pi" (as sizeof(int32_t) == 4 * sizeof(char)) */
+	/*---- 1/5 of "_buf" size is for "_s" */
 	size_t _piArraySize, _piArrayLen;
 	size_t _sArraySize, _sArrayLen;
 	
+	/*---- Both the pattern and the text can't be loaded to memory (full file) */
+	/*---- We have to count the size of fragments (it depends on size of "_s" buffer) */
+	/*---- And count how many fragments we'll have */
 	size_t _patternLen;
 	size_t _patternFragmentLen;
 	size_t _numberOfFragmentsOfPattern;
 	
+	/*---- The same with the text */
+	/*---- But to find the pattern correctly in the text we have to impose text fragments on each other */
+	/*---- (pattern fragment entry can be at the junction of the text fragments, so we have to impose) */
 	size_t _textLen;
 	size_t _textFragmentLen;
-	size_t _textFragmentWithImpositionLen;
-	size_t _numberOfFragmentsOfTextWithImposition;
+	size_t _textFragmentWithSuperimpositionLen;
+	size_t _numberOfFragmentsOfTextWithSuperimposition;
 	
 	std::vector<FirstFragmentEntry> _result;
 	
 	
 	void openDefaultFiles();
 	void initBuffers();
+	void countPiForFirstPatternFragment();
+	void savePiForFirstPatternFragment();
 	
 	void countDefaultMetrics();
 	void countPatternMetrics();
 	void countTextMetrics();
 	
-	void processDirectory(std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories);
-	void destributeNewPath(const bfs::path& newPath, std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories);
+	void processDirectory(std::vector<std::string> &newTasksFiles,
+						  std::vector<std::string> &newTasksDirectories);
+	
+	void destributeNewPath(const bfs::path& newPath,
+						   std::vector<std::string> &newTasksFiles,
+						   std::vector<std::string> &newTasksDirectories);
+	
+	
 	
 	void processFile();
-	void searchWithPrefixFunc(const size_t realPatternFragmentLen, const size_t iTextFragment, const size_t len, std::vector<EntryPair>& result);
+	
+	void searchWithPrefixFunc(const size_t realPatternFragmentLen,
+							  const size_t iTextFragment,
+							  const size_t len,
+							  std::vector<EntryPair>& result);
+	
 	void findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>>& entries);
-	bool firstPatternFragmentCanBeOnPosition(size_t position, size_t iTextFragment);
-	bool patternFragmentFitsTextFragment(const char* patternFragment, size_t realPatternFragmentLen, const char* textFragment, size_t realTextFragmentLen, size_t positionInTextFragment);
+	
+	bool firstPatternFragmentCanBeOnPosition(size_t position,
+											 size_t iTextFragment);
+	
+	bool patternFragmentExistsInTextFragment(const char* patternFragment,
+										 size_t realPatternFragmentLen,
+										 const char* textFragment,
+										 size_t realTextFragmentLen,
+										 size_t positionInTextFragment);
+	
 	
 	
 	void siftEntries(std::vector<std::vector<EntryPair>>& entries);
+	void patternFragmentSiftIteration(size_t iPatternFragment, std::vector<std::vector<EntryPair> >& entries);
+	void filterEntriesOfTextFragment(std::vector<std::vector<EntryPair>>& entries,
+								size_t iTextFragment,
+								char* &crtPatternFragment,
+								size_t &realPatternFragmentLen,
+								char* &crtTextFragment,
+								size_t &realCrtTextFragmentLen,
+								char* &nextTextFragment,
+								size_t &realNextTextFragmentLen);
+	void filterEntry(const EntryPair& pair,
+					 char* crtPatternFragment,
+					 size_t realPatternFragmentLen,
+					 char* crtTextFragment,
+					 size_t realCrtTextFragmentLen,
+					 char* nextTextFragment,
+					 size_t realNextTextFragmentLen,
+					 std::vector<EntryPair>& filteredEntries);
 	void increasePositions(std::vector<std::vector<EntryPair>>& entries);
+	void increaseEntry(const EntryPair& pair,
+									 size_t iTextFragment,
+									 std::vector<EntryPair>& filteredEntriesCrt,
+									 std::vector<EntryPair>& filteredEntriesNext);
 	
 	
 	void fillResult(const std::vector<std::vector<EntryPair>>& entries);

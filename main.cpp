@@ -12,7 +12,6 @@
 #include "ThreadsLord/ThreadLord.hpp"
 
 
-
 int main(int argc, const char * argv[]) {
 
 	
@@ -21,7 +20,6 @@ int main(int argc, const char * argv[]) {
 //	argv[3] = "-i"; argv[4] = "copyright.txt";
 //	argv[5] = "-o"; argv[6] = "output.txt";
 //	argv[7] = "-m"; argv[8] = "*.*";
-
 	
 	try {
 		const auto timeStart = std::chrono::system_clock::now();
@@ -51,10 +49,9 @@ int main(int argc, const char * argv[]) {
 	}
 	
 	
+	
 	return 0;
 }
-
-
 
 
 

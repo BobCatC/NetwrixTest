@@ -15,6 +15,11 @@
 
 #include "../BankOfTasks/BankOfTasks.hpp"
 
-void threadSearcher(BankOfTasks& tasks, const unsigned int threadID, const size_t cbBufSize, const std::string& patternFileName, const std::regex& regexMask);
+void threadSearcher(BankOfTasks& tasks,
+					const unsigned int threadID,
+					const size_t cbBufSize,
+					const std::string& outputFileDirectory,
+					const std::string& patternFileName,
+					const std::regex& regexMask);
 
 #endif /* ThreadSearcher_hpp */

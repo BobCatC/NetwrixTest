@@ -14,7 +14,12 @@
 
 void printThreadError(const unsigned int threadID, const std::string& err);
 
-void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const size_t cbMaxBufSize, const std::string& patternFileName, const std::regex& regexMask) {
+void threadSearcher(BankOfTasks& tasksBank,
+					const unsigned int threadID,
+					const size_t cbMaxBufSize,
+					const std::string& outputFileeDirectory,
+					const std::string& patternFileName,
+					const std::regex& regexMask) {
 	
 	// Cycle:
 	// 1) init executor
@@ -24,15 +29,15 @@ void threadSearcher(BankOfTasks& tasksBank, const unsigned int threadID, const s
 	// 4) do task in executor and get vectors of new files and directories to check
 	// 5) go to point (2)
 	
-	
+
 	std::vector<std::string> newTasksFiles, newTasksDirectories;
 	std::vector<ThreadTask> tasks;
 	
-	std::string outputFileName("output_" + std::to_string(threadID) + ".txt");
+	std::string outputFileName(outputFileeDirectory + preferred_separator + "output_" + std::to_string(threadID) + ".txt");
 	
 	try
 	{
-		TaskExecutor executor(threadID, outputFileName, cbMaxBufSize, patternFileName, regexMask);
+		TaskExecutor executor(threadID, outputFileName, cbMaxBufSize, outputFileeDirectory, patternFileName, regexMask);
 		
 		while(true) {
 			

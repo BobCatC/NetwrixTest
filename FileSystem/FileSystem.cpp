@@ -13,6 +13,22 @@
 #include "FileSystem.hpp"
 
 
+#if defined(_WIN32) || defined(_WIN64)
+/* ---------------------------------------- WindowsNT */
+	const std::string preferred_separator("\\");
+#else
+
+#	if (defined (__APPLE__) && defined(__MACH__)) || defined(__unix__) || defined(__linux__)
+/* ---------------------------------------- Unux/unix-like */
+		const std::string preferred_separator("/");
+#	else
+#		error "Unknown Environment"
+#	endif
+
+#endif
+
+
+
 /* ---------------------------------------- FileSystem   */
 
 void downloadFragment(FILE *file, size_t fromPositionInFile, size_t size, char *buf)
@@ -43,11 +59,34 @@ bool fileFitsMask(const std::string& nativeName, const std::regex& regexMask)
 
 bool fileWithNameExists(const std::string& path)
 {
-	FILE* file = fopen(path.c_str(), "r");
-	bool res = (file != nullptr);
-	if(file != nullptr) {
-		fclose(file);
+	bool res;
+	try {
+		res = bfs::exists(bfs::path(path));
+	} catch (const bfs::filesystem_error& err) {
+		res = true;
 	}
 	
 	return res;
 }
+
+
+std::string findFreeName(const std::string& pathWithoutExtension, const std::string& extension)
+{
+	std::string resultWithoutExtension(pathWithoutExtension);
+	
+	while(fileWithNameExists(resultWithoutExtension + '.' + extension)) {
+		
+		char randomEnglishChar = 'a' + (rand() % ('z' - 'a' + 1));
+		resultWithoutExtension.push_back(randomEnglishChar);
+	}
+	return (resultWithoutExtension + '.' + extension);
+}
+
+
+
+
+
+
+
+
+

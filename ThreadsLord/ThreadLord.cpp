@@ -10,6 +10,10 @@
 #include "ThreadLord.hpp"
 #include "../ThreadSearcher/ThreadSearcher.hpp"
 
+/* ------------------------------------------------------------ */
+/* --------------------- class ThreadLord --------------------- */
+/* ------------------------------------------------------------ */
+
 
 /* ---------------------------------------- ThreadLord Constructor */
 
@@ -100,9 +104,11 @@ void ThreadLord::startThreads()
 	// all memory is Evenly distributed
 	size_t cbMaxBufSize = _cbMaxBufSizeForProgramm / _numberOfThreads;
 	
+	_OutputFileDirectory = bfs::path(_request.outputFileName).parent_path().string();
+	
 	for(unsigned int iThread = 0; iThread < _numberOfThreads; ++iThread) {
 		
-		_threads.push_back(std::thread(threadSearcher, std::ref(_tasks), iThread, cbMaxBufSize, _request.patternFileName, std::ref(regexMask)));
+		_threads.push_back(std::thread(threadSearcher, std::ref(_tasks), iThread, cbMaxBufSize, std::ref(_OutputFileDirectory), _request.patternFileName, std::ref(regexMask)));
 		
 	}
 }
@@ -145,7 +151,7 @@ void ThreadLord::collectOutput()
 
 void ThreadLord::getOutputOfThread(size_t threadID)
 {
-	const std::string threadOutputFileName("output_" + std::to_string(threadID) + ".txt");
+	const std::string threadOutputFileName(_OutputFileDirectory + preferred_separator + "output_" + std::to_string(threadID) + ".txt");
 	
 	FILE* threadOutputFile = fopen(threadOutputFileName.c_str(), "rb");
 	if(threadOutputFile == nullptr) {
@@ -155,7 +161,7 @@ void ThreadLord::getOutputOfThread(size_t threadID)
 	moveOutputOfThread(threadOutputFile);
 	
 	fclose(threadOutputFile);
-//	remove(threadOutputFileName.c_str());
+	remove(threadOutputFileName.c_str());
 }
 
 
