@@ -19,6 +19,7 @@ void threadSearcher(BankOfTasks& tasks,
 					const unsigned int threadID,
 					const size_t cbBufSize,
 					const std::string& outputFileDirectory,
+					const std::string& outputFileName,
 					const std::string& patternFileName,
 					const std::regex& regexMask);
 

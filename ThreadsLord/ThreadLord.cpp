@@ -24,6 +24,8 @@ ThreadLord::ThreadLord(const Request& request, const unsigned int numberOfThread
 {
 	openOutputFile();
 	
+	initThreadsOutputFilesNames();
+	
 	initRegexMask();
 	
 	startThreads();
@@ -58,6 +60,20 @@ void ThreadLord::openOutputFile()
 	}
 }
 
+
+void ThreadLord::initThreadsOutputFilesNames()
+{
+	_OutputFileDirectory = bfs::path(_request.outputFileName).parent_path().string();
+	
+	_threadsOutputFilesNames.resize(_numberOfThreads);
+	
+	for(unsigned int iThread = 0; iThread < _numberOfThreads; ++iThread) {
+		
+		const std::string pathWithoutExtension = _OutputFileDirectory + preferred_separator + "output_" + std::to_string(iThread);
+		_threadsOutputFilesNames[iThread] = findFreeName(pathWithoutExtension, ".txt");
+	}
+	
+}
 
 /* ---------------------------------------- ThreadLord Init Regex From Mask String (different syntax) */
 
@@ -104,11 +120,17 @@ void ThreadLord::startThreads()
 	// all memory is Evenly distributed
 	size_t cbMaxBufSize = _cbMaxBufSizeForProgramm / _numberOfThreads;
 	
-	_OutputFileDirectory = bfs::path(_request.outputFileName).parent_path().string();
 	
 	for(unsigned int iThread = 0; iThread < _numberOfThreads; ++iThread) {
 		
-		_threads.push_back(std::thread(threadSearcher, std::ref(_tasks), iThread, cbMaxBufSize, std::ref(_OutputFileDirectory), _request.patternFileName, std::ref(regexMask)));
+		_threads.push_back(std::thread(threadSearcher,
+									   std::ref(_tasks),
+									   iThread,
+									   cbMaxBufSize,
+									   std::ref(_OutputFileDirectory),
+									   std::ref(_threadsOutputFilesNames[iThread]),
+									   _request.patternFileName,
+									   std::ref(regexMask)));
 		
 	}
 }
@@ -151,7 +173,7 @@ void ThreadLord::collectOutput()
 
 void ThreadLord::getOutputOfThread(size_t threadID)
 {
-	const std::string threadOutputFileName(_OutputFileDirectory + preferred_separator + "output_" + std::to_string(threadID) + ".txt");
+	const std::string& threadOutputFileName = _threadsOutputFilesNames[threadID];
 	
 	FILE* threadOutputFile = fopen(threadOutputFileName.c_str(), "rb");
 	if(threadOutputFile == nullptr) {

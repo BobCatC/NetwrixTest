@@ -18,6 +18,7 @@ void threadSearcher(BankOfTasks& tasksBank,
 					const unsigned int threadID,
 					const size_t cbMaxBufSize,
 					const std::string& outputFileeDirectory,
+					const std::string& outputFileName,
 					const std::string& patternFileName,
 					const std::regex& regexMask) {
 	
@@ -32,8 +33,6 @@ void threadSearcher(BankOfTasks& tasksBank,
 
 	std::vector<std::string> newTasksFiles, newTasksDirectories;
 	std::vector<ThreadTask> tasks;
-	
-	std::string outputFileName(outputFileeDirectory + preferred_separator + "output_" + std::to_string(threadID) + ".txt");
 	
 	try
 	{

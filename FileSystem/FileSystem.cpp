@@ -79,7 +79,7 @@ std::string findFreeName(const std::string& pathWithoutExtension, const std::str
 		char randomEnglishChar = 'a' + (rand() % ('z' - 'a' + 1));
 		resultWithoutExtension.push_back(randomEnglishChar);
 	}
-	return (resultWithoutExtension + '.' + extension);
+	return (resultWithoutExtension + "." + extension);
 }
 
 

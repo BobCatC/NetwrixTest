@@ -41,6 +41,8 @@ private:
 	const unsigned int _numberOfThreads;
 	std::vector<std::thread> _threads;
 	
+	std::vector<std::string> _threadsOutputFilesNames;
+	
 	// each thread has a link to synchronized bank
 	// each thread asks for tasks
 	// each thread return new tasks (if got it)
@@ -51,6 +53,8 @@ private:
 	
 	
 	void openOutputFile();
+	
+	void initThreadsOutputFilesNames();
 	
 	void initRegexMask();
 

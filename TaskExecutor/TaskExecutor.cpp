@@ -14,16 +14,6 @@
 void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from);
 
 
-
-/*
- *
- *
- *
- 
- 
- 
- */
-
 /* ---------------------------------------- TaskExecutor Constructor  */
 
 TaskExecutor::TaskExecutor(const unsigned int threadID,
@@ -230,7 +220,6 @@ void TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newT
 		
 	}
 	
-	
 	printResultToFile();
 }
 
@@ -280,7 +269,7 @@ void TaskExecutor::fillResult(const std::vector<std::vector<EntryPair> >& entrie
 	{
 		for(const auto& pair : entries[iTextFragment])
 		{
-			const FirstFragmentEntry patternStartPosition = pair.first;
+			const PatternStartPosition patternStartPosition = pair.first;
 			_result.push_back((int)patternStartPosition);
 		}
 
@@ -317,10 +306,7 @@ void TaskExecutor::printResultToFile()
 			cbResultBufSize = 0;
 		}
 		
-		
 	}
-	
-	
 }
 
 
