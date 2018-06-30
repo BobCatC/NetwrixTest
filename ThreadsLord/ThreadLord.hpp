@@ -25,6 +25,8 @@ public:
 	ThreadLord(const ThreadLord& other) = delete;
 	ThreadLord(ThreadLord& other) = delete;
 	
+	void createThreads();
+	
 	~ThreadLord();
 	
 private:

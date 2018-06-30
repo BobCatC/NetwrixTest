@@ -26,16 +26,16 @@ int main(int argc, const char * argv[]) {
 
 		
 		// parsing arguments into Request
-		Request request(argc, argv);
+		Request request;
+		request.parseArguments(argc, argv);
 		
-		
-		const unsigned int nThreads = 4;
+		const unsigned int nThreads = 1;
 		
 		// creates threads, gives them a BankTasks ref
 		// and waits for them to compile theire output files into one
 		ThreadLord lord(request, nThreads);
 		
-		
+		lord.createThreads();
 		
 		const auto timeEnd = std::chrono::system_clock::now();
 		const int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count();
@@ -43,9 +43,9 @@ int main(int argc, const char * argv[]) {
 		std::cout << std::endl << time << std::endl;
 		
 	} catch (const std::string& s) {
-		std::cout << s;
+		std::cout << s << std::endl;
 	} catch (const char* s) {
-		std::cout << s;
+		std::cout << s << std::endl;
 	}
 	
 	

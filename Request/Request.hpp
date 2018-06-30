@@ -14,7 +14,9 @@
 class Request {
 	
 public:
-	Request(const int argc, const char** argv);
+	Request();
+	
+	void parseArguments(const int argc, const char** argv);
 	
 	// getters
 	const std::string& startDirectory = 	_startDirectory;
@@ -29,7 +31,6 @@ private:
 	std::string _outputFileName;
 
 	
-	void parseArguments(const int argc, const char** argv);
 	void parsePairsOfArguments(const int argc, const char** argv);
 	void checkForEmpty() const;
 	

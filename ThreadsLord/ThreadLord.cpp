@@ -21,19 +21,7 @@ ThreadLord::ThreadLord(const Request& request, const unsigned int numberOfThread
 	_request(request),
 	_numberOfThreads(numberOfThreads),
 	_tasks(numberOfThreads, request)
-{
-	openOutputFile();
-	
-	initThreadsOutputFilesNames();
-	
-	initRegexMask();
-	
-	startThreads();
-
-	waitThreads();
-	
-	collectOutput();
-}
+{ }
 
 
 /* ---------------------------------------- ThreadLord Destructor */
@@ -47,8 +35,29 @@ ThreadLord::~ThreadLord()
 	if(_buf != nullptr) {
 		delete [] _buf;
 	}
+	
+	for(unsigned int threadID = 0; threadID < _numberOfThreads; ++threadID) {
+		if(!_threadsOutputFilesNames[threadID].empty())
+			remove(_threadsOutputFilesNames[threadID].c_str());
+	}
 }
 
+
+void ThreadLord::createThreads()
+{
+	openOutputFile();
+	
+	initThreadsOutputFilesNames();
+	
+	initRegexMask();
+	
+	startThreads();
+	
+	waitThreads();
+	
+	collectOutput();
+	
+}
 
 /* ---------------------------------------- ThreadLord Open Main Output File */
 
@@ -67,10 +76,10 @@ void ThreadLord::initThreadsOutputFilesNames()
 	
 	_threadsOutputFilesNames.resize(_numberOfThreads);
 	
-	for(unsigned int iThread = 0; iThread < _numberOfThreads; ++iThread) {
+	for(unsigned int threadID = 0; threadID < _numberOfThreads; ++threadID) {
 		
-		const std::string pathWithoutExtension = _OutputFileDirectory + preferred_separator + "output_" + std::to_string(iThread);
-		_threadsOutputFilesNames[iThread] = findFreeName(pathWithoutExtension, ".txt");
+		const std::string pathWithoutExtension = _OutputFileDirectory + preferred_separator + "output_" + std::to_string(threadID);
+		_threadsOutputFilesNames[threadID] = findFreeName(pathWithoutExtension, "txt");
 	}
 	
 }
@@ -153,6 +162,10 @@ void ThreadLord::collectOutput()
 {
 	_buf = new char[_cbMaxBufSizeForProgramm];
 	
+	if(_buf == nullptr) {
+		throw "Coludn't allocate mem";
+	}
+	
 	for(size_t threadID = 0; threadID < _numberOfThreads; ++threadID) {
 		try {
 			getOutputOfThread(threadID);
@@ -183,7 +196,6 @@ void ThreadLord::getOutputOfThread(size_t threadID)
 	moveOutputOfThread(threadOutputFile);
 	
 	fclose(threadOutputFile);
-	remove(threadOutputFileName.c_str());
 }
 
 

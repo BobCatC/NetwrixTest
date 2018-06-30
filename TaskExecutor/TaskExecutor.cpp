@@ -28,6 +28,10 @@ _cbMaxBufSize(cbMaxBufSize),
 _outputFileDirectory(outputFileDirectory),
 _patternFileName(patternFileName),
 _regexMask(regexMask)
+{ }
+
+
+void TaskExecutor::init()
 {
 	openDefaultFiles();
 	
@@ -35,7 +39,6 @@ _regexMask(regexMask)
 	
 	countPiForFirstPatternFragment();
 }
-
 
 /* ---------------------------------------- TaskExecutor openDefaultFiles ----------------------------------------------------- */
 /* ---------------------------------------- opens pattern and output (of this thread) files. Files will be closed in destructor */

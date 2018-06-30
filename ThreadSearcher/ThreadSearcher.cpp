@@ -12,6 +12,8 @@
 #include "ThreadSearcher.hpp"
 #include "../TaskExecutor/TaskExecutor.hpp"
 
+#define DoSleep
+
 void printThreadError(const unsigned int threadID, const std::string& err);
 
 void threadSearcher(BankOfTasks& tasksBank,
@@ -37,6 +39,7 @@ void threadSearcher(BankOfTasks& tasksBank,
 	try
 	{
 		TaskExecutor executor(threadID, outputFileName, cbMaxBufSize, outputFileeDirectory, patternFileName, regexMask);
+		executor.init();
 		
 		while(true) {
 			
@@ -61,6 +64,9 @@ void threadSearcher(BankOfTasks& tasksBank,
 				
 				executor.doTask(tasks[iTask], newTasksFiles, newTasksDirectories);
 				
+#ifdef DoSleep
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+#endif
 			}
 			
 			tasksBank.appendTasks(newTasksFiles, newTasksDirectories);

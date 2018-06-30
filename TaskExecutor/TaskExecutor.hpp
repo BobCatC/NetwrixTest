@@ -46,6 +46,8 @@ public:
 	TaskExecutor(const TaskExecutor& exe) = delete;
 	TaskExecutor(TaskExecutor& exe) = delete;
 
+	void init();
+	
 	~TaskExecutor();
 	
 	

@@ -19,10 +19,7 @@ const std::string __exampleRequest = "MyApp.exe -p C:\\Temp -m *.* -i String.txt
 
 /* ---------------------------------------- Request Constructor */
 
-Request::Request(const int argc, const char** argv)
-{
-	parseArguments(argc, argv);
-}
+Request::Request() { }
 
 
 /* ---------------------------------------- Request Parse Arguments Of Command Line */
