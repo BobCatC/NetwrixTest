@@ -32,7 +32,7 @@ public:
 private:
 	
 	const Request& _request;
-	const size_t _cbMaxBufSizeForProgramm = 1024 * 1024 * 8;
+	const size_t _cbMaxBufSizeForProgramm = (5 * 1024 * 1024);
 	
 	// main output file, which name was got from command line
 	FILE* _outputFile = nullptr;

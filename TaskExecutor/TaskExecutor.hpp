@@ -162,6 +162,9 @@ private:
 	void patternFragmentSiftIteration(const size_t iPatternFragment, std::vector<std::vector<EntryPair> >& entries);
 	
 	void filterEntriesOfTextFragment(std::vector<EntryPair>& entriesOfTextFragment,
+									 std::vector<EntryPair>& crtFilteredEntries,
+									 std::vector<EntryPair>& nextFilteredEntries,
+									 const size_t iPatternFragment,
 									 const size_t iTextFragment,
 									 const char* crtPatternFragment,
 									 const size_t realPatternFragmentLen,
@@ -171,21 +174,15 @@ private:
 									 const size_t realNextTextFragmentLen);
 	
 	void filterEntry(const EntryPair& pair,
+					 const size_t iPatternFragment,
 					 const char* crtPatternFragment,
 					 const size_t realPatternFragmentLen,
 					 const char* crtTextFragment,
 					 const size_t realCrtTextFragmentLen,
 					 const char* nextTextFragment,
 					 const size_t realNextTextFragmentLen,
-					 std::vector<EntryPair>& filteredEntries);
-	
-	void increasePositions(std::vector<std::vector<EntryPair>>& entries);
-	
-	void increaseEntry(const EntryPair& pair,
-					   size_t iTextFragment,
-					   std::vector<EntryPair>& filteredEntriesCrt,
-					   std::vector<EntryPair>& filteredEntriesNext);
-	
+					 std::vector<EntryPair>& crtFilteredEntries,
+					 std::vector<EntryPair>& nextFilteredEntries);
 	
 	
 	void fillResult(const std::vector<std::vector<EntryPair>>& entries);
@@ -193,6 +190,7 @@ private:
 	size_t getRealPatternFragmentLen(const size_t iPatternFragment);
 	size_t getRealTextFragmentLen(const size_t iTextFragment);
 	
+	void countPositionOfPatternFragment(const size_t iPatternFragment, const size_t absolutePositionOfStartOfPattern, size_t &iTextFragment, size_t &positionInTextFragment);
 	
 	
 	void printResultToFile();

@@ -295,6 +295,7 @@ void TaskExecutor::printResultToFile()
 		size_t i = 0;
 		size_t size = _result.size();
 		size_t cbResultBufSize = sprintf(_s, "*** In File %s\n", _textFilePath.c_str());
+		cbResultBufSize += sprintf(_s + cbResultBufSize, "\tentries : %i\n", _result.size());
 		
 		while(i < size)
 		{

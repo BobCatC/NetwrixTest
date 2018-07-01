@@ -12,7 +12,7 @@
 #include "ThreadSearcher.hpp"
 #include "../TaskExecutor/TaskExecutor.hpp"
 
-#define DoSleep
+//#define DoSleep
 
 void printThreadError(const unsigned int threadID, const std::string& err);
 
@@ -65,7 +65,7 @@ void threadSearcher(BankOfTasks& tasksBank,
 				executor.doTask(tasks[iTask], newTasksFiles, newTasksDirectories);
 				
 #ifdef DoSleep
-				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				std::this_thread::sleep_for(std::chrono::microseconds(300));
 #endif
 			}
 			

@@ -37,7 +37,7 @@ ThreadLord::~ThreadLord()
 	}
 	
 	for(unsigned int threadID = 0; threadID < _numberOfThreads; ++threadID) {
-		if(!_threadsOutputFilesNames[threadID].empty())
+		if(!_threadsOutputFilesNames[threadID].empty());
 			remove(_threadsOutputFilesNames[threadID].c_str());
 	}
 }
@@ -176,7 +176,7 @@ void ThreadLord::collectOutput()
 			
 		}
 			
-		}
+	}
 	
 	// _buf will be deleted in destructor
 }
