@@ -37,7 +37,7 @@ class TaskExecutor {
 public:
 	
 	TaskExecutor(const unsigned int threadID,
-				 const std::string& outputFileName,
+				 const std::string& thisThreadOutputFileName,
 				 const size_t cbMaxBufSize,
 				 const std::string& outputFileDirectory,
 				 const std::string& patternFileName,
@@ -66,20 +66,19 @@ private:
 	const std::regex& _regexMask;
 
 	/*---- Pointers at files ------------------------------------------------------------------------- */
-	/*---- "_patternFile", "_outputFile" and "_piForFirst..." are always opened (closed in destructor) */
+	/*---- "_patternFile", "_thisThreadOutputFile" and "_piForFirst..." are always opened (closed in destructor) */
 	/*---- "_textFile" is opened only while file processing ------------------------------------------ */
 	FILE* _patternFile = nullptr;
 	FILE* _piForFirstPatternFragmentFile = nullptr;
 	FILE* _textFile = nullptr;
-	FILE* _outputFile = nullptr;
+	FILE* _thisThreadOutputFile = nullptr;
 	
 	/*---- As we always count Prefix Function for first pattern fragment and different text fragment, */
 	/*---- we can save the value of "_pi" for first pattern fragment in file and just updoal it ----- */
 	std::string _piForFirstPatternFragmentFileName;
 	
 	
-	bfs::path _bfsTextFilePath;
-	std::string _textFileNativeName;
+	bfs::path _textFileBfsPath;
 	std::string _textFilePath;
 	
 	/*---- Dynamic memory for loading fragments of files ---------------------- */
@@ -87,8 +86,8 @@ private:
 	/*---- "_pi" for prefix function. "_pi" containts result of prefix function */
 	/*---- "_buf" is allocated in constructor and deleted in destructor ------- */
 	/*---- "_s" and "_pi" point to "_buf" memory (don't have own) ------------- */
-	char* _buf;
-	char* _s;
+	char* _buf = nullptr;
+	char* _s = nullptr;
 	int32_t* _pi = nullptr;
 
 	/*---- As we have too less memory, we have to destribute it ------------------- */

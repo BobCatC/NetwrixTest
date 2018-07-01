@@ -24,8 +24,8 @@ void TaskExecutor::siftEntries(std::vector<std::vector<EntryPair> > &entries)
 
 
 /* ---------------------------------------- TaskExecutor patternFragmentSiftIteration ------------------------------ */
-/* ---------------------------------------- In Each Iteration Firstly We Filter Entries In Each Text Fragment ------ */
-/* ---------------------------------------- And Increase Entries For Next Iteration -------------------------------- */
+/* ---------------------------------------- Firstly We Download Current Pattern Fragment --------------------------- */
+/* ---------------------------------------- In Each Iteration Have Downloaded Current And Next Text Fragment ------- */
 
 void TaskExecutor::patternFragmentSiftIteration(const uint iPatternFragment, std::vector<std::vector<EntryPair> >& entries)
 {
@@ -125,6 +125,7 @@ void TaskExecutor::filterEntriesOfTextFragment(std::vector<EntryPair>& entriesOf
 
 /* ---------------------------------------- TaskExecutor filterEntry ----------------------------------------------- */
 /* ---------------------------------------- Checks, If Current Pattern Fragment Can Be Continuation Of Current Entry */
+/* ---------------------------------------- And If It Can, It Increases pair.second And Pushes It Back ------------- */
 
 void TaskExecutor::filterEntry(const EntryPair& pair,
 							   const uint iPatternFragment,

@@ -38,17 +38,19 @@ private:
 	FILE* _outputFile = nullptr;
 	char* _buf = nullptr;
 	
+	// the directory of "_thisThreadOutputFile"
 	std::string _outputFileDirectory;
 	
 	const unsigned int _numberOfThreads;
 	std::vector<std::thread> _threads;
 	
+	// each thread has each own output file (synchronization would take too much time)
 	std::vector<std::string> _threadsOutputFilesNames;
 	
 	// each thread has a link to synchronized bank
 	// each thread asks for tasks
 	// each thread return new tasks (if got it)
-	BankOfTasks _tasks;
+	BankOfTasks _tasksBank;
 	
 	std::regex regexMask;
 	
@@ -63,7 +65,7 @@ private:
 	void startThreads();
 	void waitThreads();
 	
-	void collectOutput();
+	void mergeOutput();
 	void getOutputOfThread(size_t threadID);
 	void moveOutputOfThread(FILE* threadOutputFile);
 };

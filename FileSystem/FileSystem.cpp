@@ -29,22 +29,6 @@
 
 
 
-/* ---------------------------------------- FileSystem   */
-
-void downloadFragment(FILE *file, size_t fromPositionInFile, size_t size, char *buf)
-{
-	fseek(file, fromPositionInFile, SEEK_SET);
-	fread(buf, 1, size, file);
-}
-
-
-/* ---------------------------------------- FileSystem   */
-
-void uploadFragment(FILE* file, size_t fromPositionInFile, size_t size, char* buf)
-{
-	fseek(file, fromPositionInFile, SEEK_SET);
-	fwrite(buf, 1, size, file);
-}
 
 
 /* ---------------------------------------- FileSystem   */
@@ -81,6 +65,11 @@ std::string findFreeName(const std::string& pathWithoutExtension, const std::str
 	}
 	return (resultWithoutExtension + "." + extension);
 }
+
+
+
+
+
 
 
 

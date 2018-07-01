@@ -35,6 +35,8 @@
 
 #endif
 
+
+
 extern const std::string preferred_separator;
 
 
@@ -44,7 +46,44 @@ std::string findFreeName(const std::string& pathWithoutExtension, const std::str
 
 bool fileFitsMask(const std::string& fileNativeName, const std::regex& regexMask);
 
-void downloadFragment(FILE *file, size_t fromPositionInFile, size_t size, char *buf);
-void uploadFragment(FILE* file, size_t fromPositionInFile, size_t size, char* buf);
+
+/* ---------------------------------------- FileSystem   */
+
+template<class value_type>
+void downloadFragment(FILE *file, size_t fromPositionInFile, size_t len, value_type *buf)
+{
+	fseek(file, fromPositionInFile, SEEK_SET);
+	fread(buf, sizeof(value_type), len, file);
+}
+
+
+/* ---------------------------------------- FileSystem   */
+
+template<class value_type>
+void uploadFragment(FILE* file, size_t fromPositionInFile, size_t len, value_type *buf)
+{
+	fseek(file, fromPositionInFile, SEEK_SET);
+	fwrite(buf, sizeof(value_type), len, file);
+}
 
 #endif /* FileSystem_h */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

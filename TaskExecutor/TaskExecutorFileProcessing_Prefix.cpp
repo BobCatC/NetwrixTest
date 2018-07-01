@@ -25,7 +25,7 @@ void TaskExecutor::findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>
 	downloadFragment(_patternFile, 0, realPatternFragmentLen, _s);
 	
 	// This is saved value of "_pi" for first pattern fragment
-	downloadFragment(_piForFirstPatternFragmentFile, 0, _patternFragmentLen * sizeof(*_pi), (char*)_pi);
+	downloadFragment(_piForFirstPatternFragmentFile, 0, _patternFragmentLen, _pi);
 	
 	for(uint iTextFragment = 0; iTextFragment < _numberOfFragmentsOfTextWithSuperimposition; ++iTextFragment) {
 		

@@ -20,7 +20,7 @@ void threadSearcher(BankOfTasks& tasksBank,
 					const unsigned int threadID,
 					const size_t cbMaxBufSize,
 					const std::string& outputFileeDirectory,
-					const std::string& outputFileName,
+					const std::string& thisThreadOutputFileName,
 					const std::string& patternFileName,
 					const std::regex& regexMask) {
 	
@@ -36,9 +36,12 @@ void threadSearcher(BankOfTasks& tasksBank,
 	std::vector<std::string> newTasksFiles, newTasksDirectories;
 	std::vector<ThreadTask> tasks;
 	
+	// this try-catch block catches only fatal errors
 	try
 	{
-		TaskExecutor executor(threadID, outputFileName, cbMaxBufSize, outputFileeDirectory, patternFileName, regexMask);
+		TaskExecutor executor(threadID, thisThreadOutputFileName, cbMaxBufSize, outputFileeDirectory, patternFileName, regexMask);
+		
+		// because of allocating memory and opening files, "init()" was removed from constructor
 		executor.init();
 		
 		while(true) {

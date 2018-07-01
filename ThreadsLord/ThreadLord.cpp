@@ -20,7 +20,7 @@
 ThreadLord::ThreadLord(const Request& request, const unsigned int numberOfThreads):
 	_request(request),
 	_numberOfThreads(numberOfThreads),
-	_tasks(numberOfThreads, request)
+	_tasksBank(numberOfThreads, request)
 { }
 
 
@@ -55,8 +55,7 @@ void ThreadLord::createThreads()
 	
 	waitThreads();
 	
-	collectOutput();
-	
+	mergeOutput();
 }
 
 /* ---------------------------------------- ThreadLord Open Main Output File */
@@ -83,6 +82,8 @@ void ThreadLord::initThreadsOutputFilesNames()
 	for(unsigned int threadID = 0; threadID < _numberOfThreads; ++threadID) {
 		
 		const std::string pathWithoutExtension = _outputFileDirectory + "output_" + std::to_string(threadID);
+		
+		// to not to rewrite user's file
 		_threadsOutputFilesNames[threadID] = findFreeName(pathWithoutExtension, "txt");
 	}
 	
@@ -137,7 +138,7 @@ void ThreadLord::startThreads()
 	for(unsigned int iThread = 0; iThread < _numberOfThreads; ++iThread) {
 		
 		_threads.push_back(std::thread(threadSearcher,
-									   std::ref(_tasks),
+									   std::ref(_tasksBank),
 									   iThread,
 									   cbMaxBufSize,
 									   std::ref(_outputFileDirectory),
@@ -156,13 +157,12 @@ void ThreadLord::waitThreads()
 	for(unsigned int iThread = 0; iThread < _numberOfThreads; ++iThread) {
 		_threads[iThread].join();
 	}
-	
 }
 
 
 /* ---------------------------------------- ThreadLord  Compile Output Files Into Common */
 
-void ThreadLord::collectOutput()
+void ThreadLord::mergeOutput()
 {
 	_buf = new char[_cbMaxBufSizeForProgramm];
 	
@@ -209,7 +209,7 @@ void ThreadLord::moveOutputOfThread(FILE *threadOutputFile)
 {
 	size_t readSize = 0;
 	
-	// read -> check read size -> write
+	// fread -> check read size -> write
 	while( 0 != ( readSize = fread(_buf, 1, _cbMaxBufSizeForProgramm, threadOutputFile) )) {
 		fwrite(_buf, 1, readSize, _outputFile);
 	}

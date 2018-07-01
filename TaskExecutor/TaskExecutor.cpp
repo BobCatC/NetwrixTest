@@ -17,19 +17,22 @@ void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from
 /* ---------------------------------------- TaskExecutor Constructor  */
 
 TaskExecutor::TaskExecutor(const unsigned int threadID,
-						   const std::string& outputFileName,
+						   const std::string& thisThreadOutputFileName,
 						   const size_t cbMaxBufSize,
 						   const std::string& outputFileDirectory,
 						   const std::string& patternFileName,
 						   const std::regex& regexMask) :
 _threadID(threadID),
-_outputFileName(outputFileName),
+_outputFileName(thisThreadOutputFileName),
 _cbMaxBufSize(cbMaxBufSize),
 _outputFileDirectory(outputFileDirectory),
 _patternFileName(patternFileName),
 _regexMask(regexMask)
 { }
 
+
+/* ---------------------------------------- TaskExecutor init -------------------------------------- */
+/* ---------------------------------------- "init" function was added because of possible exceptions */
 
 void TaskExecutor::init()
 {
@@ -46,13 +49,13 @@ void TaskExecutor::init()
 void TaskExecutor::openDefaultFiles()
 {
 	_patternFile = fopen(_patternFileName.c_str(), "r");
-	_outputFile = fopen(_outputFileName.c_str(), "w");
+	_thisThreadOutputFile = fopen(_outputFileName.c_str(), "w");
 	
 	if(_patternFile == nullptr)
 	{
 		throw std::string( "Couldn't open pattern file" );
 	}
-	if(_outputFile == nullptr)
+	if(_thisThreadOutputFile == nullptr)
 	{
 		throw std::string( "Couldn't open output file \"" + _outputFileName + "\"" );
 	}
@@ -117,7 +120,7 @@ void TaskExecutor::countPatternMetrics()
 
 void TaskExecutor::countTextMetrics()
 {
-	_textLen = bfs::file_size(_bfsTextFilePath);
+	_textLen = bfs::file_size(_textFileBfsPath);
 	_textFragmentLen = _sArraySize - 1 - _patternFragmentLen;
 	
 	// every text fragment superimpose on previous one, "delta" of superimposition == "_textFragmentLen" - "_patternFragmentLen"
@@ -159,7 +162,7 @@ void TaskExecutor::savePiForFirstPatternFragment()
 		throw std::string( "Couldn't open file \"" + _piForFirstPatternFragmentFileName );
 	}
 	
-	uploadFragment(_piForFirstPatternFragmentFile, 0, _patternFragmentLen * sizeof(*_pi), (char*)_pi);
+	uploadFragment(_piForFirstPatternFragmentFile, 0, _patternFragmentLen, _pi);
 	
 	fclose(_piForFirstPatternFragmentFile);
 	_piForFirstPatternFragmentFile = fopen(_piForFirstPatternFragmentFileName.c_str(), "rb");
@@ -174,8 +177,8 @@ TaskExecutor::~TaskExecutor()
 	if(_patternFile != nullptr) {
 		fclose(_patternFile);
 	}
-	if(_outputFile != nullptr) {
-		fclose(_outputFile);
+	if(_thisThreadOutputFile != nullptr) {
+		fclose(_thisThreadOutputFile);
 	}
 	if(_piForFirstPatternFragmentFile != nullptr) {
 		fclose(_piForFirstPatternFragmentFile);
@@ -201,18 +204,19 @@ TaskExecutor::~TaskExecutor()
 
 void TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories)
 {
-	_bfsTextFilePath = task.getFileBfsPath();
-	_textFileNativeName = task.getFileNativeName();
-	_textFilePath = task.getFilePath();
+	_textFileBfsPath = task.getFileBfsPath();
 	
 	_result.clear();
 	
+	// The main and the only Try-Catch block
 	try {
 		
-		if(bfs::is_directory(_bfsTextFilePath)) {
+		if(bfs::is_directory(_textFileBfsPath)) {
 			processDirectory(newTasksFiles, newTasksDirectories);
 		}
 		else {
+			_textFilePath = task.getFilePath();
+			
 			processFile();
 		}
 		
@@ -291,23 +295,24 @@ void TaskExecutor::printResultToFile()
 		const size_t cbMaxResultBufSize = _cbMaxBufSize - 128;
 		
 		// If Initial Memory Size Is Too Little
-		assert(_cbMaxBufSize > 128);
+		if(_cbMaxBufSize <= 128) {
+			throw "Too little memory for thread";
+		}
 		
 		size_t i = 0;
-		size_t size = _result.size();
+		size_t countOfEntries = _result.size();
 		size_t cbResultBufSize = sprintf(_s, "*** In File %s\n", _textFilePath.c_str());
-		cbResultBufSize += sprintf(_s + cbResultBufSize, "\tentries : %lu\n", _result.size());
+		cbResultBufSize += sprintf(_s + cbResultBufSize, "\tentries : %lu\n", countOfEntries);
 		
-		while(i < size)
-		{
+		while(i < countOfEntries) {
 			
-			while(i < size && cbResultBufSize < cbMaxResultBufSize)
-			{
+			while(i < countOfEntries && cbResultBufSize < cbMaxResultBufSize) {
+				
 				cbResultBufSize += sprintf(_s + cbResultBufSize, "\tposition : %i\n", _result[i]);
 				++i;
 			}
 			
-			fwrite(_s, 1, cbResultBufSize, _outputFile);
+			fwrite(_s, 1, cbResultBufSize, _thisThreadOutputFile);
 			cbResultBufSize = 0;
 		}
 		

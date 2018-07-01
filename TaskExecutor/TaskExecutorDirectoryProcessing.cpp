@@ -16,7 +16,7 @@
 void TaskExecutor::processDirectory(std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories)
 {
 	const auto endIt = bfs::directory_iterator();
-	for(auto it = bfs::directory_iterator(_bfsTextFilePath); it != endIt; ++it) {
+	for(auto it = bfs::directory_iterator(_textFileBfsPath); it != endIt; ++it) {
 		
 		const bfs::path& newFilePath = it->path();
 		
