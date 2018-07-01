@@ -37,7 +37,7 @@ ThreadLord::~ThreadLord()
 	}
 	
 	for(unsigned int threadID = 0; threadID < _numberOfThreads; ++threadID) {
-		if(!_threadsOutputFilesNames[threadID].empty());
+		if(!_threadsOutputFilesNames[threadID].empty())
 			remove(_threadsOutputFilesNames[threadID].c_str());
 	}
 }
@@ -72,13 +72,17 @@ void ThreadLord::openOutputFile()
 
 void ThreadLord::initThreadsOutputFilesNames()
 {
-	_OutputFileDirectory = bfs::path(_request.outputFileName).parent_path().string();
+	_outputFileDirectory = bfs::path(_request.outputFileName).parent_path().string();
+	
+	if(_outputFileDirectory != "") {
+		_outputFileDirectory += preferred_separator;
+	}
 	
 	_threadsOutputFilesNames.resize(_numberOfThreads);
 	
 	for(unsigned int threadID = 0; threadID < _numberOfThreads; ++threadID) {
 		
-		const std::string pathWithoutExtension = _OutputFileDirectory + preferred_separator + "output_" + std::to_string(threadID);
+		const std::string pathWithoutExtension = _outputFileDirectory + "output_" + std::to_string(threadID);
 		_threadsOutputFilesNames[threadID] = findFreeName(pathWithoutExtension, "txt");
 	}
 	
@@ -136,7 +140,7 @@ void ThreadLord::startThreads()
 									   std::ref(_tasks),
 									   iThread,
 									   cbMaxBufSize,
-									   std::ref(_OutputFileDirectory),
+									   std::ref(_outputFileDirectory),
 									   std::ref(_threadsOutputFilesNames[iThread]),
 									   _request.patternFileName,
 									   std::ref(regexMask)));

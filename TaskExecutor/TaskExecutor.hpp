@@ -102,7 +102,7 @@ private:
 	/*---- And count how many fragments we'll have ---------------------------------- */
 	size_t _patternLen;
 	size_t _patternFragmentLen;
-	size_t _numberOfFragmentsOfPattern;
+	uint _numberOfFragmentsOfPattern;
 	
 	/*---- The same with the text --------------------------------------------------------------------- */
 	/*---- But to find the pattern correctly in the text we have to impose text fragments on each other */
@@ -110,7 +110,7 @@ private:
 	size_t _textLen;
 	size_t _textFragmentLen;
 	size_t _textFragmentWithSuperimpositionLen;
-	size_t _numberOfFragmentsOfTextWithSuperimposition;
+	uint _numberOfFragmentsOfTextWithSuperimposition;
 	
 	std::vector<PatternStartPosition> _result;
 	
@@ -141,31 +141,31 @@ private:
 	void findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>>& entries);
 
 	void searchWithPrefixFunc(const size_t realPatternFragmentLen,
-							  const size_t iTextFragment,
+							  const uint iTextFragment,
 							  const size_t len,
 							  std::vector<EntryPair>& result);
 	
 	bool firstPatternFragmentCanBeOnPosition(const size_t position,
-											 const size_t iTextFragment);
+											 const uint iTextFragment);
 	
 	bool patternFragmentExistsInTextFragment(const char* patternFragment,
 											 const size_t realPatternFragmentLen,
 											 const char* textFragment,
 											 const size_t realTextFragmentLen,
-											 const size_t positionInTextFragment);
+											 const uint positionInTextFragment);
 	
 	
 	/* ----------------- Sifning Found Entries */
 	
 	void siftEntries(std::vector<std::vector<EntryPair>>& entries);
 	
-	void patternFragmentSiftIteration(const size_t iPatternFragment, std::vector<std::vector<EntryPair> >& entries);
+	void patternFragmentSiftIteration(const uint iPatternFragment, std::vector<std::vector<EntryPair> >& entries);
 	
 	void filterEntriesOfTextFragment(std::vector<EntryPair>& entriesOfTextFragment,
 									 std::vector<EntryPair>& crtFilteredEntries,
 									 std::vector<EntryPair>& nextFilteredEntries,
-									 const size_t iPatternFragment,
-									 const size_t iTextFragment,
+									 const uint iPatternFragment,
+									 const uint iTextFragment,
 									 const char* crtPatternFragment,
 									 const size_t realPatternFragmentLen,
 									 const char* crtTextFragment,
@@ -174,7 +174,7 @@ private:
 									 const size_t realNextTextFragmentLen);
 	
 	void filterEntry(const EntryPair& pair,
-					 const size_t iPatternFragment,
+					 const uint iPatternFragment,
 					 const char* crtPatternFragment,
 					 const size_t realPatternFragmentLen,
 					 const char* crtTextFragment,
@@ -187,11 +187,9 @@ private:
 	
 	void fillResult(const std::vector<std::vector<EntryPair>>& entries);
 	
-	size_t getRealPatternFragmentLen(const size_t iPatternFragment);
-	size_t getRealTextFragmentLen(const size_t iTextFragment);
-	
-	void countPositionOfPatternFragment(const size_t iPatternFragment, const size_t absolutePositionOfStartOfPattern, size_t &iTextFragment, size_t &positionInTextFragment);
-	
+	size_t getRealPatternFragmentLen(const uint iPatternFragment);
+	size_t getRealTextFragmentLen(const uint iTextFragment);
+		
 	
 	void printResultToFile();
 };

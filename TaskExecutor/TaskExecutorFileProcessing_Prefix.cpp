@@ -17,7 +17,7 @@ void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from
 
 void TaskExecutor::findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>> &entries)
 {
-	const size_t iPatternFragment = 0;
+	const uint iPatternFragment = 0;
 	size_t realPatternFragmentLen;
 	realPatternFragmentLen = getRealPatternFragmentLen(iPatternFragment);
 	
@@ -27,7 +27,7 @@ void TaskExecutor::findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>
 	// This is saved value of "_pi" for first pattern fragment
 	downloadFragment(_piForFirstPatternFragmentFile, 0, _patternFragmentLen * sizeof(*_pi), (char*)_pi);
 	
-	for(size_t iTextFragment = 0; iTextFragment < _numberOfFragmentsOfTextWithSuperimposition; ++iTextFragment) {
+	for(uint iTextFragment = 0; iTextFragment < _numberOfFragmentsOfTextWithSuperimposition; ++iTextFragment) {
 		
 		size_t realTextFragmentLen;
 		
@@ -60,7 +60,7 @@ void TaskExecutor::findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>
 /* ---------------------------------------- Standart Search With Prefix Function With Little Modification */
 
 void TaskExecutor::searchWithPrefixFunc(const size_t realPatternFragmentLen,
-										const size_t iTextFragment,
+										const uint iTextFragment,
 										const size_t len,
 										std::vector<EntryPair>& result)
 {
@@ -73,7 +73,7 @@ void TaskExecutor::searchWithPrefixFunc(const size_t realPatternFragmentLen,
 		if(_pi[i] >= realPatternFragmentLen) {
 			
 			{	// Modification.
-				// If text or pattern contains symbol '\227', which divides them in "_s",
+				// If text or pattern contains symbol '#', which divides them in "_s",
 				// whithout this code some entries won't be found.
 				size_t j = i;
 				while(_pi[j] > realPatternFragmentLen) {
@@ -84,12 +84,12 @@ void TaskExecutor::searchWithPrefixFunc(const size_t realPatternFragmentLen,
 			
 			if(_pi[i] == realPatternFragmentLen) {
 				
-				CrtFragmentStartPosition position = (CrtFragmentStartPosition)(i - 2 * realPatternFragmentLen);
-				PatternStartPosition absolutePosition = (PatternStartPosition)(position + (iTextFragment * _textFragmentWithSuperimpositionLen));
-				EntryPair pair(absolutePosition, position);
+				CrtFragmentStartPosition positionInCrtTextFragment = (CrtFragmentStartPosition)(i - 2 * realPatternFragmentLen);
+				PatternStartPosition absolutePosition = (PatternStartPosition)(positionInCrtTextFragment + (iTextFragment * _textFragmentWithSuperimpositionLen));
+				EntryPair pair(absolutePosition, positionInCrtTextFragment);
 				
 				// (First pattern fragment can't be on position, if the whole pattern won't fit it )
-				if(firstPatternFragmentCanBeOnPosition(position, iTextFragment)) {
+				if(firstPatternFragmentCanBeOnPosition(positionInCrtTextFragment, iTextFragment)) {
 					result.push_back(pair);
 				}
 			}
@@ -103,7 +103,7 @@ void TaskExecutor::searchWithPrefixFunc(const size_t realPatternFragmentLen,
 /* ---------------------------------------- TaskExecutor firstPatternFragmentCanBeOnPosition ------------------------------------- */
 /* ---------------------------------------- Counts Rightmost Position Of First Pattern Fragment According To Pattern And Text Size */
 
-bool TaskExecutor::firstPatternFragmentCanBeOnPosition(const size_t position, const size_t iTextFragment)
+bool TaskExecutor::firstPatternFragmentCanBeOnPosition(const size_t position, const uint iTextFragment)
 {
 	size_t absolutePosition = position + (iTextFragment * _textFragmentWithSuperimpositionLen);
 	const size_t maxSizeForPosition = _textLen - absolutePosition;

@@ -108,7 +108,7 @@ void TaskExecutor::countPatternMetrics()
 	}
 	
 	// round up
-	_numberOfFragmentsOfPattern = (_patternLen + _patternFragmentLen - 1) / (_patternFragmentLen);
+	_numberOfFragmentsOfPattern = (uint)( (_patternLen + _patternFragmentLen - 1) / (_patternFragmentLen) );
 }
 
 
@@ -124,7 +124,7 @@ void TaskExecutor::countTextMetrics()
 	_textFragmentWithSuperimpositionLen = _textFragmentLen - _patternFragmentLen;
 	
 	// !!! it's important to count it in signed type
-	_numberOfFragmentsOfTextWithSuperimposition = 1 + (((long long)_textLen - (long long)_patternFragmentLen - 1) / (long long)(_textFragmentLen - _patternFragmentLen));
+	_numberOfFragmentsOfTextWithSuperimposition = (uint)( 1 + (((long)_textLen - (long)_patternFragmentLen - 1) / (long)(_textFragmentLen - _patternFragmentLen)) );
 }
 
 
@@ -148,7 +148,7 @@ void TaskExecutor::countPiForFirstPatternFragment()
 
 void TaskExecutor::savePiForFirstPatternFragment()
 {
-	std::string piForFirstPatternFragmentFileNameWithoutExtension(_outputFileDirectory + preferred_separator + "piForFirstFragment_" + std::to_string(_threadID));
+	std::string piForFirstPatternFragmentFileNameWithoutExtension(_outputFileDirectory + "piForFirstFragment_" + std::to_string(_threadID));
 	std::string extension("bin");
 	
 	_piForFirstPatternFragmentFileName = findFreeName(piForFirstPatternFragmentFileNameWithoutExtension, extension);
@@ -186,6 +186,7 @@ TaskExecutor::~TaskExecutor()
 		delete [] _buf;
 	}
 }
+
 
 
 
@@ -230,7 +231,7 @@ void TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newT
 /* ---------------------------------------- TaskExecutor getRealPatternFragmentLen ------------------------------ */
 /* ---------------------------------------- Last Fragment Is Less ----------------------------------------------- */
 
-size_t TaskExecutor::getRealPatternFragmentLen(const size_t iPatternFragment)
+size_t TaskExecutor::getRealPatternFragmentLen(const uint iPatternFragment)
 {
 	size_t realPatternFragmentLen;
 	if(iPatternFragment == _numberOfFragmentsOfPattern - 1) {
@@ -247,7 +248,7 @@ size_t TaskExecutor::getRealPatternFragmentLen(const size_t iPatternFragment)
 /* ---------------------------------------- TaskExecutor openDefaultFiles ------------------------------ */
 /* ---------------------------------------- Last Fragment Is Less -------------------------------------- */
 
-size_t TaskExecutor::getRealTextFragmentLen(const size_t iTextFragment)
+size_t TaskExecutor::getRealTextFragmentLen(const uint iTextFragment)
 {
 	size_t realTextFragmentLen;
 	if(iTextFragment == _numberOfFragmentsOfTextWithSuperimposition - 1) {
@@ -268,7 +269,7 @@ size_t TaskExecutor::getRealTextFragmentLen(const size_t iTextFragment)
 void TaskExecutor::fillResult(const std::vector<std::vector<EntryPair> >& entries)
 {
 	
-	for(size_t iTextFragment = 0; iTextFragment < _numberOfFragmentsOfTextWithSuperimposition; ++iTextFragment)
+	for(uint iTextFragment = 0; iTextFragment < _numberOfFragmentsOfTextWithSuperimposition; ++iTextFragment)
 	{
 		for(const auto& pair : entries[iTextFragment])
 		{
@@ -295,7 +296,7 @@ void TaskExecutor::printResultToFile()
 		size_t i = 0;
 		size_t size = _result.size();
 		size_t cbResultBufSize = sprintf(_s, "*** In File %s\n", _textFilePath.c_str());
-		cbResultBufSize += sprintf(_s + cbResultBufSize, "\tentries : %i\n", _result.size());
+		cbResultBufSize += sprintf(_s + cbResultBufSize, "\tentries : %lu\n", _result.size());
 		
 		while(i < size)
 		{

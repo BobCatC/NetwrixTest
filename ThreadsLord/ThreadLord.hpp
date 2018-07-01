@@ -38,7 +38,7 @@ private:
 	FILE* _outputFile = nullptr;
 	char* _buf = nullptr;
 	
-	std::string _OutputFileDirectory;
+	std::string _outputFileDirectory;
 	
 	const unsigned int _numberOfThreads;
 	std::vector<std::thread> _threads;

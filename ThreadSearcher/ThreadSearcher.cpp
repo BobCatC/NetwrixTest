@@ -65,7 +65,7 @@ void threadSearcher(BankOfTasks& tasksBank,
 				executor.doTask(tasks[iTask], newTasksFiles, newTasksDirectories);
 				
 #ifdef DoSleep
-				std::this_thread::sleep_for(std::chrono::microseconds(300));
+				std::this_thread::sleep_for(std::chrono::microseconds(50));
 #endif
 			}
 			

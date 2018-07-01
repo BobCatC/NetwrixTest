@@ -16,7 +16,7 @@
 
 void TaskExecutor::siftEntries(std::vector<std::vector<EntryPair> > &entries)
 {
-	for(size_t iPatternFragment = 1; iPatternFragment < _numberOfFragmentsOfPattern; ++iPatternFragment) {
+	for(uint iPatternFragment = 1; iPatternFragment < _numberOfFragmentsOfPattern; ++iPatternFragment) {
 		
 		patternFragmentSiftIteration(iPatternFragment, entries);
 	}
@@ -27,7 +27,7 @@ void TaskExecutor::siftEntries(std::vector<std::vector<EntryPair> > &entries)
 /* ---------------------------------------- In Each Iteration Firstly We Filter Entries In Each Text Fragment ------ */
 /* ---------------------------------------- And Increase Entries For Next Iteration -------------------------------- */
 
-void TaskExecutor::patternFragmentSiftIteration(const size_t iPatternFragment, std::vector<std::vector<EntryPair> >& entries)
+void TaskExecutor::patternFragmentSiftIteration(const uint iPatternFragment, std::vector<std::vector<EntryPair> >& entries)
 {
 	size_t realPatternFragmentLen;
 	size_t realCrtTextFragmentLen, realNextTextFragmentLen;
@@ -51,7 +51,7 @@ void TaskExecutor::patternFragmentSiftIteration(const size_t iPatternFragment, s
 	std::vector<EntryPair> crtFilteredEntries, nextFilteredEntries;
 
 	
-	for(int iTextFragment = 0; iTextFragment < _numberOfFragmentsOfTextWithSuperimposition; ++iTextFragment) {
+	for(uint iTextFragment = 0; iTextFragment < _numberOfFragmentsOfTextWithSuperimposition; ++iTextFragment) {
 		
 		// We get current text fragment from next one and download new next
 		std::swap(realCrtTextFragmentLen, realNextTextFragmentLen);
@@ -88,8 +88,8 @@ void TaskExecutor::patternFragmentSiftIteration(const size_t iPatternFragment, s
 void TaskExecutor::filterEntriesOfTextFragment(std::vector<EntryPair>& entriesOfTextFragment,
 											   std::vector<EntryPair>& crtFilteredEntries,
 											   std::vector<EntryPair>& nextFilteredEntries,
-											   const size_t iPatternFragment,
-											   const size_t iTextFragment,
+											   const uint iPatternFragment,
+											   const uint iTextFragment,
 											   const char* crtPatternFragment,
 											   const size_t realPatternFragmentLen,
 											   const char* crtTextFragment,
@@ -127,7 +127,7 @@ void TaskExecutor::filterEntriesOfTextFragment(std::vector<EntryPair>& entriesOf
 /* ---------------------------------------- Checks, If Current Pattern Fragment Can Be Continuation Of Current Entry */
 
 void TaskExecutor::filterEntry(const EntryPair& pair,
-							   const size_t iPatternFragment,
+							   const uint iPatternFragment,
 							   const char* crtPatternFragment,
 							   const size_t realPatternFragmentLen,
 							   const char* crtTextFragment,
@@ -140,9 +140,7 @@ void TaskExecutor::filterEntry(const EntryPair& pair,
 	const PatternStartPosition startPositionOfPatternFragment = pair.second;
 	
 	
-	
-	
-	size_t positionOfNextPatternFragment = startPositionOfPatternFragment + _patternFragmentLen;
+	uint positionOfNextPatternFragment = (uint)(startPositionOfPatternFragment + _patternFragmentLen);
 	
 	const char* textFragment;
 	size_t textFragmentLen;
@@ -181,7 +179,7 @@ bool TaskExecutor::patternFragmentExistsInTextFragment(const char* patternFragme
 													   const size_t realPatternFragmentLen,
 													   const char* textFragment,
 													   const size_t realTextFragmentLen,
-													   const size_t positionInTextFragment)
+													   const uint positionInTextFragment)
 {
 	if(realPatternFragmentLen > realTextFragmentLen - positionInTextFragment) {
 		return false;
