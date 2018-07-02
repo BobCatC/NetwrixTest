@@ -9,6 +9,10 @@
 #include "FirstStepSearchInFile.hpp"
 #include "../../FileSystem/FileSystem.hpp"
 
+
+/* ---------------------------------------- FirstStepSearchInFile constructor ------------------ */
+/* ---------------------------------------- Recieves Initial Data ------------------------------ */
+
 FirstStepSearchInFile::FirstStepSearchInFile(const BuffersForSearch& buffers,
 											 const PatternMetrics& patternMetrics,
 											 const TextMetrics& textMetrics,
@@ -30,8 +34,8 @@ void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from
 
 
 
-/* ---------------------------------------- TaskExecutor findEntriesOfFirstFragment ------------------------------ */
-/* ---------------------------------------- Findes All The Entries Of First Pattern Fragment In All Text Fragments */
+/* ---------------------------------------- FirstStepSearchInFile findEntriesOfFirstFragment ------------------------------ */
+/* ---------------------------------------- Findes All The Entries Of First Pattern Fragment In All Text Fragments -------- */
 
 void FirstStepSearchInFile::findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>> &entries)
 {
@@ -78,8 +82,8 @@ void FirstStepSearchInFile::findEntriesOfFirstFragment(std::vector<std::vector<E
 }
 
 
-/* ---------------------------------------- searchWithPrefixFunc ---------------------------------------- */
-/* ---------------------------------------- Standart Search With Prefix Function With Little Modification */
+/* ---------------------------------------- FirstStepSearchInFile searchWithPrefixFunc ---------------------------------------- */
+/* ---------------------------------------- Standart Search With Prefix Function With Little Modification --------------------- */
 
 bool FirstStepSearchInFile::searchWithPrefixFunc(const size_t realPatternFragmentLen,
 										const uint iTextFragment,
@@ -129,8 +133,8 @@ bool FirstStepSearchInFile::searchWithPrefixFunc(const size_t realPatternFragmen
 }
 
 
-/* ---------------------------------------- TaskExecutor firstPatternFragmentCanBeOnPosition ------------------------------------- */
-/* ---------------------------------------- Counts Rightmost Position Of First Pattern Fragment According To Pattern And Text Size */
+/* ---------------------------------------- FirstStepSearchInFile firstPatternFragmentCanBeOnPosition ------------------------------------- */
+/* ---------------------------------------- Counts Rightmost Position Of First Pattern Fragment According To Pattern And Text Size -------- */
 
 bool FirstStepSearchInFile::firstPatternFragmentCanBeOnPosition(const size_t position, const uint iTextFragment)
 {

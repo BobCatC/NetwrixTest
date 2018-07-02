@@ -38,8 +38,8 @@ struct BuffersForSearch {
 	int32_t* pi = nullptr;
 	
 	/*---- As we have too less memory, we have to destribute it ------------------- */
-	/*---- 4/5 of "_buf" size is for "pi" (as sizeof(int32_t) == 4 * sizeof(char)) */
-	/*---- 1/5 of "_buf" size is for "s" ----------------------------------------- */
+	/*---- 4/5 of "buf" size is for "pi" (as sizeof(int32_t) == 4 * sizeof(char)) */
+	/*---- 1/5 of "buf" size is for "s" ----------------------------------------- */
 	size_t piArraySize, piArrayLen;
 	size_t sArraySize, sArrayLen;
 };

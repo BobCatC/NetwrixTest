@@ -59,10 +59,10 @@ void TaskExecutor::processFile()
 void TaskExecutor::fillResult(const std::vector<std::vector<EntryPair> >& entries)
 {
 	
-	for(uint iTextFragment = 0; iTextFragment < _textMetrics.numberOfFragments; ++iTextFragment)
-	{
-		for(const auto& pair : entries[iTextFragment])
-		{
+	for(uint iTextFragment = 0; iTextFragment < _textMetrics.numberOfFragments; ++iTextFragment) {
+		
+		for(const auto& pair : entries[iTextFragment]) {
+			
 			const PatternStartPosition patternStartPosition = pair.first;
 			_result.push_back((int)patternStartPosition);
 		}

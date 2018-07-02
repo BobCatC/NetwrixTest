@@ -8,6 +8,10 @@
 
 #include "SecondStepSearchInFile.hpp"
 
+
+/* ---------------------------------------- SecondStepSearchInFile constructor ------------------------ */
+/* ---------------------------------------- Recieves Initial Data ------------------------------------- */
+
 SecondStepSearchInFile::SecondStepSearchInFile(const BuffersForSearch& buffers,
 											   const PatternMetrics& patternMetrics,
 											   const TextMetrics& textMetrics,
@@ -21,10 +25,7 @@ _textFile(textFile)
 { }
 
 
-
-
-
-/* ---------------------------------------- TaskExecutor siftEntries ------------------------------------- */
+/* ---------------------------------------- SecondStepSearchInFile siftEntries --------------------------- */
 /* ---------------------------------------- Each Iteration Processes Each Pattern Fragment --------------- */
 
 
@@ -36,7 +37,7 @@ void SecondStepSearchInFile::siftEntries(std::vector<std::vector<EntryPair>>& en
 	}
 }
 
-/* ---------------------------------------- TaskExecutor patternFragmentSiftIteration ------------------------------ */
+/* ---------------------------------------- SecondStepSearchInFile patternFragmentSiftIteration -------------------- */
 /* ---------------------------------------- Firstly We Download Current Pattern Fragment --------------------------- */
 /* ---------------------------------------- In Each Iteration Have Downloaded Current And Next Text Fragment ------- */
 
@@ -85,7 +86,7 @@ void SecondStepSearchInFile::patternFragmentSiftIteration(const uint iPatternFra
 }
 
 
-/* ---------------------------------------- TaskExecutor filterEntriesOfTextFragment ------------------------------ */
+/* ---------------------------------------- SecondStepSearchInFile filterEntriesOfTextFragment -------------------- */
 /* ---------------------------------------- Checks All Entries In Current Text Fragment --------------------------- */
 
 void SecondStepSearchInFile::filterEntriesOfTextFragment(std::vector<EntryPair>& entriesOfTextFragment,
@@ -114,7 +115,7 @@ void SecondStepSearchInFile::filterEntriesOfTextFragment(std::vector<EntryPair>&
 }
 
 
-/* ---------------------------------------- TaskExecutor filterEntry ----------------------------------------------- */
+/* ---------------------------------------- SecondStepSearchInFile filterEntry ------------------------------------- */
 /* ---------------------------------------- Checks, If Current Pattern Fragment Can Be Continuation Of Current Entry */
 /* ---------------------------------------- And If It Can, It Increases pair.second And Pushes It Back ------------- */
 
@@ -162,7 +163,7 @@ void SecondStepSearchInFile::filterEntry(const EntryPair& pair,
 }
 
 
-/* ---------------------------------------- TaskExecutor patternFragmentExistsInTextFragment ------------------------------ */
+/* ---------------------------------------- SecondStepSearchInFile patternFragmentExistsInTextFragment -------------------- */
 /* ---------------------------------------- Checks If Pattern Fragment Exists In Text Fragment On Position ---------------- */
 
 bool SecondStepSearchInFile::patternFragmentExistsInTextFragment(const char* patternFragment,

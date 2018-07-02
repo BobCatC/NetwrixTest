@@ -53,9 +53,9 @@ private:
 	const std::string& _patternFileName;
 	const std::regex& _regexMask;
 
-	/*---- Pointers at files ------------------------------------------------------------------------- */
-	/*---- "_patternFile", "_thisThreadOutputFile" and "_piForFirst..." are always opened (closed in destructor) */
-	/*---- "_textFile" is opened only while file processing ------------------------------------------ */
+	/*---- Pointers at files --------------------------------------------------------------------------------------------------- */
+	/*---- "_patternFile", "_thisThreadOutputFile" and "_piForFirstPatternFragmentFile" are always opened (closed in destructor) */
+	/*---- "_textFile" is opened only while file processing -------------------------------------------------------------------- */
 	FILE* _patternFile = nullptr;
 	FILE* _piForFirstPatternFragmentFile = nullptr;
 	FILE* _textFile = nullptr;
@@ -106,10 +106,7 @@ private:
 	/*================== File Searching */
 	void processFile();
 	
-	
 	void fillResult(const std::vector<std::vector<EntryPair>>& entries);
-	
-	
 	void printResultToFile();
 };
 

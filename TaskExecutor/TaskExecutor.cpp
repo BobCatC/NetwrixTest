@@ -61,7 +61,7 @@ void TaskExecutor::openDefaultFiles()
 
 
 /* ---------------------------------------- TaskExecutor initBuffers  ------------------------------------- */
-/* ---------------------------------------- allocates memory in "_buf" and distributes it to "_s" and "_pi" */
+/* ---------------------------------------- allocates memory in "buf" and distributes it to "s" and "pi" */
 
 void TaskExecutor::initBuffers()
 {	
@@ -174,7 +174,7 @@ void TaskExecutor::savePiForFirstPatternFragment()
 
 
 /* ---------------------------------------- TaskExecutor ~TaskExecutor ------------------------------ */
-/* ---------------------------------------- Closes All Files, Frees Buf ----------------------------- */
+/* ---------------------------------------- Closes All Files, deleted own file, Frees Buf ----------- */
 
 TaskExecutor::~TaskExecutor()
 {
@@ -197,11 +197,11 @@ TaskExecutor::~TaskExecutor()
 
 
 
-/* ---------------------------------------- TaskExecutor doTask ------------------------------------------------------------ */
-/* ---------------------------------------- Sets Name, Path, BfsPath Of TaskFile, Determines, If It's a File Or a Directrory */
-/* ---------------------------------------- Here Is Main Try-Catch Block, As File Or Directory Unavailable ----------------- */
-/* ---------------------------------------- Triing To Process It Will Throw The Exception ---------------------------------- */
-/* ---------------------------------------- We Don't Need To Process It, As We Know, That The Reason Is Unaccessibility ---- */
+/* ---------------------------------------- TaskExecutor doTask ------------------------------------------------------------ --*/
+/* ---------------------------------------- Sets Name, Path, BfsPath Of TaskFile, Determines, If It's a File Or a Directrory --*/
+/* ---------------------------------------- Here Is Main Try-Catch Block, As File Or Directory can be Unavailable ------------ */
+/* ---------------------------------------- Triing To Process It Will Throw The Exception ------------------------------------ */
+/* ---------------------------------------- We Don't Need To Process exception, As We Know, That The Reason Is Unaccessibility */
 
 void TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories)
 {
@@ -226,6 +226,8 @@ void TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newT
 	} catch(const std::string& err) {
 		
 	} catch(const char* err) {
+		
+	} catch(const std::exception& err) {
 		
 	}
 	
