@@ -81,35 +81,52 @@ private:
 	bfs::path _textFileBfsPath;
 	std::string _textFilePath;
 	
+	
+	
+	struct BuffersForSearch {
+		
+		char* buf = nullptr;
+		char* s = nullptr;
+		int32_t* pi = nullptr;
+		
+		
+		size_t piArraySize, piArrayLen;
+		size_t sArraySize, sArrayLen;
+	};
+	
 	/*---- Dynamic memory for loading fragments of files ---------------------- */
 	/*---- "_s" for prefix function. _s : [pattern]#[text] -------------------- */
 	/*---- "_pi" for prefix function. "_pi" containts result of prefix function */
 	/*---- "_buf" is allocated in constructor and deleted in destructor ------- */
 	/*---- "_s" and "_pi" point to "_buf" memory (don't have own) ------------- */
-	char* _buf = nullptr;
-	char* _s = nullptr;
-	int32_t* _pi = nullptr;
-
+	
+	
 	/*---- As we have too less memory, we have to destribute it ------------------- */
 	/*---- 4/5 of "_buf" size is for "_pi" (as sizeof(int32_t) == 4 * sizeof(char)) */
 	/*---- 1/5 of "_buf" size is for "_s" ----------------------------------------- */
-	size_t _piArraySize, _piArrayLen;
-	size_t _sArraySize, _sArrayLen;
+	BuffersForSearch _buffers;
+	
+	
+	
+	struct FileMetrics {
+		size_t len;
+		size_t fragmentLen;
+		uint numberOfFragments;
+	};
+	
 	
 	/*---- Both the pattern and the text can't be loaded to memory (full file) ------ */
 	/*---- We have to count the size of fragments (it depends on size of "_s" buffer) */
 	/*---- And count how many fragments we'll have ---------------------------------- */
-	size_t _patternLen;
-	size_t _patternFragmentLen;
-	uint _numberOfFragmentsOfPattern;
+	
+	FileMetrics _patternMetrics;
 	
 	/*---- The same with the text --------------------------------------------------------------------- */
 	/*---- But to find the pattern correctly in the text we have to impose text fragments on each other */
 	/*---- (pattern fragment entry can be at the junction of the text fragments, so we have to impose)  */
-	size_t _textLen;
-	size_t _textFragmentLen;
-	size_t _textFragmentWithSuperimpositionLen;
-	uint _numberOfFragmentsOfTextWithSuperimposition;
+	size_t _textFragmentWithoutSuperimpositionLen;
+	FileMetrics _textMetrics;
+	
 	
 	std::vector<PatternStartPosition> _result;
 	

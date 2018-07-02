@@ -67,9 +67,9 @@ void TaskExecutor::openDefaultFiles()
 
 void TaskExecutor::initBuffers()
 {	
-	_buf = new char[_cbMaxBufSize];
+	_buffers.buf = new char[_cbMaxBufSize];
 	
-	if(_buf == nullptr) {
+	if(_buffers.buf == nullptr) {
 		throw "Memory Allocation Error";
 	}
 	
@@ -79,8 +79,8 @@ void TaskExecutor::initBuffers()
 	// metrics of pattern (len, fragment len, quontity of framgents)
 	countPatternMetrics();
 	
-	_s = _buf;
-	_pi = (int32_t*)(_buf + _sArraySize);
+	_buffers.s = _buffers.buf;
+	_buffers.pi = (int32_t*)(_buffers.buf + _buffers.sArraySize);
 }
 
 
@@ -89,11 +89,11 @@ void TaskExecutor::initBuffers()
 
 void TaskExecutor::countDefaultMetrics()
 {
-	_piArraySize = (_cbMaxBufSize * 4) / 5;
-	_piArrayLen = _piArraySize / sizeof(int32_t);
+	_buffers.piArraySize = (_cbMaxBufSize * 4) / 5;
+	_buffers.piArrayLen = _buffers.piArraySize / sizeof(int32_t);
 	
-	_sArraySize = (_cbMaxBufSize * 1) / 5;
-	_sArrayLen = _sArraySize / sizeof(char);
+	_buffers.sArraySize = (_cbMaxBufSize * 1) / 5;
+	_buffers.sArrayLen = _buffers.sArraySize / sizeof(char);
 }
 
 
@@ -102,16 +102,16 @@ void TaskExecutor::countDefaultMetrics()
 
 void TaskExecutor::countPatternMetrics()
 {
-	_patternLen = bfs::file_size(bfs::path(_patternFileName));
-	_patternFragmentLen = ((_sArrayLen - 1) * 1) / 7;
+	_patternMetrics.len = bfs::file_size(bfs::path(_patternFileName));
+	_patternMetrics.fragmentLen = ((_buffers.sArrayLen - 1) * 1) / 7;
 	
 	// if pattern is little, we can set "_patternFragmentLen" to the size of whole pattern
-	if(_patternLen < _patternFragmentLen) {
-		_patternFragmentLen = _patternLen;
+	if(_patternMetrics.len < _patternMetrics.fragmentLen) {
+		_patternMetrics.fragmentLen = _patternMetrics.len;
 	}
 	
 	// round up
-	_numberOfFragmentsOfPattern = (uint)( (_patternLen + _patternFragmentLen - 1) / (_patternFragmentLen) );
+	_patternMetrics.numberOfFragments = (uint)( (_patternMetrics.len + _patternMetrics.fragmentLen - 1) / (_patternMetrics.fragmentLen) );
 }
 
 
@@ -120,14 +120,16 @@ void TaskExecutor::countPatternMetrics()
 
 void TaskExecutor::countTextMetrics()
 {
-	_textLen = bfs::file_size(_textFileBfsPath);
-	_textFragmentLen = _sArraySize - 1 - _patternFragmentLen;
+	_textMetrics.len = bfs::file_size(_textFileBfsPath);
+	_textFragmentWithoutSuperimpositionLen = _buffers.sArraySize - 1 - _patternMetrics.fragmentLen;
 	
-	// every text fragment superimpose on previous one, "delta" of superimposition == "_textFragmentLen" - "_patternFragmentLen"
-	_textFragmentWithSuperimpositionLen = _textFragmentLen - _patternFragmentLen;
+	// every text fragment superimpose on previous one, "delta" of superimposition == "textFragmentWithoutSuperimpositionLen" - "_patternFragmentLen"
+	_textMetrics.fragmentLen = _textFragmentWithoutSuperimpositionLen - _patternMetrics.fragmentLen;
 	
 	// !!! it's important to count it in signed type
-	_numberOfFragmentsOfTextWithSuperimposition = (uint)( 1 + (((long)_textLen - (long)_patternFragmentLen - 1) / (long)(_textFragmentLen - _patternFragmentLen)) );
+	_textMetrics.numberOfFragments =
+	(uint)( 1 +
+		   (((long)_textMetrics.len - (long)_patternMetrics.fragmentLen - 1) / (long)(_textFragmentWithoutSuperimpositionLen - _patternMetrics.fragmentLen)) );
 }
 
 
@@ -137,10 +139,10 @@ void TaskExecutor::countTextMetrics()
 
 void TaskExecutor::countPiForFirstPatternFragment()
 {
-	downloadFragment(_patternFile, 0, _patternFragmentLen, _s);
+	downloadFragment(_patternFile, 0, _patternMetrics.fragmentLen, _buffers.s);
 	
-	_pi[0] = 0;
-	prefixFunction(_s, _pi, _patternFragmentLen, 1);
+	_buffers.pi[0] = 0;
+	prefixFunction(_buffers.s, _buffers.pi, _patternMetrics.fragmentLen, 1);
 	
 	savePiForFirstPatternFragment();
 }
@@ -162,7 +164,7 @@ void TaskExecutor::savePiForFirstPatternFragment()
 		throw std::string( "Couldn't open file \"" + _piForFirstPatternFragmentFileName );
 	}
 	
-	uploadFragment(_piForFirstPatternFragmentFile, 0, _patternFragmentLen, _pi);
+	uploadFragment(_piForFirstPatternFragmentFile, 0, _patternMetrics.fragmentLen, _buffers.pi);
 	
 	fclose(_piForFirstPatternFragmentFile);
 	_piForFirstPatternFragmentFile = fopen(_piForFirstPatternFragmentFileName.c_str(), "rb");
@@ -185,8 +187,8 @@ TaskExecutor::~TaskExecutor()
 		remove(_piForFirstPatternFragmentFileName.c_str());
 	}
 	
-	if(_buf != nullptr) {
-		delete [] _buf;
+	if(_buffers.buf != nullptr) {
+		delete [] _buffers.buf;
 	}
 }
 
@@ -238,11 +240,11 @@ void TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newT
 size_t TaskExecutor::getRealPatternFragmentLen(const uint iPatternFragment)
 {
 	size_t realPatternFragmentLen;
-	if(iPatternFragment == _numberOfFragmentsOfPattern - 1) {
-		realPatternFragmentLen = _patternLen - (_numberOfFragmentsOfPattern - 1) * _patternFragmentLen;
+	if(iPatternFragment == _patternMetrics.numberOfFragments - 1) {
+		realPatternFragmentLen = _patternMetrics.len - (_patternMetrics.numberOfFragments - 1) * _patternMetrics.fragmentLen;
 	}
 	else {
-		realPatternFragmentLen = _patternFragmentLen;
+		realPatternFragmentLen = _patternMetrics.fragmentLen;
 	}
 	return realPatternFragmentLen;
 	
@@ -255,11 +257,11 @@ size_t TaskExecutor::getRealPatternFragmentLen(const uint iPatternFragment)
 size_t TaskExecutor::getRealTextFragmentLen(const uint iTextFragment)
 {
 	size_t realTextFragmentLen;
-	if(iTextFragment == _numberOfFragmentsOfTextWithSuperimposition - 1) {
-		realTextFragmentLen = _textLen - (_numberOfFragmentsOfTextWithSuperimposition - 1) * _textFragmentWithSuperimpositionLen;
+	if(iTextFragment == _textMetrics.numberOfFragments - 1) {
+		realTextFragmentLen = _textMetrics.len - (_textMetrics.numberOfFragments - 1) * _textMetrics.fragmentLen;
 	}
 	else {
-		realTextFragmentLen = _textFragmentLen;
+		realTextFragmentLen = _textFragmentWithoutSuperimpositionLen;
 	}
 	return realTextFragmentLen;
 }
@@ -273,7 +275,7 @@ size_t TaskExecutor::getRealTextFragmentLen(const uint iTextFragment)
 void TaskExecutor::fillResult(const std::vector<std::vector<EntryPair> >& entries)
 {
 	
-	for(uint iTextFragment = 0; iTextFragment < _numberOfFragmentsOfTextWithSuperimposition; ++iTextFragment)
+	for(uint iTextFragment = 0; iTextFragment < _textMetrics.numberOfFragments; ++iTextFragment)
 	{
 		for(const auto& pair : entries[iTextFragment])
 		{
@@ -301,18 +303,18 @@ void TaskExecutor::printResultToFile()
 		
 		size_t i = 0;
 		size_t countOfEntries = _result.size();
-		size_t cbResultBufSize = sprintf(_s, "*** In File %s\n", _textFilePath.c_str());
-		cbResultBufSize += sprintf(_s + cbResultBufSize, "\tentries : %lu\n", countOfEntries);
+		size_t cbResultBufSize = sprintf(_buffers.s, "*** In File %s\n", _textFilePath.c_str());
+		cbResultBufSize += sprintf(_buffers.s + cbResultBufSize, "\tentries : %lu\n", countOfEntries);
 		
 		while(i < countOfEntries) {
 			
 			while(i < countOfEntries && cbResultBufSize < cbMaxResultBufSize) {
 				
-				cbResultBufSize += sprintf(_s + cbResultBufSize, "\tposition : %i\n", _result[i]);
+				cbResultBufSize += sprintf(_buffers.s + cbResultBufSize, "\tposition : %i\n", _result[i]);
 				++i;
 			}
 			
-			fwrite(_s, 1, cbResultBufSize, _thisThreadOutputFile);
+			fwrite(_buffers.s, 1, cbResultBufSize, _thisThreadOutputFile);
 			cbResultBufSize = 0;
 		}
 		

@@ -23,7 +23,7 @@ void TaskExecutor::processFile()
 {
 	countTextMetrics();
 	
-	if(_patternLen > _textLen){
+	if(_patternMetrics.len > _textMetrics.len){
 		return;
 	}
 	
@@ -35,7 +35,7 @@ void TaskExecutor::processFile()
 	
 	// entries[i] - vector of entries of current pattern fragment in i-th text fragment.
 	// What is the pattern fragment, it depends on state of searching.
-	std::vector<std::vector<EntryPair>> entries(_numberOfFragmentsOfTextWithSuperimposition);
+	std::vector<std::vector<EntryPair>> entries(_textMetrics.numberOfFragments);
 	
 	
 	findEntriesOfFirstFragment(entries);

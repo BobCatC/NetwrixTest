@@ -16,7 +16,7 @@
 
 void TaskExecutor::siftEntries(std::vector<std::vector<EntryPair> > &entries)
 {
-	for(uint iPatternFragment = 1; iPatternFragment < _numberOfFragmentsOfPattern; ++iPatternFragment) {
+	for(uint iPatternFragment = 1; iPatternFragment < _patternMetrics.numberOfFragments; ++iPatternFragment) {
 		
 		patternFragmentSiftIteration(iPatternFragment, entries);
 	}
@@ -36,22 +36,22 @@ void TaskExecutor::patternFragmentSiftIteration(const uint iPatternFragment, std
 	realNextTextFragmentLen = getRealTextFragmentLen(0);
 	
 	// Pattern fragment won't be changed
-	char* crtPatternFragment = _buf;
-	downloadFragment(_patternFile, iPatternFragment * _patternFragmentLen, realPatternFragmentLen, crtPatternFragment);
+	char* crtPatternFragment = _buffers.buf;
+	downloadFragment(_patternFile, iPatternFragment * _patternMetrics.fragmentLen, realPatternFragmentLen, crtPatternFragment);
 	
 	
 	// We'll go through all the text
 	// And we'll always have memory mapping of text of current frgment and next fragment
 	char* crtTextFragment, *nextTextFragment;
-	crtTextFragment = _buf + _patternFragmentLen + 1;
-	nextTextFragment = _buf + _patternFragmentLen + 2 + _textFragmentLen;
+	crtTextFragment = _buffers.buf + _patternMetrics.fragmentLen + 1;
+	nextTextFragment = _buffers.buf + _patternMetrics.fragmentLen + 2 + _textMetrics.fragmentLen;
 	
 	downloadFragment(_textFile, 0, realNextTextFragmentLen, nextTextFragment);
 	
 	std::vector<EntryPair> crtFilteredEntries, nextFilteredEntries;
 
 	
-	for(uint iTextFragment = 0; iTextFragment < _numberOfFragmentsOfTextWithSuperimposition; ++iTextFragment) {
+	for(uint iTextFragment = 0; iTextFragment < _textMetrics.numberOfFragments; ++iTextFragment) {
 		
 		// We get current text fragment from next one and download new next
 		std::swap(realCrtTextFragmentLen, realNextTextFragmentLen);
@@ -60,7 +60,7 @@ void TaskExecutor::patternFragmentSiftIteration(const uint iPatternFragment, std
 		realNextTextFragmentLen = getRealTextFragmentLen(iTextFragment + 1);
 		
 		downloadFragment(_textFile,
-						 (iTextFragment + 1) * (_textFragmentLen - _patternFragmentLen),
+						 (iTextFragment + 1) * (_textMetrics.fragmentLen - _patternMetrics.fragmentLen),
 						 realNextTextFragmentLen,
 						 nextTextFragment);
 		
@@ -141,14 +141,14 @@ void TaskExecutor::filterEntry(const EntryPair& pair,
 	const PatternStartPosition startPositionOfPatternFragment = pair.second;
 	
 	
-	uint positionOfNextPatternFragment = (uint)(startPositionOfPatternFragment + _patternFragmentLen);
+	uint positionOfNextPatternFragment = (uint)(startPositionOfPatternFragment + _patternMetrics.fragmentLen);
 	
 	const char* textFragment;
 	size_t textFragmentLen;
 	std::vector<EntryPair>* resultEntries = nullptr;
 	
 	// Maybe pattern fragment we'll be not in current text fragment, but in next
-	if(positionOfNextPatternFragment < _textFragmentWithSuperimpositionLen) {
+	if(positionOfNextPatternFragment < _textMetrics.fragmentLen) {
 		
 		textFragment = crtTextFragment;
 		textFragmentLen = realCrtTextFragmentLen;
@@ -157,7 +157,7 @@ void TaskExecutor::filterEntry(const EntryPair& pair,
 	else {
 		textFragment = nextTextFragment;
 		textFragmentLen = realNextTextFragmentLen;
-		positionOfNextPatternFragment -= _textFragmentWithSuperimpositionLen;
+		positionOfNextPatternFragment -= _textMetrics.fragmentLen;
 		resultEntries = &nextFilteredEntries;
 	}
 	
@@ -165,7 +165,7 @@ void TaskExecutor::filterEntry(const EntryPair& pair,
 	if(patternFragmentExistsInTextFragment(crtPatternFragment, realPatternFragmentLen, textFragment, textFragmentLen, positionOfNextPatternFragment))
 	{
 		EntryPair newPair(pair.first,
-						  ( iPatternFragment == (_numberOfFragmentsOfPattern - 1) ) ? pair.second : positionOfNextPatternFragment);
+						  ( iPatternFragment == (_patternMetrics.numberOfFragments - 1) ) ? pair.second : positionOfNextPatternFragment);
 		
 		resultEntries->push_back(newPair);
 	}
