@@ -40,7 +40,7 @@ int main(int argc, const char * argv[]) {
 		const auto timeEnd = std::chrono::system_clock::now();
 		const int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count();
 		
-		std::cout << time << std::endl;
+		std::cout << "Time : " << time << " ms" << std::endl;
 
 	} catch (const std::string& s) {
 		std::cout << s << std::endl;
