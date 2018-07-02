@@ -1,12 +1,30 @@
 //
-//  TaskExecutorFileProcessing_Prefix.cpp
+//  FirstStepSearchInFile.cpp
 //  NetwrixTest
 //
-//  Created by Александр Пахомов on 29.06.2018.
+//  Created by Александр Пахомов on 02.07.2018.
 //  Copyright © 2018 Александр Пахомов. All rights reserved.
 //
 
-#include "TaskExecutor.hpp"
+#include "FirstStepSearchInFile.hpp"
+#include "../../FileSystem/FileSystem.hpp"
+
+FirstStepSearchInFile::FirstStepSearchInFile(const BuffersForSearch& buffers,
+											 const PatternMetrics& patternMetrics,
+											 const TextMetrics& textMetrics,
+											 FILE* patternFile,
+											 FILE* piForFirstPatternFragmentFile,
+											 FILE* textFile) :
+_buffers(buffers),
+_patternMetrics(patternMetrics),
+_textMetrics(textMetrics),
+_patternFile(patternFile),
+_piForFirstPatternFragmentFile(piForFirstPatternFragmentFile),
+_textFile(textFile)
+{ }
+
+
+
 
 void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from);
 
@@ -15,11 +33,11 @@ void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from
 /* ---------------------------------------- TaskExecutor findEntriesOfFirstFragment ------------------------------ */
 /* ---------------------------------------- Findes All The Entries Of First Pattern Fragment In All Text Fragments */
 
-void TaskExecutor::findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>> &entries)
+void FirstStepSearchInFile::findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>> &entries)
 {
 	const uint iPatternFragment = 0;
 	size_t realPatternFragmentLen;
-	realPatternFragmentLen = getRealPatternFragmentLen(iPatternFragment);
+	realPatternFragmentLen = _patternMetrics.getRealFragmentLen(iPatternFragment);
 	
 	// Pattern fragment won't be changed => we download it only once
 	downloadFragment(_patternFile, 0, realPatternFragmentLen, _buffers.s);
@@ -32,7 +50,7 @@ void TaskExecutor::findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>
 		size_t realTextFragmentLen;
 		
 		// Last fragment can be less
-		realTextFragmentLen = getRealTextFragmentLen(iTextFragment);
+		realTextFragmentLen = _textMetrics.getRealFragmentLen(iTextFragment);
 		
 		// Without decrement some "boundary" entries will be found twice (because of imposition)
 		if(iTextFragment != _textMetrics.numberOfFragments - 1)
@@ -42,7 +60,7 @@ void TaskExecutor::findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>
 		((unsigned char*)_buffers.s)[realPatternFragmentLen] = 227; // pi (non-ascii symbol)
 		
 		downloadFragment(_textFile,
-						 iTextFragment * _textMetrics.fragmentLen,
+						 iTextFragment * _textMetrics.fragmentWithSuperimpositionLen,
 						 realTextFragmentLen,
 						 _buffers.s + realPatternFragmentLen + 1);
 		
@@ -59,7 +77,7 @@ void TaskExecutor::findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>
 /* ---------------------------------------- searchWithPrefixFunc ---------------------------------------- */
 /* ---------------------------------------- Standart Search With Prefix Function With Little Modification */
 
-void TaskExecutor::searchWithPrefixFunc(const size_t realPatternFragmentLen,
+void FirstStepSearchInFile::searchWithPrefixFunc(const size_t realPatternFragmentLen,
 										const uint iTextFragment,
 										const size_t len,
 										std::vector<EntryPair>& result)
@@ -85,7 +103,7 @@ void TaskExecutor::searchWithPrefixFunc(const size_t realPatternFragmentLen,
 			if(_buffers.pi[i] == realPatternFragmentLen) {
 				
 				CrtFragmentStartPosition positionInCrtTextFragment = (CrtFragmentStartPosition)(i - 2 * realPatternFragmentLen);
-				PatternStartPosition absolutePosition = (PatternStartPosition)(positionInCrtTextFragment + (iTextFragment * _textMetrics.fragmentLen));
+				PatternStartPosition absolutePosition = (PatternStartPosition)(positionInCrtTextFragment + (iTextFragment * _textMetrics.fragmentWithSuperimpositionLen));
 				EntryPair pair(absolutePosition, positionInCrtTextFragment);
 				
 				// (First pattern fragment can't be on position, if the whole pattern won't fit it )
@@ -103,9 +121,9 @@ void TaskExecutor::searchWithPrefixFunc(const size_t realPatternFragmentLen,
 /* ---------------------------------------- TaskExecutor firstPatternFragmentCanBeOnPosition ------------------------------------- */
 /* ---------------------------------------- Counts Rightmost Position Of First Pattern Fragment According To Pattern And Text Size */
 
-bool TaskExecutor::firstPatternFragmentCanBeOnPosition(const size_t position, const uint iTextFragment)
+bool FirstStepSearchInFile::firstPatternFragmentCanBeOnPosition(const size_t position, const uint iTextFragment)
 {
-	size_t absolutePosition = position + (iTextFragment * _textMetrics.fragmentLen);
+	size_t absolutePosition = position + (iTextFragment * _textMetrics.fragmentWithSuperimpositionLen);
 	const size_t maxSizeForPosition = _textMetrics.len - absolutePosition;
 	
 	return ( _patternMetrics.len <= maxSizeForPosition );
@@ -135,16 +153,6 @@ void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from
 		pi[i] = j;
 	}
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

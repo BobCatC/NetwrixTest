@@ -31,8 +31,8 @@ _regexMask(regexMask)
 { }
 
 
-/* ---------------------------------------- TaskExecutor init -------------------------------------- */
-/* ---------------------------------------- "init" function was added because of possible exceptions */
+/* ---------------------------------------- TaskExecutor init ----------------------------------------------------------- */
+/* ---------------------------------------- "init" function was extracted from constructor because of possible exceptions */
 
 void TaskExecutor::init()
 {
@@ -51,12 +51,10 @@ void TaskExecutor::openDefaultFiles()
 	_patternFile = fopen(_patternFileName.c_str(), "r");
 	_thisThreadOutputFile = fopen(_outputFileName.c_str(), "w");
 	
-	if(_patternFile == nullptr)
-	{
+	if(_patternFile == nullptr) {
 		throw std::string( "Couldn't open pattern file" );
 	}
-	if(_thisThreadOutputFile == nullptr)
-	{
+	if(_thisThreadOutputFile == nullptr) {
 		throw std::string( "Couldn't open output file \"" + _outputFileName + "\"" );
 	}
 }
@@ -73,7 +71,7 @@ void TaskExecutor::initBuffers()
 		throw "Memory Allocation Error";
 	}
 	
-	// metrics of "_pi" and "_s"
+	// metrics of "pi" and "s"
 	countDefaultMetrics();
 	
 	// metrics of pattern (len, fragment len, quontity of framgents)
@@ -85,15 +83,15 @@ void TaskExecutor::initBuffers()
 
 
 /* ---------------------------------------- TaskExecutor countDefaultMetrics ------------------- */
-/* ---------------------------------------- length of "_pi" and "_s" is equal, but size is not   */
+/* ---------------------------------------- length of "pi" and "s" is equal, but size is not   */
 
 void TaskExecutor::countDefaultMetrics()
 {
 	_buffers.piArraySize = (_cbMaxBufSize * 4) / 5;
-	_buffers.piArrayLen = _buffers.piArraySize / sizeof(int32_t);
+	_buffers.piArrayLen = _buffers.piArraySize / sizeof(*_buffers.pi);
 	
 	_buffers.sArraySize = (_cbMaxBufSize * 1) / 5;
-	_buffers.sArrayLen = _buffers.sArraySize / sizeof(char);
+	_buffers.sArrayLen = _buffers.sArraySize / sizeof(*_buffers.s);
 }
 
 
@@ -121,15 +119,15 @@ void TaskExecutor::countPatternMetrics()
 void TaskExecutor::countTextMetrics()
 {
 	_textMetrics.len = bfs::file_size(_textFileBfsPath);
-	_textFragmentWithoutSuperimpositionLen = _buffers.sArraySize - 1 - _patternMetrics.fragmentLen;
+	_textMetrics.fragmentWithoutSuperimpositionLen = _buffers.sArraySize - 1 - _patternMetrics.fragmentLen;
 	
-	// every text fragment superimpose on previous one, "delta" of superimposition == "textFragmentWithoutSuperimpositionLen" - "_patternFragmentLen"
-	_textMetrics.fragmentLen = _textFragmentWithoutSuperimpositionLen - _patternMetrics.fragmentLen;
+	// every text fragment superimpose on previous one, "delta" of superimposition == "textFragmentWithoutSuperimpositionLen" - "patternFragmentLen"
+	_textMetrics.fragmentWithSuperimpositionLen = _textMetrics.fragmentWithoutSuperimpositionLen - _patternMetrics.fragmentLen;
 	
 	// !!! it's important to count it in signed type
-	_textMetrics.numberOfFragments =
-	(uint)( 1 +
-		   (((long)_textMetrics.len - (long)_patternMetrics.fragmentLen - 1) / (long)(_textFragmentWithoutSuperimpositionLen - _patternMetrics.fragmentLen)) );
+	_textMetrics.numberOfFragments = (uint)(   1 +
+											( ((long)_textMetrics.len - (long)_patternMetrics.fragmentLen - 1 ) /
+											 (long)(_textMetrics.fragmentWithoutSuperimpositionLen - _patternMetrics.fragmentLen) )   );
 }
 
 
@@ -195,9 +193,6 @@ TaskExecutor::~TaskExecutor()
 
 
 
-
-
-
 /* ---------------------------------------- TaskExecutor doTask ------------------------------------------------------------ */
 /* ---------------------------------------- Sets Name, Path, BfsPath Of TaskFile, Determines, If It's a File Or a Directrory */
 /* ---------------------------------------- Here Is Main Try-Catch Block, As File Or Directory Unavailable ----------------- */
@@ -231,59 +226,6 @@ void TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newT
 	}
 	
 	printResultToFile();
-}
-
-
-/* ---------------------------------------- TaskExecutor getRealPatternFragmentLen ------------------------------ */
-/* ---------------------------------------- Last Fragment Is Less ----------------------------------------------- */
-
-size_t TaskExecutor::getRealPatternFragmentLen(const uint iPatternFragment)
-{
-	size_t realPatternFragmentLen;
-	if(iPatternFragment == _patternMetrics.numberOfFragments - 1) {
-		realPatternFragmentLen = _patternMetrics.len - (_patternMetrics.numberOfFragments - 1) * _patternMetrics.fragmentLen;
-	}
-	else {
-		realPatternFragmentLen = _patternMetrics.fragmentLen;
-	}
-	return realPatternFragmentLen;
-	
-}
-
-
-/* ---------------------------------------- TaskExecutor openDefaultFiles ------------------------------ */
-/* ---------------------------------------- Last Fragment Is Less -------------------------------------- */
-
-size_t TaskExecutor::getRealTextFragmentLen(const uint iTextFragment)
-{
-	size_t realTextFragmentLen;
-	if(iTextFragment == _textMetrics.numberOfFragments - 1) {
-		realTextFragmentLen = _textMetrics.len - (_textMetrics.numberOfFragments - 1) * _textMetrics.fragmentLen;
-	}
-	else {
-		realTextFragmentLen = _textFragmentWithoutSuperimpositionLen;
-	}
-	return realTextFragmentLen;
-}
-
-
-
-
-/* ---------------------------------------- TaskExecutor fillResult ---------------------------- */
-/* ---------------------------------------- Taskes All Remaining Entries And Fills Result Vector */
-
-void TaskExecutor::fillResult(const std::vector<std::vector<EntryPair> >& entries)
-{
-	
-	for(uint iTextFragment = 0; iTextFragment < _textMetrics.numberOfFragments; ++iTextFragment)
-	{
-		for(const auto& pair : entries[iTextFragment])
-		{
-			const PatternStartPosition patternStartPosition = pair.first;
-			_result.push_back((int)patternStartPosition);
-		}
-
-	}
 }
 
 

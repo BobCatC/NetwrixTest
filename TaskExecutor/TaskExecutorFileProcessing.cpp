@@ -22,13 +22,11 @@
 void TaskExecutor::processFile()
 {
 	countTextMetrics();
-	
 	if(_patternMetrics.len > _textMetrics.len){
 		return;
 	}
 	
 	_textFile = fopen(_textFilePath.c_str(), "r");
-	
 	if(_textFile == nullptr) {
 		throw ( "Couldn't open file \"" + _textFilePath + "\"");
 	}
@@ -37,14 +35,14 @@ void TaskExecutor::processFile()
 	// What is the pattern fragment, it depends on state of searching.
 	std::vector<std::vector<EntryPair>> entries(_textMetrics.numberOfFragments);
 	
-	
-	findEntriesOfFirstFragment(entries);
+	FirstStepSearchInFile firstStep(_buffers, _patternMetrics, _textMetrics, _patternFile, _piForFirstPatternFragmentFile, _textFile);
+	firstStep.findEntriesOfFirstFragment(entries);
 	// Now "entries" contain all entries of First pattern fragment
 	
 	
-	
+	SecondStepSearchInFile secondStep(_buffers, _patternMetrics, _textMetrics, _patternFile, _textFile);
 	// "entries" will be sifted
-	siftEntries(entries);
+	secondStep.siftEntries(entries);
 	
 	
 	// Now "entries" contain the final result of searching
@@ -53,3 +51,25 @@ void TaskExecutor::processFile()
 	fclose(_textFile);
 	_textFile = nullptr;
 }
+
+
+/* ---------------------------------------- TaskExecutor fillResult ---------------------------- */
+/* ---------------------------------------- Taskes All Remaining Entries And Fills Result Vector */
+
+void TaskExecutor::fillResult(const std::vector<std::vector<EntryPair> >& entries)
+{
+	
+	for(uint iTextFragment = 0; iTextFragment < _textMetrics.numberOfFragments; ++iTextFragment)
+	{
+		for(const auto& pair : entries[iTextFragment])
+		{
+			const PatternStartPosition patternStartPosition = pair.first;
+			_result.push_back((int)patternStartPosition);
+		}
+		
+	}
+}
+
+
+
+
