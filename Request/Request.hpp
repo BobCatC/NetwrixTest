@@ -32,9 +32,9 @@ private:
 
 	
 	void parsePairsOfArguments(const int argc, const char** argv);
-	void checkForEmpty() const;
+	void checkForEmpty();
 	
-	std::string makeAbsolute(const std::string& path);
+	std::string makeAbsolute(const std::string& path) const;
 };
 
 #endif /* CRequest_h */

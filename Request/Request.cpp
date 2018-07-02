@@ -80,7 +80,7 @@ void Request::parsePairsOfArguments(const int argc, const char** argv)
 
 /* ---------------------------------------- Request Check If Any Field Is Empty */
 
-void Request::checkForEmpty() const
+void Request::checkForEmpty()
 {
 	
 	if(_startDirectory.empty()) {
@@ -88,7 +88,7 @@ void Request::checkForEmpty() const
 	}
 	
 	if(_mask.empty()) {
-		throw "Not Found Mask Value";
+		_mask = "*.*";
 	}
 	
 	if(_patternFileName.empty()) {
@@ -103,7 +103,7 @@ void Request::checkForEmpty() const
 
 /* ---------------------------------------- Request Make Path Absolute ( even if it's already abolute ) */
 
-std::string Request::makeAbsolute(const std::string & path)
+std::string Request::makeAbsolute(const std::string & path) const
 {
 	const bfs::path bfsPath(path);
 	return bfs::absolute(bfsPath).string();
