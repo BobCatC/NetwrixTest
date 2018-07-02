@@ -12,7 +12,6 @@
 #include "ThreadSearcher.hpp"
 #include "../TaskExecutor/TaskExecutor.hpp"
 
-//#define DoSleep
 
 void printThreadError(const unsigned int threadID, const std::string& err);
 
@@ -32,13 +31,13 @@ void threadSearcher(BankOfTasks& tasksBank,
 	// 4) do task in executor and get vectors of new files and directories to check
 	// 5) go to point (2)
 	
-
-	std::vector<std::string> newTasksFiles, newTasksDirectories;
-	std::vector<ThreadTask> tasks;
 	
 	// this try-catch block catches only fatal errors
 	try
 	{
+		std::vector<std::string> newTasksFiles, newTasksDirectories;
+		std::vector<ThreadTask> tasks;
+		
 		TaskExecutor executor(threadID, thisThreadOutputFileName, cbMaxBufSize, outputFileeDirectory, patternFileName, regexMask);
 		
 		// because of allocating memory and opening files, "init()" was removed from constructor
@@ -66,28 +65,21 @@ void threadSearcher(BankOfTasks& tasksBank,
 			for(size_t iTask = 0; iTask < tasks.size(); ++iTask) {
 				
 				executor.doTask(tasks[iTask], newTasksFiles, newTasksDirectories);
-				
-#ifdef DoSleep
-				std::this_thread::sleep_for(std::chrono::microseconds(50));
-#endif
 			}
 			
 			tasksBank.appendTasks(newTasksFiles, newTasksDirectories);
 			
 		}
 	
-	}
-	catch(const std::string& err)
-	{
+	} catch(const std::string& err) {
 		printThreadError(threadID, err);
 		tasksBank.fatalErrorHappened();
-		return;
-	}
-	catch(const char* s)
-	{
+	} catch(const char* s) {
 		printThreadError(threadID, std::string(s));
 		tasksBank.fatalErrorHappened();
-		return;
+	} catch(const std::exception& e) {
+		printThreadError(threadID, e.what());
+		tasksBank.fatalErrorHappened();
 	}
 	
 	

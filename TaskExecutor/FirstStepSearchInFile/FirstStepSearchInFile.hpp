@@ -33,14 +33,12 @@ private:
 	FILE* _textFile;
 	
 	
-	void searchWithPrefixFunc(const size_t realPatternFragmentLen,
+	bool searchWithPrefixFunc(const size_t realPatternFragmentLen,
 						 const uint iTextFragment,
 						 const size_t len,
 						 std::vector<EntryPair>& result);
 	
 	bool firstPatternFragmentCanBeOnPosition(const size_t position, const uint iTextFragment);
-	
-	
 };
 
 

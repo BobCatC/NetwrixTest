@@ -51,10 +51,10 @@ void TaskExecutor::openDefaultFiles()
 	_patternFile = fopen(_patternFileName.c_str(), "r");
 	_thisThreadOutputFile = fopen(_outputFileName.c_str(), "w");
 	
-	if(_patternFile == nullptr) {
+	if(_patternFile == NULL) {
 		throw std::string( "Couldn't open pattern file" );
 	}
-	if(_thisThreadOutputFile == nullptr) {
+	if(_thisThreadOutputFile == NULL) {
 		throw std::string( "Couldn't open output file \"" + _outputFileName + "\"" );
 	}
 }
@@ -158,7 +158,7 @@ void TaskExecutor::savePiForFirstPatternFragment()
 	
 	_piForFirstPatternFragmentFile = fopen(_piForFirstPatternFragmentFileName.c_str(), "w");
 	
-	if(_piForFirstPatternFragmentFile == nullptr) {
+	if(_piForFirstPatternFragmentFile == NULL) {
 		throw std::string( "Couldn't open file \"" + _piForFirstPatternFragmentFileName );
 	}
 	
@@ -166,6 +166,10 @@ void TaskExecutor::savePiForFirstPatternFragment()
 	
 	fclose(_piForFirstPatternFragmentFile);
 	_piForFirstPatternFragmentFile = fopen(_piForFirstPatternFragmentFileName.c_str(), "rb");
+	
+	if(_piForFirstPatternFragmentFile == NULL) {
+		throw std::string( "Couldn't open file \"" + _piForFirstPatternFragmentFileName );
+	}
 }
 
 
@@ -174,13 +178,13 @@ void TaskExecutor::savePiForFirstPatternFragment()
 
 TaskExecutor::~TaskExecutor()
 {
-	if(_patternFile != nullptr) {
+	if(_patternFile != NULL) {
 		fclose(_patternFile);
 	}
-	if(_thisThreadOutputFile != nullptr) {
+	if(_thisThreadOutputFile != NULL) {
 		fclose(_thisThreadOutputFile);
 	}
-	if(_piForFirstPatternFragmentFile != nullptr) {
+	if(_piForFirstPatternFragmentFile != NULL) {
 		fclose(_piForFirstPatternFragmentFile);
 		remove(_piForFirstPatternFragmentFileName.c_str());
 	}
@@ -245,8 +249,7 @@ void TaskExecutor::printResultToFile()
 		
 		size_t i = 0;
 		size_t countOfEntries = _result.size();
-		size_t cbResultBufSize = sprintf(_buffers.s, "*** In File %s\n", _textFilePath.c_str());
-		cbResultBufSize += sprintf(_buffers.s + cbResultBufSize, "\tentries : %lu\n", countOfEntries);
+		size_t cbResultBufSize = sprintf(_buffers.s, "%s\n", _textFilePath.c_str());
 		
 		while(i < countOfEntries) {
 			

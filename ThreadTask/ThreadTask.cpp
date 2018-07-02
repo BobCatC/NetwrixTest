@@ -8,7 +8,6 @@
 
 #include "ThreadTask.hpp"
 
-
 /* ---------------------------------------- ThreadTask Constructor  */
 
 ThreadTask::ThreadTask(const bfs::path& path) : _bfsPath(path){ }

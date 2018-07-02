@@ -12,23 +12,8 @@
 
 #include "FileSystem.hpp"
 
-
-#if defined(_WIN32) || defined(_WIN64)
-/* ---------------------------------------- WindowsNT */
-	const std::string preferred_separator("\\");
-#else
-
-#	if (defined (__APPLE__) && defined(__MACH__)) || defined(__unix__) || defined(__linux__)
-/* ---------------------------------------- Unux/unix-like */
-		const std::string preferred_separator("/");
-#	else
-#		error "Unknown Environment"
-#	endif
-
-#endif
-
-
-
+// bfs::path::preferred_separator hasn't method to convert to std::string
+const std::string preferred_separator = bfs::path(bfs::path::string_type(&bfs::path::preferred_separator)).string();
 
 
 /* ---------------------------------------- FileSystem   */

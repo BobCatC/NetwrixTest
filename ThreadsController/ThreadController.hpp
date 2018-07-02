@@ -1,13 +1,13 @@
 //
-//  ThreadLord.hpp
+//  ThreadsController.hpp
 //  NetwrixTest
 //
 //  Created by Александр Пахомов on 23.06.2018.
 //  Copyright © 2018 Александр Пахомов. All rights reserved(no).
 //
 
-#ifndef CThreadLord_hpp
-#define CThreadLord_hpp
+#ifndef CThreadsController_hpp
+#define CThreadsController_hpp
 
 #include <thread>
 #include <atomic>
@@ -17,17 +17,17 @@
 #include "../Request/Request.hpp"
 
 
-class ThreadLord {
+class ThreadsController {
 	
 public:
 	
-	ThreadLord(const Request& request, const unsigned int numberOfThreads = 8);
-	ThreadLord(const ThreadLord& other) = delete;
-	ThreadLord(ThreadLord& other) = delete;
+	ThreadsController(const Request& request, const unsigned int numberOfThreads = 8);
+	ThreadsController(const ThreadsController& other) = delete;
+	ThreadsController(ThreadsController& other) = delete;
 	
 	void createThreads();
 	
-	~ThreadLord();
+	~ThreadsController();
 	
 private:
 	
@@ -70,4 +70,4 @@ private:
 	void moveOutputOfThread(FILE* threadOutputFile);
 };
 
-#endif /* CThreadLord_hpp */
+#endif /* CThreadsController_hpp */

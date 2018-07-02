@@ -1,5 +1,5 @@
 //
-//  ThreadLord.cpp
+//  ThreadsController.cpp
 //  NetwrixTest
 //
 //  Created by Александр Пахомов on 23.06.2018.
@@ -7,26 +7,26 @@
 //
 #include <iostream>
 
-#include "ThreadLord.hpp"
+#include "ThreadController.hpp"
 #include "../ThreadSearcher/ThreadSearcher.hpp"
 
-/* ------------------------------------------------------------ */
-/* --------------------- class ThreadLord --------------------- */
-/* ------------------------------------------------------------ */
+/* ------------------------------------------------------------------- */
+/* --------------------- class ThreadsController --------------------- */
+/* ------------------------------------------------------------------- */
 
 
-/* ---------------------------------------- ThreadLord Constructor */
+/* ---------------------------------------- ThreadsController Constructor */
 
-ThreadLord::ThreadLord(const Request& request, const unsigned int numberOfThreads):
+ThreadsController::ThreadsController(const Request& request, const unsigned int numberOfThreads):
 	_request(request),
 	_numberOfThreads(numberOfThreads),
 	_tasksBank(numberOfThreads, request)
 { }
 
 
-/* ---------------------------------------- ThreadLord Destructor */
+/* ---------------------------------------- ThreadsController Destructor */
 
-ThreadLord::~ThreadLord()
+ThreadsController::~ThreadsController()
 {
 	if(_outputFile != nullptr) {
 		fclose(_outputFile);
@@ -43,7 +43,7 @@ ThreadLord::~ThreadLord()
 }
 
 
-void ThreadLord::createThreads()
+void ThreadsController::createThreads()
 {
 	openOutputFile();
 	
@@ -58,18 +58,18 @@ void ThreadLord::createThreads()
 	mergeOutput();
 }
 
-/* ---------------------------------------- ThreadLord Open Main Output File */
+/* ---------------------------------------- ThreadsController Open Main Output File */
 
-void ThreadLord::openOutputFile()
+void ThreadsController::openOutputFile()
 {
 	_outputFile = fopen(_request.outputFileName.c_str(), "w");
-	if(_outputFile == nullptr) {
+	if(_outputFile == NULL) {
 		throw std::string( "Couldn't open output file \"" + _request.outputFileName + "\"" );
 	}
 }
 
 
-void ThreadLord::initThreadsOutputFilesNames()
+void ThreadsController::initThreadsOutputFilesNames()
 {
 	_outputFileDirectory = bfs::path(_request.outputFileName).parent_path().string();
 	
@@ -89,9 +89,9 @@ void ThreadLord::initThreadsOutputFilesNames()
 	
 }
 
-/* ---------------------------------------- ThreadLord Init Regex From Mask String (different syntax) */
+/* ---------------------------------------- ThreadsController Init Regex From Mask String (different syntax) */
 
-void ThreadLord::initRegexMask()
+void ThreadsController::initRegexMask()
 {
 	const std::string& mask = _request.mask;
 	std::string result;
@@ -121,9 +121,9 @@ void ThreadLord::initRegexMask()
 }
 
 
-/* ---------------------------------------- ThreadLord Start Threads */
+/* ---------------------------------------- ThreadsController Start Threads */
 
-void ThreadLord::startThreads()
+void ThreadsController::startThreads()
 {
 	// we can't create either Zero or Too Many threads
 	const unsigned int maxNumberOfThreads = 100;
@@ -149,9 +149,9 @@ void ThreadLord::startThreads()
 	}
 }
 
-/* ---------------------------------------- ThreadLord Wait For All Threads To Compile Their Output Files Into Common */
+/* ---------------------------------------- ThreadsController Wait For All Threads To Compile Their Output Files Into Common */
 
-void ThreadLord::waitThreads()
+void ThreadsController::waitThreads()
 {
 	
 	for(unsigned int iThread = 0; iThread < _numberOfThreads; ++iThread) {
@@ -160,9 +160,9 @@ void ThreadLord::waitThreads()
 }
 
 
-/* ---------------------------------------- ThreadLord  Compile Output Files Into Common */
+/* ---------------------------------------- ThreadsController  Compile Output Files Into Common */
 
-void ThreadLord::mergeOutput()
+void ThreadsController::mergeOutput()
 {
 	_buf = new char[_cbMaxBufSizeForProgramm];
 	
@@ -186,14 +186,14 @@ void ThreadLord::mergeOutput()
 }
 
 
-/* ---------------------------------------- ThreadLord  Compile Crt Thread File Into Common */
+/* ---------------------------------------- ThreadsController  Compile Crt Thread File Into Common */
 
-void ThreadLord::getOutputOfThread(size_t threadID)
+void ThreadsController::getOutputOfThread(size_t threadID)
 {
 	const std::string& threadOutputFileName = _threadsOutputFilesNames[threadID];
 	
 	FILE* threadOutputFile = fopen(threadOutputFileName.c_str(), "rb");
-	if(threadOutputFile == nullptr) {
+	if(threadOutputFile == NULL) {
 		return;
 	}
 	
@@ -203,9 +203,9 @@ void ThreadLord::getOutputOfThread(size_t threadID)
 }
 
 
-/* ---------------------------------------- ThreadLord Move Thread File Through Buf To Common */
+/* ---------------------------------------- ThreadsController Move Thread File Through Buf To Common */
 
-void ThreadLord::moveOutputOfThread(FILE *threadOutputFile)
+void ThreadsController::moveOutputOfThread(FILE *threadOutputFile)
 {
 	size_t readSize = 0;
 	

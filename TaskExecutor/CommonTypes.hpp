@@ -63,7 +63,6 @@ struct PatternMetrics {
 		return realPatternFragmentLen;
 		
 	}
-
 };
 
 
@@ -86,7 +85,6 @@ struct TextMetrics {
 		}
 		return realTextFragmentLen;
 	}
-
 };
 
 

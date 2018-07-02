@@ -30,12 +30,10 @@ _textFile(textFile)
 
 void SecondStepSearchInFile::siftEntries(std::vector<std::vector<EntryPair>>& entries)
 {
-	
 	for(uint iPatternFragment = 1; iPatternFragment < _patternMetrics.numberOfFragments; ++iPatternFragment) {
 		
 		patternFragmentSiftIteration(iPatternFragment, entries);
 	}
-	
 }
 
 /* ---------------------------------------- TaskExecutor patternFragmentSiftIteration ------------------------------ */
@@ -44,24 +42,20 @@ void SecondStepSearchInFile::siftEntries(std::vector<std::vector<EntryPair>>& en
 
 void SecondStepSearchInFile::patternFragmentSiftIteration(const uint iPatternFragment, std::vector<std::vector<EntryPair> >& entries)
 {
-	size_t realPatternFragmentLen;
-	size_t realCrtTextFragmentLen, realNextTextFragmentLen;
-	
-	realPatternFragmentLen = _patternMetrics.getRealFragmentLen(iPatternFragment);
-	realNextTextFragmentLen = _textMetrics.getRealFragmentLen(0);
+	_realPatternFragmentLen = _patternMetrics.getRealFragmentLen(iPatternFragment);
+	_realNextTextFragmentLen = _textMetrics.getRealFragmentLen(0);
 	
 	// Pattern fragment won't be changed
-	char* crtPatternFragment = _buffers.buf;
-	downloadFragment(_patternFile, iPatternFragment * _patternMetrics.fragmentLen, realPatternFragmentLen, crtPatternFragment);
+	_crtPatternFragment = _buffers.buf;
+	downloadFragment(_patternFile, iPatternFragment * _patternMetrics.fragmentLen, _realPatternFragmentLen, _crtPatternFragment);
 	
 	
 	// We'll go through all the text
 	// And we'll always have memory mapping of text of current frgment and next fragment
-	char* crtTextFragment, *nextTextFragment;
-	crtTextFragment = _buffers.buf + _patternMetrics.fragmentLen + 1;
-	nextTextFragment = _buffers.buf + _patternMetrics.fragmentLen + 2 + _textMetrics.fragmentWithSuperimpositionLen;
+	_crtTextFragment = _buffers.buf + _patternMetrics.fragmentLen + 1;
+	_nextTextFragment = _buffers.buf + _patternMetrics.fragmentLen + 2 + _textMetrics.fragmentWithoutSuperimpositionLen;
 	
-	downloadFragment(_textFile, 0, realNextTextFragmentLen, nextTextFragment);
+	downloadFragment(_textFile, 0, _realNextTextFragmentLen, _nextTextFragment);
 	
 	std::vector<EntryPair> crtFilteredEntries, nextFilteredEntries;
 	
@@ -69,28 +63,22 @@ void SecondStepSearchInFile::patternFragmentSiftIteration(const uint iPatternFra
 	for(uint iTextFragment = 0; iTextFragment < _textMetrics.numberOfFragments; ++iTextFragment) {
 		
 		// We get current text fragment from next one and download new next
-		std::swap(realCrtTextFragmentLen, realNextTextFragmentLen);
-		std::swap(crtTextFragment, nextTextFragment);
+		std::swap(_realCrtTextFragmentLen, _realNextTextFragmentLen);
+		std::swap(_crtTextFragment, _nextTextFragment);
 		
-		realNextTextFragmentLen = _textMetrics.getRealFragmentLen(iTextFragment + 1);
+		_realNextTextFragmentLen = _textMetrics.getRealFragmentLen(iTextFragment + 1);
 		
 		downloadFragment(_textFile,
-						 (iTextFragment + 1) * (_textMetrics.fragmentWithSuperimpositionLen - _patternMetrics.fragmentLen),
-						 realNextTextFragmentLen,
-						 nextTextFragment);
+						 (iTextFragment + 1) * _textMetrics.fragmentWithSuperimpositionLen,
+						 _realNextTextFragmentLen,
+						 _nextTextFragment);
 		
 		
 		filterEntriesOfTextFragment(entries[iTextFragment],
 									crtFilteredEntries,
 									nextFilteredEntries,
 									iPatternFragment,
-									iTextFragment,
-									crtPatternFragment,
-									realPatternFragmentLen,
-									crtTextFragment,
-									realCrtTextFragmentLen,
-									nextTextFragment,
-									realNextTextFragmentLen);
+									iTextFragment);
 		
 	}
 	
@@ -104,13 +92,7 @@ void SecondStepSearchInFile::filterEntriesOfTextFragment(std::vector<EntryPair>&
 											   std::vector<EntryPair>& crtFilteredEntries,
 											   std::vector<EntryPair>& nextFilteredEntries,
 											   const uint iPatternFragment,
-											   const uint iTextFragment,
-											   const char* crtPatternFragment,
-											   const size_t realPatternFragmentLen,
-											   const char* crtTextFragment,
-											   const size_t realCrtTextFragmentLen,
-											   const char* nextTextFragment,
-											   const size_t realNextTextFragmentLen)
+											   const uint iTextFragment)
 {
 	// As we pass through the whole vector, it's much better to fill new vector, than to change current
 	//	std::vector<EntryPair> filteredEntries;
@@ -122,12 +104,6 @@ void SecondStepSearchInFile::filterEntriesOfTextFragment(std::vector<EntryPair>&
 		
 		filterEntry(pair,
 					iPatternFragment,
-					crtPatternFragment,
-					realPatternFragmentLen,
-					crtTextFragment,
-					realCrtTextFragmentLen,
-					nextTextFragment,
-					realNextTextFragmentLen,
 					crtFilteredEntries,
 					nextFilteredEntries);
 		
@@ -144,12 +120,6 @@ void SecondStepSearchInFile::filterEntriesOfTextFragment(std::vector<EntryPair>&
 
 void SecondStepSearchInFile::filterEntry(const EntryPair& pair,
 							   const uint iPatternFragment,
-							   const char* crtPatternFragment,
-							   const size_t realPatternFragmentLen,
-							   const char* crtTextFragment,
-							   const size_t realCrtTextFragmentLen,
-							   const char* nextTextFragment,
-							   const size_t realNextTextFragmentLen,
 							   std::vector<EntryPair>& crtFilteredEntries,
 							   std::vector<EntryPair>& nextFilteredEntries)
 {
@@ -165,22 +135,26 @@ void SecondStepSearchInFile::filterEntry(const EntryPair& pair,
 	// Maybe pattern fragment we'll be not in current text fragment, but in next
 	if(positionOfNextPatternFragment < _textMetrics.fragmentWithSuperimpositionLen) {
 		
-		textFragment = crtTextFragment;
-		textFragmentLen = realCrtTextFragmentLen;
+		textFragment = _crtTextFragment;
+		textFragmentLen = _realCrtTextFragmentLen;
 		resultEntries = &crtFilteredEntries;
 	}
 	else {
-		textFragment = nextTextFragment;
-		textFragmentLen = realNextTextFragmentLen;
+		textFragment = _nextTextFragment;
+		textFragmentLen = _realNextTextFragmentLen;
 		positionOfNextPatternFragment -= _textMetrics.fragmentWithSuperimpositionLen;
 		resultEntries = &nextFilteredEntries;
 	}
 	
 	// Checks, if bytes in text fragment and bytes int pattern fragment are equal
-	if(patternFragmentExistsInTextFragment(crtPatternFragment, realPatternFragmentLen, textFragment, textFragmentLen, positionOfNextPatternFragment))
-	{
-		EntryPair newPair(pair.first,
-						  ( iPatternFragment == (_patternMetrics.numberOfFragments - 1) ) ? pair.second : positionOfNextPatternFragment);
+	if(patternFragmentExistsInTextFragment(_crtPatternFragment,
+										   _realPatternFragmentLen,
+										   textFragment,
+										   textFragmentLen,
+										   positionOfNextPatternFragment)) {
+		
+		const CrtFragmentStartPosition crtPosition = iPatternFragment == (_patternMetrics.numberOfFragments - 1) ? pair.second : positionOfNextPatternFragment;
+		EntryPair newPair(pair.first, crtPosition);
 		
 		resultEntries->push_back(newPair);
 	}
@@ -201,5 +175,5 @@ bool SecondStepSearchInFile::patternFragmentExistsInTextFragment(const char* pat
 		return false;
 	}
 	
-	return strncmp(patternFragment, textFragment + positionInTextFragment, realPatternFragmentLen) == 0;
+	return 0 == strncmp(patternFragment, textFragment + positionInTextFragment, realPatternFragmentLen);
 }

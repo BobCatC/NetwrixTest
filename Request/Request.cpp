@@ -51,13 +51,12 @@ void Request::parsePairsOfArguments(const int argc, const char** argv)
 
 		const std::string key( argv[1 + iPairOfArg * 2] );
 		const std::string value( argv[2 + iPairOfArg * 2] );
-		const std::string runtimeDirectory = bfs::current_path().string();
 		
 		
 		if( key == "-p" ) {
 			_startDirectory = value;
 
-			makeAbsolute(_startDirectory, runtimeDirectory);
+			makeAbsolute(_startDirectory);
 		}
 		else if( key == "-m" ) {
 			_mask = value;
@@ -65,12 +64,12 @@ void Request::parsePairsOfArguments(const int argc, const char** argv)
 		else if( key == "-i" ) {
 			_patternFileName = value;
 			
-			makeAbsolute(_patternFileName, runtimeDirectory);
+			makeAbsolute(_patternFileName);
 		}
 		else if( key == "-o" ) {
 			_outputFileName = value;
 			
-			makeAbsolute(_outputFileName, runtimeDirectory);
+			makeAbsolute(_outputFileName);
 		}
 		else {
 			throw ( "Unknown Key : " + key );
@@ -104,35 +103,14 @@ void Request::checkForEmpty() const
 
 /* ---------------------------------------- Request Make Path Absolute ( even if it's already abolute ) */
 
-std::string Request::makeAbsolute(const std::string & path, const std::string& runtimeDIrectory)
+std::string Request::makeAbsolute(const std::string & path)
 {
-
-	if (!isAbsolute(path)) {
-
-#if defined(__APPLE__)
-		return runtimeDIrectory + "/" + path;
-#else
-		return runtimeDIrectory + "\\" + path;
-#endif
-	}
-	else {
-		return path;
-	}
+	const bfs::path bfsPath(path);
+	return bfs::absolute(bfsPath).string();
 }
 
 
-/* ---------------------------------------- Request Check If Path Is Absolute */
 
-bool Request::isAbsolute(const std::string & path)
-{
-
-#if defined(__APPLE__)
-	return (path[0] == '/');
-#else
-	return (path[1] == L':');
-#endif
-
-}
 
 
 

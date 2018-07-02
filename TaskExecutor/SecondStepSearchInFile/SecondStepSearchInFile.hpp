@@ -34,28 +34,24 @@ private:
 	FILE* _patternFile;
 	FILE* _textFile;
 	
+	char* _crtPatternFragment = nullptr;
+	size_t _realPatternFragmentLen = 0;
+	
+	char* _crtTextFragment = nullptr;
+	size_t _realCrtTextFragmentLen = 0;
+	char* _nextTextFragment = nullptr;
+	size_t _realNextTextFragmentLen = 0;
+	
 	void patternFragmentSiftIteration(const uint iPatternFragment, std::vector<std::vector<EntryPair> >& entries);
 	
 	void filterEntriesOfTextFragment(std::vector<EntryPair>& entriesOfTextFragment,
 									 std::vector<EntryPair>& crtFilteredEntries,
 									 std::vector<EntryPair>& nextFilteredEntries,
 									 const uint iPatternFragment,
-									 const uint iTextFragment,
-									 const char* crtPatternFragment,
-									 const size_t realPatternFragmentLen,
-									 const char* crtTextFragment,
-									 const size_t realCrtTextFragmentLen,
-									 const char* nextTextFragment,
-									 const size_t realNextTextFragmentLen);
+									 const uint iTextFragment);
 	
 	void filterEntry(const EntryPair& pair,
 					 const uint iPatternFragment,
-					 const char* crtPatternFragment,
-					 const size_t realPatternFragmentLen,
-					 const char* crtTextFragment,
-					 const size_t realCrtTextFragmentLen,
-					 const char* nextTextFragment,
-					 const size_t realNextTextFragmentLen,
 					 std::vector<EntryPair>& crtFilteredEntries,
 					 std::vector<EntryPair>& nextFilteredEntries);
 	

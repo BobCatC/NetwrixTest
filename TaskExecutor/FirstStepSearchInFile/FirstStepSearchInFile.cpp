@@ -42,7 +42,7 @@ void FirstStepSearchInFile::findEntriesOfFirstFragment(std::vector<std::vector<E
 	// Pattern fragment won't be changed => we download it only once
 	downloadFragment(_patternFile, 0, realPatternFragmentLen, _buffers.s);
 	
-	// This is saved value of "_pi" for first pattern fragment
+	// This is saved value of "pi" for first pattern fragment
 	downloadFragment(_piForFirstPatternFragmentFile, 0, _patternMetrics.fragmentLen, _buffers.pi);
 	
 	for(uint iTextFragment = 0; iTextFragment < _textMetrics.numberOfFragments; ++iTextFragment) {
@@ -52,22 +52,26 @@ void FirstStepSearchInFile::findEntriesOfFirstFragment(std::vector<std::vector<E
 		// Last fragment can be less
 		realTextFragmentLen = _textMetrics.getRealFragmentLen(iTextFragment);
 		
-		// Without decrement some "boundary" entries will be found twice (because of imposition)
+		// Without decrement some "boundary" entries will be found twice (because of superimposition)
 		if(iTextFragment != _textMetrics.numberOfFragments - 1)
 			--realTextFragmentLen;
 		
 		
-		((unsigned char*)_buffers.s)[realPatternFragmentLen] = 227; // pi (non-ascii symbol)
+		_buffers.s[realPatternFragmentLen] = '#'; // divider
 		
 		downloadFragment(_textFile,
 						 iTextFragment * _textMetrics.fragmentWithSuperimpositionLen,
 						 realTextFragmentLen,
 						 _buffers.s + realPatternFragmentLen + 1);
 		
-		searchWithPrefixFunc(realPatternFragmentLen,
-							 iTextFragment,
-							 realPatternFragmentLen + 1 + realTextFragmentLen,
-							 entries[iTextFragment]);
+		bool nextIterationNeeded =  searchWithPrefixFunc(realPatternFragmentLen,
+														 iTextFragment,
+														 realPatternFragmentLen + 1 + realTextFragmentLen,
+														 entries[iTextFragment]);
+		
+		if(nextIterationNeeded == false) {
+			break;
+		}
 		
 		// Now entries[iTextFragment] contains all the entries of first pattern fragment in iTextFragment-th fragment of the text
 	}
@@ -77,7 +81,7 @@ void FirstStepSearchInFile::findEntriesOfFirstFragment(std::vector<std::vector<E
 /* ---------------------------------------- searchWithPrefixFunc ---------------------------------------- */
 /* ---------------------------------------- Standart Search With Prefix Function With Little Modification */
 
-void FirstStepSearchInFile::searchWithPrefixFunc(const size_t realPatternFragmentLen,
+bool FirstStepSearchInFile::searchWithPrefixFunc(const size_t realPatternFragmentLen,
 										const uint iTextFragment,
 										const size_t len,
 										std::vector<EntryPair>& result)
@@ -85,6 +89,7 @@ void FirstStepSearchInFile::searchWithPrefixFunc(const size_t realPatternFragmen
 	// Prefix function will start counting from "realPatternFragmentLen", as "_pi" from Zero to "realPatternFragmentLen" was downloaded
 	prefixFunction(_buffers.s, _buffers.pi, len, (int)realPatternFragmentLen);
 	
+	bool goOnSearching = true;
 	size_t i = 2 * realPatternFragmentLen;
 	while (i < len) {
 		
@@ -110,11 +115,17 @@ void FirstStepSearchInFile::searchWithPrefixFunc(const size_t realPatternFragmen
 				if(firstPatternFragmentCanBeOnPosition(positionInCrtTextFragment, iTextFragment)) {
 					result.push_back(pair);
 				}
+				else {
+					goOnSearching = false;
+					break;
+				}
 			}
 		}
 		
 		++i;
 	}
+	
+	return goOnSearching;
 }
 
 

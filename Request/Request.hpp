@@ -34,8 +34,7 @@ private:
 	void parsePairsOfArguments(const int argc, const char** argv);
 	void checkForEmpty() const;
 	
-	std::string makeAbsolute(const std::string& path, const std::string& runtimeDirectory);
-	bool isAbsolute(const std::string& path);
+	std::string makeAbsolute(const std::string& path);
 };
 
 #endif /* CRequest_h */

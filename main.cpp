@@ -9,7 +9,7 @@
 #include <iostream>
 
 #include "Request/Request.hpp"
-#include "ThreadsLord/ThreadLord.hpp"
+#include "ThreadsController/ThreadController.hpp"
 
 
 int main(int argc, const char * argv[]) {
@@ -33,9 +33,9 @@ int main(int argc, const char * argv[]) {
 		
 		// creates threads, gives them a BankTasks ref
 		// and waits for them to compile theire output files into one
-		ThreadLord lord(request, nThreads);
+		ThreadsController controller(request, nThreads);
 		
-		lord.createThreads();
+		controller.createThreads();
 		
 		const auto timeEnd = std::chrono::system_clock::now();
 		const int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count();
@@ -46,12 +46,15 @@ int main(int argc, const char * argv[]) {
 		std::cout << s << std::endl;
 	} catch (const char* s) {
 		std::cout << s << std::endl;
+	} catch (const std::exception& e) {
+		std::cout << "Unknown exception : " << e.what() << std::endl;
 	}
 	
 	
 	
 	return 0;
 }
+
 
 
 
