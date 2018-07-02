@@ -15,11 +15,11 @@
 int main(int argc, const char * argv[]) {
 
 	
-	argc = 9;
-	argv[1] = "-p"; argv[2] = "boost";
-	argv[3] = "-i"; argv[4] = "Copyright.txt";
-	argv[5] = "-o"; argv[6] = "output.txt";
-	argv[7] = "-m"; argv[8] = "*.h*";
+//	argc = 9;
+//	argv[1] = "-p"; argv[2] = "boost";
+//	argv[3] = "-i"; argv[4] = "Copyright.txt";
+//	argv[5] = "-o"; argv[6] = "output.txt";
+//	argv[7] = "-m"; argv[8] = "*.h*";
 	
 	try {
 		const auto timeStart = std::chrono::system_clock::now();

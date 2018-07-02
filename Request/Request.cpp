@@ -56,7 +56,7 @@ void Request::parsePairsOfArguments(const int argc, const char** argv)
 		if( key == "-p" ) {
 			_startDirectory = value;
 
-			makeAbsolute(_startDirectory);
+			_startDirectory = makeAbsolute(_startDirectory);
 		}
 		else if( key == "-m" ) {
 			_mask = value;
@@ -64,12 +64,12 @@ void Request::parsePairsOfArguments(const int argc, const char** argv)
 		else if( key == "-i" ) {
 			_patternFileName = value;
 			
-			makeAbsolute(_patternFileName);
+			_patternFileName = makeAbsolute(_patternFileName);
 		}
 		else if( key == "-o" ) {
 			_outputFileName = value;
 			
-			makeAbsolute(_outputFileName);
+			_outputFileName = makeAbsolute(_outputFileName);
 		}
 		else {
 			throw ( "Unknown Key : " + key );
