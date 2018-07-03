@@ -11,7 +11,7 @@
 
 #include <vector>
 
-#include "../CommonTypes.hpp"
+#include "../CommonTypes/CommonTypes.hpp"
 #include "../../FileSystem/FileSystem.hpp"
 
 class SecondStepSearchInFile {

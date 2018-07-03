@@ -9,16 +9,15 @@
 #ifndef FileSystem_h
 #define FileSystem_h
 
-/* ---------------------------------------- FileSystem "ifdef" including of modules  */
-
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <string>
 #include <regex>
 
+/* ---------------------------------------- FileSystem "ifdef" including of modules  */
 
 #if defined(_WIN32) || defined(_WIN64)
-/* ---------------------------------------- WindowsNT */
+/* ---------------------------------------- Windows */
 #	include <experimental/filesystem>
 	namespace bfs = std::experimental::filesystem;
 
@@ -47,7 +46,7 @@ std::string findFreeName(const std::string& pathWithoutExtension, const std::str
 bool fileFitsMask(const std::string& fileNativeName, const std::regex& regexMask);
 
 
-/* ---------------------------------------- FileSystem   */
+/* ---------------------------------------- FileSystem downloadFragment  */
 
 template<class value_type>
 void downloadFragment(FILE *file, size_t fromPositionInFile, size_t len, value_type *buf)
@@ -57,7 +56,7 @@ void downloadFragment(FILE *file, size_t fromPositionInFile, size_t len, value_t
 }
 
 
-/* ---------------------------------------- FileSystem   */
+/* ---------------------------------------- FileSystem uploadFragment */
 
 template<class value_type>
 void uploadFragment(FILE* file, size_t fromPositionInFile, size_t len, value_type *buf)

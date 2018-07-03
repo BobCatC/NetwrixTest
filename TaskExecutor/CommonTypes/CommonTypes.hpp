@@ -49,20 +49,7 @@ struct PatternMetrics {
 	size_t fragmentLen;
 	uint numberOfFragments;
 	
-	/* ---------------------------------------- Last Fragment Is Less ----------------------------------------------- */
-	
-	size_t getRealFragmentLen(const uint iPatternFragment) const
-	{
-		size_t realPatternFragmentLen;
-		if(iPatternFragment == numberOfFragments - 1) {
-			realPatternFragmentLen = len - (numberOfFragments - 1) * fragmentLen;
-		}
-		else {
-			realPatternFragmentLen = fragmentLen;
-		}
-		return realPatternFragmentLen;
-		
-	}
+	size_t getRealFragmentLen(const uint iPatternFragment) const;
 };
 
 
@@ -72,19 +59,7 @@ struct TextMetrics {
 	size_t fragmentWithSuperimpositionLen;
 	uint numberOfFragments;
 	
-	/* ---------------------------------------- Last Fragment Is Not The Same Size --------------------------------- */
-	
-	size_t getRealFragmentLen(const uint iTextFragment) const
-	{
-		size_t realTextFragmentLen;
-		if(iTextFragment == numberOfFragments - 1) {
-			realTextFragmentLen = len - (numberOfFragments - 1) * fragmentWithSuperimpositionLen;
-		}
-		else {
-			realTextFragmentLen = fragmentWithoutSuperimpositionLen;
-		}
-		return realTextFragmentLen;
-	}
+	size_t getRealFragmentLen(const uint iTextFragment) const;
 };
 
 

@@ -18,7 +18,7 @@
 #include "../ThreadTask/ThreadTask.hpp"
 #include "FirstStepSearchInFile/FirstStepSearchInFile.hpp"
 #include "SecondStepSearchInFile/SecondStepSearchInFile.hpp"
-#include "CommonTypes.hpp"
+#include "CommonTypes/CommonTypes.hpp"
 
 class TaskExecutor {
 
@@ -32,7 +32,7 @@ public:
 				 const std::regex& regexMask);
 	
 	TaskExecutor(const TaskExecutor& exe) = delete;
-	TaskExecutor(TaskExecutor& exe) = delete;
+	TaskExecutor(TaskExecutor&& exe) = delete;
 	
 	void init();
 	
@@ -40,8 +40,8 @@ public:
 	
 	
 	void doTask(const ThreadTask& task,
-				std::vector<std::string>& newTasksFiles,
-				std::vector<std::string>& newTasksDirectories);
+				std::vector<ThreadTask>& newTasksFiles,
+				std::vector<ThreadTask>& newTasksDirectories);
 	
 	
 private:
@@ -95,12 +95,12 @@ private:
 	
 	/*================== Directory Searching */
 
-	void processDirectory(std::vector<std::string> &newTasksFiles,
-						  std::vector<std::string> &newTasksDirectories);
+	void processDirectory(std::vector<ThreadTask> &newTasksFiles,
+						  std::vector<ThreadTask> &newTasksDirectories);
 	
 	void destributeNewPath(const bfs::path& newPath,
-						   std::vector<std::string> &newTasksFiles,
-						   std::vector<std::string> &newTasksDirectories);
+						   std::vector<ThreadTask> &newTasksFiles,
+						   std::vector<ThreadTask> &newTasksDirectories);
 	
 	
 	/*================== File Searching */

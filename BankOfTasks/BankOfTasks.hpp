@@ -22,11 +22,11 @@ public:
 	
 	BankOfTasks(const unsigned int numberOfThreads, const Request& request);
 	BankOfTasks(const BankOfTasks& other) = delete;
-	BankOfTasks(BankOfTasks& other) = delete;
+	BankOfTasks(BankOfTasks&& other) = delete;
 	
 	
 	std::vector<ThreadTask> getVectorOfTasks(const unsigned int threadID);
-	void appendTasks(const std::vector<std::string>& newTasksFiles, const std::vector<std::string>& newTasksDirectories);
+	void appendTasks(const std::vector<ThreadTask>& newTasksFiles, const std::vector<ThreadTask>& newTasksDirectories);
 	
 	bool isAllWorkDone();
 	
@@ -36,16 +36,15 @@ private:
 	
 	std::atomic_flag _flag = ATOMIC_FLAG_INIT;
 	const unsigned int _numberOfThreads;
-	
+	std::vector<bool> _threadHasNotWork;
+
 	bool _fatalError = false;
 	
-	std::vector<std::string> _allTasksFiles, _allTasksDirectories;
-	
-	unsigned int _numberOfThreadsWithoutWork;
-	std::vector<bool> _threadHasNotWork;
+	std::vector<ThreadTask> _allTasksFiles, _allTasksDirectories;
 	
 	
-	void fillNewTasks(std::vector<ThreadTask>& tasksResult, std::vector<std::string>& tasksBank, size_t maxTasksToGive);
+	
+	void fillNewTasks(std::vector<ThreadTask>& tasksResult, std::vector<ThreadTask>& tasksBank, size_t maxTasksToGive);
 
 	void markThreadAsWithoutWorkOne(unsigned int threadID);
 	void markThreadAsWorkingOne(unsigned int threadID);

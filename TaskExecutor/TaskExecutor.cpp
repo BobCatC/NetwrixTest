@@ -205,7 +205,7 @@ TaskExecutor::~TaskExecutor()
 /* ---------------------------------------- Triing To Process It Will Throw The Exception ------------------------------------ */
 /* ---------------------------------------- We Don't Need To Process exception, As We Know, That The Reason Is Unaccessibility */
 
-void TaskExecutor::doTask(const ThreadTask& task, std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories)
+void TaskExecutor::doTask(const ThreadTask& task, std::vector<ThreadTask> &newTasksFiles, std::vector<ThreadTask> &newTasksDirectories)
 {
 	_textFileBfsPath = task.getFileBfsPath();
 	

@@ -18,7 +18,6 @@ class ThreadTask {
 public:
 	
 	ThreadTask(const bfs::path& bfsPath = bfs::path());
-	ThreadTask(const ThreadTask& other);
 	
 	
 	const std::string getFileNativeName() const;
@@ -26,7 +25,7 @@ public:
 	const bfs::path& getFileBfsPath() const;
 	
 private:
-	const bfs::path _bfsPath;
+	bfs::path _bfsPath;
 };
 
 

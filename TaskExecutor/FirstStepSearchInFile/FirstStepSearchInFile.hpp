@@ -9,7 +9,7 @@
 #ifndef FirstStepSearchInFile_hpp
 #define FirstStepSearchInFile_hpp
 
-#include "../CommonTypes.hpp"
+#include "../CommonTypes/CommonTypes.hpp"
 
 class FirstStepSearchInFile {
 	

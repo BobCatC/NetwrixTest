@@ -106,6 +106,8 @@ void Request::checkForEmpty()
 std::string Request::makeAbsolute(const std::string & path) const
 {
 	const bfs::path bfsPath(path);
+	return path;
+	const bfs::path absoluteBfsPath(bfs::absolute(bfsPath));
 	return bfs::absolute(bfsPath).string();
 }
 

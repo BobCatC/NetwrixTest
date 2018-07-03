@@ -8,13 +8,15 @@
 
 #include "BankOfTasks.hpp"
 
+#include <algorithm>
+
+
 
 /* ---------------------------------------- BankOfTasks Constructor */
 
 BankOfTasks::BankOfTasks(const unsigned int numberOfThreads, const Request& request):
 _numberOfThreads(numberOfThreads)
 {
-	_numberOfThreadsWithoutWork = 0;
 	_threadHasNotWork = std::vector<bool>(_numberOfThreads, false);
 	
 	initFirstTask(request);
@@ -25,7 +27,7 @@ _numberOfThreads(numberOfThreads)
 
 void BankOfTasks::initFirstTask(const Request& request)
 {
-	_allTasksDirectories.push_back(request.startDirectory);
+	_allTasksDirectories.push_back(bfs::path(request.startDirectory));
 }
 
 
@@ -49,8 +51,12 @@ bool BankOfTasks::isAllWorkDone()
 	bool result;
 	
 	waitForFlag();
-
-	result = ( _fatalError || ( _numberOfThreadsWithoutWork == _numberOfThreads ) );
+	
+	// is equal to true
+	const auto op = std::bind(std::equal_to<bool>(), std::placeholders::_1, true);
+	bool allThreadsWIthoutWork = std::all_of(_threadHasNotWork.begin(), _threadHasNotWork.end(), op);
+	
+	result = ( _fatalError || allThreadsWIthoutWork );
 	
 	_flag.clear();
 
@@ -58,37 +64,36 @@ bool BankOfTasks::isAllWorkDone()
 }
 
 
-/* ---------------------------------------- BankOfTasks getVectorOfTasks Returns Vector Of Tasks To Do.
- 											If Bank Has Tasks With Files, Firstly It Return Tasks With Files (No Tiwh Directories) */
+/* ---------------------------------------- BankOfTasks getVectorOfTasks Returns Vector Of Tasks To Do. -------------------------- */
+/* ---------------------------------------- If Bank Has Tasks With Files, Firstly It Return Tasks With Files (No Tiwh Directories) */
 
 std::vector<ThreadTask> BankOfTasks::getVectorOfTasks(const unsigned int threadID)
 {
 	waitForFlag();
 	
 	std::vector<ThreadTask> tasks;
-	if(_fatalError) {
-		return tasks;
-	}
 	
-	// Firstly we process files
-	// And if threre is no task whith file, we return tasks whith directories
-	std::vector<std::string>& tasksBank = _allTasksFiles.empty() ? _allTasksDirectories : _allTasksFiles;
-	
-	size_t maxTasksToGive = 4;
-	
-	// If we return tasks with files, we can return Many tasks
-	if(!_allTasksFiles.empty()) {
-		maxTasksToGive *= 10;
-	}
-	
-	if(!tasksBank.empty()) {
-	
-		markThreadAsWorkingOne(threadID);
-	
-		fillNewTasks(tasks, tasksBank, maxTasksToGive);
-	}
-	else {
-		markThreadAsWithoutWorkOne(threadID);
+	if(!_fatalError) {
+		// Firstly we process files
+		// And if threre is no task whith file, we return tasks whith directories
+		std::vector<ThreadTask>& tasksBank = _allTasksFiles.empty() ? _allTasksDirectories : _allTasksFiles;
+		
+		size_t maxTasksToGive = 16;
+		
+		// If we return tasks with files, we can return Many tasks
+		if(!_allTasksFiles.empty()) {
+			maxTasksToGive *= 10;
+		}
+		
+		if(!tasksBank.empty()) {
+			
+			markThreadAsWorkingOne(threadID);
+			
+			fillNewTasks(tasks, tasksBank, maxTasksToGive);
+		}
+		else {
+			markThreadAsWithoutWorkOne(threadID);
+		}
 	}
 	
 	_flag.clear();
@@ -98,17 +103,18 @@ std::vector<ThreadTask> BankOfTasks::getVectorOfTasks(const unsigned int threadI
 
 /* ---------------------------------------- BankOfTasks fillNewTasks Fills Given To It Vector Of New Tasks */
 
-void BankOfTasks::fillNewTasks(std::vector<ThreadTask>& tasksResult, std::vector<std::string>& tasksBank, size_t maxTasksToGive)
+void BankOfTasks::fillNewTasks(std::vector<ThreadTask>& tasksResult, std::vector<ThreadTask>& tasksBank, size_t maxTasksToGive)
 {
 	const size_t crtTasksCount = tasksBank.size();
 	
 	// rounding up
 	const size_t tasksForEach = (crtTasksCount + _numberOfThreads - 1) / _numberOfThreads;
-	size_t tasksToGive = maxTasksToGive < tasksForEach ? maxTasksToGive : tasksForEach;
+	size_t tasksToGive = std::min(maxTasksToGive, tasksForEach);
+	
 	
 	for(int i = 0; i < tasksToGive; ++i) {
-		
-		tasksResult.push_back(ThreadTask(bfs::path(tasksBank[crtTasksCount - 1 - i])));
+		// take the last one
+		tasksResult.push_back(ThreadTask(tasksBank[crtTasksCount - 1 - i]));
 		tasksBank.pop_back();
 	}
 }
@@ -118,10 +124,7 @@ void BankOfTasks::fillNewTasks(std::vector<ThreadTask>& tasksResult, std::vector
 
 void BankOfTasks::markThreadAsWorkingOne(unsigned int threadID)
 {
-	if(_threadHasNotWork[threadID] == true) {
-		_threadHasNotWork[threadID] = false;
-		--_numberOfThreadsWithoutWork;
-	}
+	_threadHasNotWork[threadID] = false;
 }
 
 
@@ -129,10 +132,7 @@ void BankOfTasks::markThreadAsWorkingOne(unsigned int threadID)
 
 void BankOfTasks::markThreadAsWithoutWorkOne(unsigned int threadID)
 {
-	if(_threadHasNotWork[threadID] == false) {
-		_threadHasNotWork[threadID] = true;
-		++_numberOfThreadsWithoutWork;
-	}
+	_threadHasNotWork[threadID] = true;
 }
 
 
@@ -141,30 +141,19 @@ void BankOfTasks::markThreadAsWithoutWorkOne(unsigned int threadID)
 void BankOfTasks::waitForFlag()
 {
 	while (_flag.test_and_set()) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(2));
 	}
 }
 
 
 /* ---------------------------------------- BankOfTasks appendTasks Fills Interior Vectors Of Tasks */
 
-void BankOfTasks::appendTasks(const std::vector<std::string> &newTasksFiles, const std::vector<std::string>& newTasksDirectories)
+void BankOfTasks::appendTasks(const std::vector<ThreadTask> &newTasksFiles, const std::vector<ThreadTask>& newTasksDirectories)
 {
 	waitForFlag();
 	
-	if(!newTasksFiles.empty()) {
-		
-		for(const auto& task : newTasksFiles) {
-			_allTasksFiles.push_back(task);
-		}
-	}
-	
-	if(!newTasksDirectories.empty()) {
-		
-		for(const auto& task : newTasksDirectories) {
-			_allTasksDirectories.push_back(task);
-		}
-	}
+	_allTasksFiles.insert(_allTasksFiles.end(), newTasksFiles.begin(), newTasksFiles.end());
+	_allTasksDirectories.insert(_allTasksDirectories.end(), newTasksDirectories.begin(), newTasksDirectories.end());
 	
 	_flag.clear();
 	

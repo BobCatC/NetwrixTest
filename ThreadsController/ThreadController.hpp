@@ -21,9 +21,9 @@ class ThreadsController {
 	
 public:
 	
-	ThreadsController(const Request& request, const unsigned int numberOfThreads = 8);
+	ThreadsController(const Request& request, unsigned int numberOfThreads = 8);
 	ThreadsController(const ThreadsController& other) = delete;
-	ThreadsController(ThreadsController& other) = delete;
+	ThreadsController(ThreadsController&& other) = delete;
 	
 	void createThreads();
 	
@@ -32,21 +32,20 @@ public:
 private:
 	
 	const Request& _request;
-	const size_t _cbMaxBufSizeForProgramm = (5 * 1024 * 1024);
+	const unsigned int _numberOfThreads;
+
+	constexpr static size_t _cbMaxBufSizeForProgramm = (5 * 1024 * 1024);
 	
 	// main output file, which name was got from command line
 	FILE* _outputFile = nullptr;
+	std::string _outputFileDirectory;
 	char* _buf = nullptr;
 	
-	// the directory of "_thisThreadOutputFile"
-	std::string _outputFileDirectory;
-	
-	const unsigned int _numberOfThreads;
-	std::vector<std::thread> _threads;
 	
 	// each thread has each own output file (synchronization would take too much time)
 	std::vector<std::string> _threadsOutputFilesNames;
-	
+	std::vector<std::thread> _threads;
+
 	// each thread has a link to synchronized bank
 	// each thread asks for tasks
 	// each thread return new tasks (if got it)

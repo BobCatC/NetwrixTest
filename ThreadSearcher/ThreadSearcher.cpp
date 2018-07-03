@@ -35,7 +35,7 @@ void threadSearcher(BankOfTasks& tasksBank,
 	// this try-catch block catches only fatal errors
 	try
 	{
-		std::vector<std::string> newTasksFiles, newTasksDirectories;
+		std::vector<ThreadTask> newTasksFiles, newTasksDirectories;
 		std::vector<ThreadTask> tasks;
 		
 		TaskExecutor executor(threadID, thisThreadOutputFileName, cbMaxBufSize, outputFileeDirectory, patternFileName, regexMask);
@@ -47,7 +47,7 @@ void threadSearcher(BankOfTasks& tasksBank,
 			
 			tasks = tasksBank.getVectorOfTasks(threadID);
 			
-			if(tasks.size() == 0) {
+			if(tasks.empty()) {
 				
 				// isAllWorkDonw returns true only when all threads get here
 				// ( to prevent the situation when one thread in the start takes all the tasks and another threads end work because of no tasks )
@@ -62,9 +62,9 @@ void threadSearcher(BankOfTasks& tasksBank,
 			newTasksFiles.clear();
 			newTasksDirectories.clear();
 			
-			for(size_t iTask = 0; iTask < tasks.size(); ++iTask) {
+			for(const auto& task : tasks) {
 				
-				executor.doTask(tasks[iTask], newTasksFiles, newTasksDirectories);
+				executor.doTask(task, newTasksFiles, newTasksDirectories);
 			}
 			
 			tasksBank.appendTasks(newTasksFiles, newTasksDirectories);

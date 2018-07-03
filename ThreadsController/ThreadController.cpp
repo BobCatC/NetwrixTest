@@ -39,9 +39,10 @@ ThreadsController::~ThreadsController()
 		delete [] _buf;
 	}
 	
-	for(unsigned int threadID = 0; threadID < _numberOfThreads; ++threadID) {
-		if(!_threadsOutputFilesNames[threadID].empty())
-			remove(_threadsOutputFilesNames[threadID].c_str());
+	for(const auto& threadOutputFileName : _threadsOutputFilesNames) {
+		
+		if(!threadOutputFileName.empty())
+			remove(threadOutputFileName.c_str());
 	}
 }
 
@@ -157,8 +158,8 @@ void ThreadsController::startThreads()
 void ThreadsController::waitThreads()
 {
 	
-	for(unsigned int iThread = 0; iThread < _numberOfThreads; ++iThread) {
-		_threads[iThread].join();
+	for(auto& thread : _threads) {
+		thread.join();
 	}
 }
 
@@ -173,7 +174,7 @@ void ThreadsController::mergeOutput()
 		throw "Coludn't allocate mem";
 	}
 	
-	for(size_t threadID = 0; threadID < _numberOfThreads; ++threadID) {
+	for(unsigned int threadID = 0; threadID < _numberOfThreads; ++threadID) {
 		try {
 			getOutputOfThread(threadID);
 		}

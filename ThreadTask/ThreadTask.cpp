@@ -12,12 +12,6 @@
 
 ThreadTask::ThreadTask(const bfs::path& path) : _bfsPath(path){ }
 
-
-/* ---------------------------------------- ThreadTask Copy Constructor */
-
-ThreadTask::ThreadTask(const ThreadTask& other) : _bfsPath(other._bfsPath) { }
-
-
 /* ---------------------------------------- ThreadTask getFileName  */
 
 const std::string ThreadTask::getFileNativeName() const
@@ -40,6 +34,7 @@ const bfs::path& ThreadTask::getFileBfsPath() const
 {
 	return _bfsPath;
 }
+
 
 
 

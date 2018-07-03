@@ -126,25 +126,24 @@ void SecondStepSearchInFile::filterEntry(const EntryPair& pair,
 {
 	const PatternStartPosition startPositionOfPatternFragment = pair.second;
 	
-	
 	uint positionOfNextPatternFragment = (uint)(startPositionOfPatternFragment + _patternMetrics.fragmentLen);
 	
 	const char* textFragment;
 	size_t textFragmentLen;
-	std::vector<EntryPair>* resultEntries = nullptr;
+	std::vector<EntryPair>& resultEntries = crtFilteredEntries;
 	
 	// Maybe pattern fragment we'll be not in current text fragment, but in next
 	if(positionOfNextPatternFragment < _textMetrics.fragmentWithSuperimpositionLen) {
 		
 		textFragment = _crtTextFragment;
 		textFragmentLen = _realCrtTextFragmentLen;
-		resultEntries = &crtFilteredEntries;
+		resultEntries = crtFilteredEntries;
 	}
 	else {
 		textFragment = _nextTextFragment;
 		textFragmentLen = _realNextTextFragmentLen;
 		positionOfNextPatternFragment -= _textMetrics.fragmentWithSuperimpositionLen;
-		resultEntries = &nextFilteredEntries;
+		resultEntries = nextFilteredEntries;
 	}
 	
 	// Checks, if bytes in text fragment and bytes int pattern fragment are equal
@@ -157,7 +156,7 @@ void SecondStepSearchInFile::filterEntry(const EntryPair& pair,
 		const CrtFragmentStartPosition crtPosition = iPatternFragment == (_patternMetrics.numberOfFragments - 1) ? pair.second : positionOfNextPatternFragment;
 		EntryPair newPair(pair.first, crtPosition);
 		
-		resultEntries->push_back(newPair);
+		resultEntries.push_back(newPair);
 	}
 	
 }
@@ -178,3 +177,9 @@ bool SecondStepSearchInFile::patternFragmentExistsInTextFragment(const char* pat
 	
 	return 0 == strncmp(patternFragment, textFragment + positionInTextFragment, realPatternFragmentLen);
 }
+
+
+
+
+
+

@@ -13,7 +13,7 @@
 
 /* ---------------------------------------- TaskExecutor processDirectory ------------------------------ */
 
-void TaskExecutor::processDirectory(std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories)
+void TaskExecutor::processDirectory(std::vector<ThreadTask> &newTasksFiles, std::vector<ThreadTask> &newTasksDirectories)
 {
 	const auto endIt = bfs::directory_iterator();
 	for(auto it = bfs::directory_iterator(_textFileBfsPath); it != endIt; ++it) {
@@ -29,17 +29,17 @@ void TaskExecutor::processDirectory(std::vector<std::string> &newTasksFiles, std
 /* ---------------------------------------- TaskExecutor destributeNewPath ------------------------------ */
 /* ---------------------------------------- Already Here Files Are Separated With Mask ------------------ */
 
-void TaskExecutor::destributeNewPath(const bfs::path &newFilePath, std::vector<std::string> &newTasksFiles, std::vector<std::string> &newTasksDirectories)
+void TaskExecutor::destributeNewPath(const bfs::path &newFilePath, std::vector<ThreadTask> &newTasksFiles, std::vector<ThreadTask> &newTasksDirectories)
 {
 	
 	if(bfs::is_directory(newFilePath)) {
-		newTasksDirectories.push_back(newFilePath.string());
+		newTasksDirectories.push_back(newFilePath);
 	}
 	else {
 		const std::string nativeName = newFilePath.filename().string();
 		
 		if (fileFitsMask(nativeName, _regexMask)) {
-			newTasksFiles.push_back(newFilePath.string());
+			newTasksFiles.push_back(newFilePath);
 		}
 	}
 	
