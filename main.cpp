@@ -10,7 +10,7 @@
 
 #include "Request/Request.hpp"
 #include "ThreadsController/ThreadController.hpp"
-#include <vector>
+
 
 int main(int argc, const char * argv[]) {
 
@@ -29,7 +29,7 @@ int main(int argc, const char * argv[]) {
 		Request request;
 		request.parseArguments(argc, argv);
 		
-		const unsigned int nThreads = 4;
+		const unsigned int nThreads = 1;
 		
 		// creates threads, gives them a BankTasks ref
 		// and waits for them to compile theire output files into one
