@@ -244,28 +244,7 @@ void TaskExecutor::printResultToFile()
 {
 	if(!_result.empty()) {
 		
-		const size_t cbMaxResultBufSize = _cbMaxBufSize - 128;
-		
-		// If Initial Memory Size Is Too Little
-		if(_cbMaxBufSize <= 128) {
-			throw "Too little memory for thread";
-		}
-		
-		size_t i = 0;
-		size_t countOfEntries = _result.size();
-		size_t cbResultBufSize = sprintf(_buffers.s, "%s\n", _textFilePath.c_str());
-		
-		while(i < countOfEntries) {
-			
-			while(i < countOfEntries && cbResultBufSize < cbMaxResultBufSize) {
-				
-				cbResultBufSize += sprintf(_buffers.s + cbResultBufSize, "\tposition : %i\n", _result[i]);
-				++i;
-			}
-			
-			fwrite(_buffers.s, 1, cbResultBufSize, _thisThreadOutputFile);
-			cbResultBufSize = 0;
-		}
+		fprintf(_thisThreadOutputFile, "%s\n", _textFilePath.c_str());
 		
 	}
 }

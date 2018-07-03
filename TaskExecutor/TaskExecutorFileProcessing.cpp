@@ -26,7 +26,7 @@ void TaskExecutor::processFile()
 		return;
 	}
 	
-	_textFile = fopen(_textFilePath.c_str(), "r");
+	_textFile = fopen(_textFilePath.c_str(), "rb");
 	if(_textFile == nullptr) {
 		throw ( "Couldn't open file \"" + _textFilePath + "\"");
 	}
