@@ -34,7 +34,7 @@ private:
 	const Request& _request;
 	const unsigned int _numberOfThreads;
 
-	constexpr static size_t _cbMaxBufSizeForProgramm = (5 * 1024 * 1024);
+	constexpr static size_t _cbMaxBufSizeForProgramm = (6 * 1024 * 1024);
 	
 	// main output file, which name was got from command line
 	FILE* _outputFile = nullptr;

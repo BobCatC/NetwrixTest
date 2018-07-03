@@ -14,11 +14,11 @@
 
 int main(int argc, const char * argv[]) {
 
-//	argc = 9;
-//	argv[1] = "-p"; argv[2] = "boost";
-//	argv[3] = "-i"; argv[4] = "Copyright.txt";
-//	argv[5] = "-o"; argv[6] = "output.txt";
-//	argv[7] = "-m"; argv[8] = "*.h*";
+	argc = 9;
+	argv[1] = "-p"; argv[2] = "C:\\Windows";
+	argv[3] = "-i"; argv[4] = "Copyright.txt";
+	argv[5] = "-o"; argv[6] = "output.txt";
+	argv[7] = "-m"; argv[8] = "*.*";
 	
 	
 	try {
@@ -51,7 +51,7 @@ int main(int argc, const char * argv[]) {
 	}
 	
 	
-	std::this_thread::sleep_for(std::chrono::seconds(3));
+	std::this_thread::sleep_for(std::chrono::seconds(5));
 	return 0;
 }
 

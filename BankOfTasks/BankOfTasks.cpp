@@ -78,11 +78,11 @@ std::vector<ThreadTask> BankOfTasks::getVectorOfTasks(const unsigned int threadI
 		// And if threre is no task whith file, we return tasks whith directories
 		std::vector<ThreadTask>& tasksBank = _allTasksFiles.empty() ? _allTasksDirectories : _allTasksFiles;
 		
-		size_t maxTasksToGive = 16;
+		size_t maxTasksToGive = 1;
 		
 		// If we return tasks with files, we can return Many tasks
 		if(!_allTasksFiles.empty()) {
-			maxTasksToGive *= 10;
+			maxTasksToGive = 80;
 		}
 		
 		if(!tasksBank.empty()) {
