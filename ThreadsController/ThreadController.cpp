@@ -66,10 +66,7 @@ void ThreadsController::createThreads()
 
 void ThreadsController::openOutputFile()
 {
-	_outputFile = fopen(_request.outputFileName.c_str(), "w");
-	if(_outputFile == NULL) {
-		throw std::string( "Couldn't open output file \"" + _request.outputFileName + "\"" );
-	}
+	_outputFile = fopen_throw(_request.outputFileName.c_str(), "w");
 }
 
 
@@ -196,10 +193,7 @@ void ThreadsController::getOutputOfThread(size_t threadID)
 {
 	const std::string& threadOutputFileName = _threadsOutputFilesNames[threadID];
 	
-	FILE* threadOutputFile = fopen(threadOutputFileName.c_str(), "rb");
-	if(threadOutputFile == NULL) {
-		return;
-	}
+	FILE* threadOutputFile = fopen_throw(threadOutputFileName.c_str(), "rb");
 	
 	moveOutputOfThread(threadOutputFile);
 	

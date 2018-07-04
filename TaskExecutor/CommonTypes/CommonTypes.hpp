@@ -25,7 +25,6 @@ typedef std::pair<PatternStartPosition, CrtFragmentStartPosition> EntryPair;
 
 
 
-
 struct BuffersForSearch {
 	
 	/*---- Dynamic memory for loading fragments of files ---------------------- */
@@ -42,12 +41,20 @@ struct BuffersForSearch {
 	/*---- 1/5 of "buf" size is for "s" ----------------------------------------- */
 	size_t piArraySize, piArrayLen;
 	size_t sArraySize, sArrayLen;
+	
+	void countDefaultMetrics(const size_t cbMaxBufSize);
+	
+	
+	void initBuffers(const size_t cbMaxBufSize, void* pointerPatternMetrics, const std::string& patternFileName);
 };
 
 struct PatternMetrics {
 	size_t len;
 	size_t fragmentLen;
 	uint numberOfFragments;
+	
+	
+	void countPatternMetrics(const size_t length, const BuffersForSearch& buffers);
 	
 	size_t getRealFragmentLen(const uint iPatternFragment) const;
 };
@@ -58,6 +65,11 @@ struct TextMetrics {
 	size_t fragmentWithoutSuperimpositionLen;
 	size_t fragmentWithSuperimpositionLen;
 	uint numberOfFragments;
+	
+
+	
+	void countTextMetrics(const size_t lenOfTextFile, const PatternMetrics& patternMetrics, const BuffersForSearch& buffers);
+
 	
 	size_t getRealFragmentLen(const uint iTextFragment) const;
 };

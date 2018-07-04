@@ -88,13 +88,9 @@ private:
 	
 	
 	void openDefaultFiles();
-	void initBuffers();
 	void countPiForFirstPatternFragment();
 	void savePiForFirstPatternFragment();
 	
-	void countDefaultMetrics();
-	void countPatternMetrics();
-	void countTextMetrics();
 	
 	/*================== Directory Searching */
 

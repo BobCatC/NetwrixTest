@@ -55,21 +55,15 @@ void Request::parsePairsOfArguments(const int argc, const char** argv)
 		
 		if( key == "-p" ) {
 			_startDirectory = value;
-
-			_startDirectory = makeAbsolute(_startDirectory);
 		}
 		else if( key == "-m" ) {
 			_mask = value;
 		}
 		else if( key == "-i" ) {
 			_patternFileName = value;
-			
-			_patternFileName = makeAbsolute(_patternFileName);
 		}
 		else if( key == "-o" ) {
 			_outputFileName = value;
-			
-			_outputFileName = makeAbsolute(_outputFileName);
 		}
 		else {
 			throw ( "Unknown Key : " + key );
@@ -100,16 +94,6 @@ void Request::checkForEmpty()
 	}
 }
 
-
-/* ---------------------------------------- Request Make Path Absolute ( even if it's already abolute ) */
-
-std::string Request::makeAbsolute(const std::string & path) const
-{
-	const bfs::path bfsPath(path);
-	return path;
-	const bfs::path absoluteBfsPath(bfs::absolute(bfsPath));
-	return bfs::absolute(bfsPath).string();
-}
 
 
 

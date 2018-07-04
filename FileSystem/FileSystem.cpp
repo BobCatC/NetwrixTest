@@ -52,6 +52,16 @@ std::string findFreeName(const std::string& pathWithoutExtension, const std::str
 }
 
 
+FILE* fopen_throw(const char* fileName, const char* mode)
+{
+	FILE* file = fopen(fileName, mode);
+	if(file == NULL) {
+		throw std::string("Couldn't open \"" + std::string(fileName) + "\"");
+	}
+	
+	return file;
+}
+
 
 
 

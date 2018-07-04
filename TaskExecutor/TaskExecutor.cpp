@@ -42,7 +42,7 @@ void TaskExecutor::init()
 {
 	openDefaultFiles();
 	
-	initBuffers();
+	_buffers.initBuffers(_cbMaxBufSize, &_patternMetrics, _patternFileName);
 	
 	countPiForFirstPatternFragment();
 }
@@ -52,87 +52,13 @@ void TaskExecutor::init()
 
 void TaskExecutor::openDefaultFiles()
 {
-	_patternFile = fopen(_patternFileName.c_str(), "r");
-	_thisThreadOutputFile = fopen(_outputFileName.c_str(), "w");
-	
-	if(_patternFile == NULL) {
-		throw std::string( "Couldn't open pattern file" );
-	}
-	if(_thisThreadOutputFile == NULL) {
-		throw std::string( "Couldn't open output file \"" + _outputFileName + "\"" );
-	}
+	_patternFile = fopen_throw(_patternFileName.c_str(), "r");
+	_thisThreadOutputFile = fopen_throw(_outputFileName.c_str(), "w");
 }
 
 
-/* ---------------------------------------- TaskExecutor initBuffers  ------------------------------------- */
-/* ---------------------------------------- allocates memory in "buf" and distributes it to "s" and "pi" */
-
-void TaskExecutor::initBuffers()
-{	
-	_buffers.buf = new char[_cbMaxBufSize];
-	
-	if(_buffers.buf == nullptr) {
-		throw "Memory Allocation Error";
-	}
-	
-	// metrics of "pi" and "s"
-	countDefaultMetrics();
-	
-	// metrics of pattern (len, fragment len, quontity of framgents)
-	countPatternMetrics();
-	
-	_buffers.s = _buffers.buf;
-	_buffers.pi = (int32_t*)(_buffers.buf + _buffers.sArraySize);
-}
 
 
-/* ---------------------------------------- TaskExecutor countDefaultMetrics ------------------- */
-/* ---------------------------------------- length of "pi" and "s" is equal, but size is not   */
-
-void TaskExecutor::countDefaultMetrics()
-{
-	_buffers.piArraySize = (_cbMaxBufSize * 4) / 5;
-	_buffers.piArrayLen = _buffers.piArraySize / sizeof(*_buffers.pi);
-	
-	_buffers.sArraySize = (_cbMaxBufSize * 1) / 5;
-	_buffers.sArrayLen = _buffers.sArraySize / sizeof(*_buffers.s);
-}
-
-
-/* ---------------------------------------- TaskExecutor countPatternMetrics ------------------------------------------------------- */
-/* ---------------------------------------- gets the pattern file len, counts pattern fragment len and quontity of pattern fragments */
-
-void TaskExecutor::countPatternMetrics()
-{
-	_patternMetrics.len = bfs::file_size(bfs::path(_patternFileName));
-	_patternMetrics.fragmentLen = ((_buffers.sArrayLen - 1) * 1) / 7;
-	
-	// if pattern is little, we can set "_patternFragmentLen" to the size of whole pattern
-	if(_patternMetrics.len < _patternMetrics.fragmentLen) {
-		_patternMetrics.fragmentLen = _patternMetrics.len;
-	}
-	
-	// round up
-	_patternMetrics.numberOfFragments = (uint)( (_patternMetrics.len + _patternMetrics.fragmentLen - 1) / (_patternMetrics.fragmentLen) );
-}
-
-
-/* ---------------------------------------- TaskExecutor countTextMetrics ------------------------------ */
-/* ---------------------------------------- does the same as countPatternMetrics ----------------------- */
-
-void TaskExecutor::countTextMetrics()
-{
-	_textMetrics.len = bfs::file_size(_textFileBfsPath);
-	_textMetrics.fragmentWithoutSuperimpositionLen = _buffers.sArraySize - 1 - _patternMetrics.fragmentLen;
-	
-	// every text fragment superimpose on previous one, "delta" of superimposition == "textFragmentWithoutSuperimpositionLen" - "patternFragmentLen"
-	_textMetrics.fragmentWithSuperimpositionLen = _textMetrics.fragmentWithoutSuperimpositionLen - _patternMetrics.fragmentLen;
-	
-	// !!! it's important to count it in signed type
-	_textMetrics.numberOfFragments = (uint)(   1 +
-											( ((long)_textMetrics.len - (long)_patternMetrics.fragmentLen - 1 ) /
-											 (long)(_textMetrics.fragmentWithoutSuperimpositionLen - _patternMetrics.fragmentLen) )   );
-}
 
 
 /* ---------------------------------------- TaskExecutor countPiForFirstPatternFragment --------------------------------------------------- */
@@ -160,20 +86,14 @@ void TaskExecutor::savePiForFirstPatternFragment()
 	
 	_piForFirstPatternFragmentFileName = findFreeName(piForFirstPatternFragmentFileNameWithoutExtension, extension);
 	
-	_piForFirstPatternFragmentFile = fopen(_piForFirstPatternFragmentFileName.c_str(), "w");
+	_piForFirstPatternFragmentFile = fopen_throw(_piForFirstPatternFragmentFileName.c_str(), "w");
 	
-	if(_piForFirstPatternFragmentFile == NULL) {
-		throw std::string( "Couldn't open file \"" + _piForFirstPatternFragmentFileName );
-	}
 	
 	uploadFragment(_piForFirstPatternFragmentFile, 0, _patternMetrics.fragmentLen, _buffers.pi);
 	
 	fclose(_piForFirstPatternFragmentFile);
-	_piForFirstPatternFragmentFile = fopen(_piForFirstPatternFragmentFileName.c_str(), "rb");
+	_piForFirstPatternFragmentFile = fopen_throw(_piForFirstPatternFragmentFileName.c_str(), "rb");
 	
-	if(_piForFirstPatternFragmentFile == NULL) {
-		throw std::string( "Couldn't open file \"" + _piForFirstPatternFragmentFileName );
-	}
 }
 
 

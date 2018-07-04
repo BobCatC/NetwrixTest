@@ -21,15 +21,13 @@
 
 void TaskExecutor::processFile()
 {
-	countTextMetrics();
+	_textMetrics.countTextMetrics(bfs::file_size(_textFileBfsPath), _patternMetrics, _buffers);
 	if(_patternMetrics.len > _textMetrics.len){
 		return;
 	}
 	
-	_textFile = fopen(_textFilePath.c_str(), "rb");
-	if(_textFile == nullptr) {
-		throw ( "Couldn't open file \"" + _textFilePath + "\"");
-	}
+	_textFile = fopen_throw(_textFilePath.c_str(), "rb");
+
 	
 	// entries[i] - vector of entries of current pattern fragment in i-th text fragment.
 	// What is the pattern fragment, it depends on state of searching.
