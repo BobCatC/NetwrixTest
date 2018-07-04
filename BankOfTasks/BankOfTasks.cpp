@@ -9,7 +9,7 @@
 #include "BankOfTasks.hpp"
 
 #include <algorithm>
-
+#include <iostream>
 
 
 /* ---------------------------------------- BankOfTasks Constructor */
@@ -160,6 +160,16 @@ void BankOfTasks::appendTasks(const std::vector<ThreadTask> &newTasksFiles, cons
 }
 
 
+/* ---------------------------------------- BankOfTasks log */
+
+void BankOfTasks::log(const std::string &str)
+{
+	waitForFlag();
+	
+	std::cout << "NetwrixTest: " << str << std::endl;
+	
+	_flag.clear();
+}
 
 
 

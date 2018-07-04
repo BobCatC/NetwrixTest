@@ -32,6 +32,8 @@ public:
 	
 	void fatalErrorHappened();
 	
+	void log(const std::string& str);
+	
 private:
 	
 	std::atomic_flag _flag = ATOMIC_FLAG_INIT;

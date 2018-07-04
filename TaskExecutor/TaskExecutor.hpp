@@ -15,6 +15,7 @@
 #include <stdio.h>
 
 #include "../FileSystem/FileSystem.hpp"
+#include "../BankOfTasks/BankOfTasks.hpp"
 #include "../ThreadTask/ThreadTask.hpp"
 #include "FirstStepSearchInFile/FirstStepSearchInFile.hpp"
 #include "SecondStepSearchInFile/SecondStepSearchInFile.hpp"
@@ -25,6 +26,7 @@ class TaskExecutor {
 public:
 	
 	TaskExecutor(const unsigned int threadID,
+				 BankOfTasks& tasksBank,
 				 const std::string& thisThreadOutputFileName,
 				 const size_t cbMaxBufSize,
 				 const std::string& outputFileDirectory,
@@ -47,6 +49,7 @@ public:
 private:
 	/*---- Initial thread data */
 	const unsigned int _threadID;
+	BankOfTasks& _tasksBank;
 	const std::string& _outputFileName;
 	const size_t _cbMaxBufSize;
 	const std::string& _outputFileDirectory;
@@ -108,6 +111,9 @@ private:
 	
 	void fillResult(const std::vector<std::vector<EntryPair>>& entries);
 	void printResultToFile();
+	
+	
+	void printError();
 };
 
 

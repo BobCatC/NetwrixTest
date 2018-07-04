@@ -38,7 +38,7 @@ void threadSearcher(BankOfTasks& tasksBank,
 		std::vector<ThreadTask> newTasksFiles, newTasksDirectories;
 		std::vector<ThreadTask> tasks;
 		
-		TaskExecutor executor(threadID, thisThreadOutputFileName, cbMaxBufSize, outputFileeDirectory, patternFileName, regexMask);
+		TaskExecutor executor(threadID, tasksBank, thisThreadOutputFileName, cbMaxBufSize, outputFileeDirectory, patternFileName, regexMask);
 		
 		// because of allocating memory and opening files, "init()" was removed from constructor
 		executor.init();

@@ -19,12 +19,14 @@ void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from
 /* ---------------------------------------- TaskExecutor Constructor  */
 
 TaskExecutor::TaskExecutor(const unsigned int threadID,
+						   BankOfTasks& tasksBank,
 						   const std::string& thisThreadOutputFileName,
 						   const size_t cbMaxBufSize,
 						   const std::string& outputFileDirectory,
 						   const std::string& patternFileName,
 						   const std::regex& regexMask) :
 _threadID(threadID),
+_tasksBank(tasksBank),
 _outputFileName(thisThreadOutputFileName),
 _cbMaxBufSize(cbMaxBufSize),
 _outputFileDirectory(outputFileDirectory),
@@ -208,7 +210,8 @@ TaskExecutor::~TaskExecutor()
 void TaskExecutor::doTask(const ThreadTask& task, std::vector<ThreadTask> &newTasksFiles, std::vector<ThreadTask> &newTasksDirectories)
 {
 	_textFileBfsPath = task.getFileBfsPath();
-	
+	_textFilePath = task.getFilePath();
+
 	_result.clear();
 	
 	// The main and the only Try-Catch block
@@ -218,19 +221,21 @@ void TaskExecutor::doTask(const ThreadTask& task, std::vector<ThreadTask> &newTa
 			processDirectory(newTasksFiles, newTasksDirectories);
 		}
 		else {
-			_textFilePath = task.getFilePath();
 			
 			processFile();
 		}
 		
 	} catch (const bfs::filesystem_error& err) {
-		
+		printError();
 	} catch(const std::string& err) {
-		
+		printError();
+
 	} catch(const char* err) {
-		
+		printError();
+
 	} catch(const std::exception& err) {
-		
+		printError();
+
 	}
 	
 	printResultToFile();
@@ -250,8 +255,23 @@ void TaskExecutor::printResultToFile()
 }
 
 
+/* ---------------------------------------- TaskExecutor printError ------------------------------ */
+/* ----------------------------------------  --------- */
 
-
+void TaskExecutor::printError()
+{
+	try {
+		if(bfs::exists(_textFileBfsPath)) {
+			_tasksBank.log(_textFilePath + ": Permission denied");
+		}
+		else {
+			_tasksBank.log(_textFilePath + ": No such file or directory");
+		}
+	} catch (const bfs::filesystem_error& err) {
+		_tasksBank.log(_textFilePath + ": Filesystem access error");
+	}
+	
+}
 
 
 
