@@ -13,13 +13,6 @@
 
 
 int main(int argc, const char * argv[]) {
-	/*
-	argc = 9;
-	argv[1] = "-p"; argv[2] = "C:\\Windows";
-	argv[3] = "-i"; argv[4] = "Copyright.txt";
-	argv[5] = "-o"; argv[6] = "output.txt";
-	argv[7] = "-m"; argv[8] = "*.*";
-	*/
 	
 	try {
 		const auto timeStart = std::chrono::system_clock::now();
@@ -50,8 +43,6 @@ int main(int argc, const char * argv[]) {
 		std::cout << "Unknown exception : " << e.what() << std::endl;
 	}
 	
-	
-	std::this_thread::sleep_for(std::chrono::seconds(5));
 	return 0;
 }
 
