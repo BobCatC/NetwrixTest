@@ -35,7 +35,7 @@ void Request::parseArguments(const int argc, const char **argv)
 		checkForEmpty();
 		
 	} catch (const std::string& s) {
-		throw ( "Error In Parsing Input Arguments\n" + s + "\nEXAMPLE:\n" + __exampleRequest );
+		throw std::string( "Error In Parsing Input Arguments\n" + s + "\nEXAMPLE:\n" + __exampleRequest );
 	}
 	
 	
@@ -72,7 +72,7 @@ void Request::parsePairsOfArguments(const int argc, const char** argv)
 			_outputFileName = makeAbsolute(_outputFileName);
 		}
 		else {
-			throw ( "Unknown Key : " + key );
+			throw std::string( "Unknown Key : " + key );
 		}
 	}
 }
@@ -84,7 +84,7 @@ void Request::checkForEmpty()
 {
 	
 	if(_startDirectory.empty()) {
-		throw "Not Found Start Directory Value";
+		throw std::string("Not Found Start Directory Value");
 	}
 	
 	if(_mask.empty()) {
@@ -92,11 +92,11 @@ void Request::checkForEmpty()
 	}
 	
 	if(_patternFileName.empty()) {
-		throw "Not Found Pattern File Name";
+		throw std::string("Not Found Pattern File Name");
 	}
 	
 	if(_outputFileName.empty()) {
-		throw "Not Found Output File Name";
+		throw std::string("Not Found Output File Name");
 	}
 }
 
