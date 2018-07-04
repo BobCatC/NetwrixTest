@@ -36,8 +36,3 @@ $(TARGET): $(OBJFILES)
 
 clean:
 	rm -rf $(OBJFILES)
-
-
-
-
-	
