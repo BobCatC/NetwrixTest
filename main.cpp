@@ -6,57 +6,32 @@
 //  Copyright © 2018 Александр Пахомов. All rights reserved(no).
 //
 
-#include <iostream>
-
-#include "Request/Request.hpp"
-#include "ThreadsController/ThreadController.hpp"
 
 
-int main(int argc, const char * argv[]) {
-	/*
-	argc = 9;
-	argv[1] = "-p"; argv[2] = "C:\\Windows";
-	argv[3] = "-i"; argv[4] = "Copyright.txt";
-	argv[5] = "-o"; argv[6] = "output.txt";
-	argv[7] = "-m"; argv[8] = "*.*";
-	*/
+class Person
+{
 	
-	try {
-		const auto timeStart = std::chrono::system_clock::now();
-
-		
-		// parsing arguments into Request
-		Request request;
-		request.parseArguments(argc, argv);
-		
-		const unsigned int nThreads = 4;
-		
-		// creates threads, gives them a BankTasks ref
-		// and waits for them to compile theire output files into one
-		ThreadsController controller(request, nThreads);
-		
-		controller.createThreads();
-		
-		const auto timeEnd = std::chrono::system_clock::now();
-		const int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count();
-		
-		std::cout << "Time : " << time << " ms" << std::endl;
-
-	} catch (const std::string& s) {
-		std::cout << s << std::endl;
-	} catch (const char* s) {
-		std::cout << s << std::endl;
-	} catch (const std::exception& e) {
-		std::cout << "Unknown exception : " << e.what() << std::endl;
+public:
+	Person(const char* name)
+	{
 	}
+private:
+	const char* name;
+};
+
+#define BOOST_TEST_MAIN
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
+
+BOOST_AUTO_TEST_SUITE(Testing1)
+
+BOOST_AUTO_TEST_CASE( my_test )
+{
+	Person test_object( "qwerty" );
 	
-	
-	std::this_thread::sleep_for(std::chrono::seconds(5));
-	return 0;
 }
 
 
-
-
+BOOST_AUTO_TEST_SUITE_END()
 
 
