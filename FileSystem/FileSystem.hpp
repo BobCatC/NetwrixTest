@@ -49,20 +49,20 @@ bool fileFitsMask(const std::string& fileNativeName, const std::regex& regexMask
 /* ---------------------------------------- FileSystem downloadFragment  */
 
 template<class value_type>
-void downloadFragment(FILE *file, size_t fromPositionInFile, size_t len, value_type *buf)
+auto downloadFragment(FILE *file, size_t fromPositionInFile, size_t len, value_type *buf)
 {
 	fseek(file, fromPositionInFile, SEEK_SET);
-	fread(buf, sizeof(value_type), len, file);
+	return fread(buf, sizeof(value_type), len, file);
 }
 
 
 /* ---------------------------------------- FileSystem uploadFragment */
 
 template<class value_type>
-void uploadFragment(FILE* file, size_t fromPositionInFile, size_t len, value_type *buf)
+auto uploadFragment(FILE* file, size_t fromPositionInFile, size_t len, value_type *buf)
 {
 	fseek(file, fromPositionInFile, SEEK_SET);
-	fwrite(buf, sizeof(value_type), len, file);
+	return fwrite(buf, sizeof(value_type), len, file);
 }
 
 #endif /* FileSystem_h */
