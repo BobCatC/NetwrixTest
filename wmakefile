@@ -1,0 +1,51 @@
+.PHONY: all, clean
+
+CC      = cl
+LD      = link
+CFLAGS  = /c /EHsc /std:c++17
+
+TARGET = NetwrixTest.exe
+
+CPPFILES = \
+	main.cpp \
+	Request/Request.cpp \
+	ThreadsController/ThreadsController.cpp \
+	ThreadSearcher/ThreadSearcher.cpp \
+	BankOfTasks/BankOfTasks.cpp \
+	ThreadTask/ThreadTask.cpp \
+	TaskExecutor/TaskExecutor.cpp \
+	TaskExecutor/TaskExecutorDirectoryProcessing.cpp \
+	TaskExecutor/TaskExecutorFileProcessing.cpp \
+	TaskExecutor/FirstStepSearchInFile/FirstStepSearchInFile.cpp \
+	TaskExecutor/SecondStepSearchInFile/SecondStepSearchInFile.cpp \
+	TaskExecutor/CommonTypes/CommonTypes.cpp \
+	FileSystem/FileSystem.cpp 
+
+
+OBJFILES = \
+	main.obj \
+	Request.obj \
+	ThreadsController.obj \
+	ThreadSearcher.obj \
+	BankOfTasks.obj \
+	ThreadTask.obj \
+	TaskExecutor.obj \
+	TaskExecutorDirectoryProcessing.obj \
+	TaskExecutorFileProcessing.obj \
+	FirstStepSearchInFile.obj \
+	SecondStepSearchInFile.obj \
+	CommonTypes.obj \
+	FileSystem.obj 
+
+all: 
+	$(CC) $(CFLAGS) $(CPPFILES)
+	$(LD) /OUT:$(TARGET) $(OBJFILES)
+	nmake clean
+
+clean:
+	del $(OBJFILES)
+
+
+
+
+	
