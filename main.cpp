@@ -9,7 +9,7 @@
 #include <iostream>
 
 #include "Request/Request.hpp"
-#include "ThreadsController/ThreadController.hpp"
+#include "ThreadsController/ThreadsController.hpp"
 
 
 int main(int argc, const char * argv[]) {
@@ -40,7 +40,7 @@ int main(int argc, const char * argv[]) {
 		const auto timeEnd = std::chrono::system_clock::now();
 		const int time = (int)std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count();
 		
-		std::cout << "Time : " << time << " ms" << std::endl;
+		std::cout << "DONE" << std::endl << "Time : " << time << " ms" << std::endl;
 
 	} catch (const std::string& s) {
 		std::cout << s << std::endl;

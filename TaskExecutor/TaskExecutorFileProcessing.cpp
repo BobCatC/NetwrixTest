@@ -31,7 +31,7 @@ void TaskExecutor::processFile()
 	
 	// entries[i] - vector of entries of current pattern fragment in i-th text fragment.
 	// What is the pattern fragment, it depends on state of searching.
-	std::vector<std::vector<EntryPair>> entries(_textMetrics.numberOfFragments);
+	std::vector< std::vector<EntryPair> > entries(_textMetrics.numberOfFragments);
 	
 	FirstStepSearchInFile firstStep(_buffers, _patternMetrics, _textMetrics, _patternFile, _piForFirstPatternFragmentFile, _textFile);
 	firstStep.findEntriesOfFirstFragment(entries);
@@ -54,7 +54,7 @@ void TaskExecutor::processFile()
 /* ---------------------------------------- TaskExecutor fillResult ---------------------------- */
 /* ---------------------------------------- Taskes All Remaining Entries And Fills Result Vector */
 
-void TaskExecutor::fillResult(const std::vector<std::vector<EntryPair> >& entries)
+void TaskExecutor::fillResult(const std::vector< std::vector<EntryPair> >& entries)
 {
 	
 	for(uint iTextFragment = 0; iTextFragment < _textMetrics.numberOfFragments; ++iTextFragment) {

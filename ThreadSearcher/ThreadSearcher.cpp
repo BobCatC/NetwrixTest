@@ -13,7 +13,7 @@
 #include "../TaskExecutor/TaskExecutor.hpp"
 
 
-void printThreadError(const unsigned int threadID, const std::string& err);
+void printThreadError(BankOfTasks& tasksBank, const unsigned int threadID, const std::string& err);
 
 void threadSearcher(BankOfTasks& tasksBank,
 					const unsigned int threadID,
@@ -72,13 +72,13 @@ void threadSearcher(BankOfTasks& tasksBank,
 		}
 	
 	} catch(const std::string& err) {
-		printThreadError(threadID, err);
+		printThreadError(tasksBank, threadID, err);
 		tasksBank.fatalErrorHappened();
 	} catch(const char* s) {
-		printThreadError(threadID, std::string(s));
+		printThreadError(tasksBank, threadID, std::string(s));
 		tasksBank.fatalErrorHappened();
 	} catch(const std::exception& e) {
-		printThreadError(threadID, e.what());
+		printThreadError(tasksBank, threadID, e.what());
 		tasksBank.fatalErrorHappened();
 	}
 	
@@ -87,9 +87,9 @@ void threadSearcher(BankOfTasks& tasksBank,
 	return;
 }
 
-void printThreadError(const unsigned int threadID, const std::string& err)
+void printThreadError(BankOfTasks& tasksBank, const unsigned int threadID, const std::string& err)
 {
-	std::cout << "! ! ! Thread " << threadID << " Error" << std::endl << err << std::endl;
+	tasksBank.log("! ! ! Thread " + std::to_string(threadID) + " Error\n" + err + "\n");
 }
 
 

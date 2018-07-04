@@ -68,12 +68,12 @@ void FirstStepSearchInFile::findEntriesOfFirstFragment(std::vector<std::vector<E
 						 realTextFragmentLen,
 						 _buffers.s + realPatternFragmentLen + 1);
 		
-		bool nextIterationNeeded =  searchWithPrefixFunc(realPatternFragmentLen,
+		bool nextIterationIsNeeded =  searchWithPrefixFunc(realPatternFragmentLen,
 														 iTextFragment,
 														 realPatternFragmentLen + 1 + realTextFragmentLen,
 														 entries[iTextFragment]);
 		
-		if(nextIterationNeeded == false) {
+		if(nextIterationIsNeeded == false) {
 			break;
 		}
 		
@@ -90,7 +90,7 @@ bool FirstStepSearchInFile::searchWithPrefixFunc(const size_t realPatternFragmen
 										const size_t len,
 										std::vector<EntryPair>& result)
 {
-	// Prefix function will start counting from "realPatternFragmentLen", as "_pi" from Zero to "realPatternFragmentLen" was downloaded
+	// Prefix function will start counting from "realPatternFragmentLen", as "pi" from Zero to "realPatternFragmentLen" was downloaded
 	prefixFunction(_buffers.s, _buffers.pi, len, (int)realPatternFragmentLen);
 	
 	bool goOnSearching = true;
@@ -100,7 +100,7 @@ bool FirstStepSearchInFile::searchWithPrefixFunc(const size_t realPatternFragmen
 		if(_buffers.pi[i] >= realPatternFragmentLen) {
 			
 			{	// Modification.
-				// If text or pattern contains symbol '#', which divides them in "_s",
+				// If text or pattern contains symbol '#', which divides them in "s",
 				// whithout this code some entries won't be found.
 				size_t j = i;
 				while(_buffers.pi[j] > realPatternFragmentLen) {

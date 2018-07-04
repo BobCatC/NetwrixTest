@@ -20,8 +20,10 @@ public:
 						  FILE* patternFile,
 						  FILE* piForFirstPatternFragmentFile,
 						  FILE* textFile);
+	FirstStepSearchInFile(const FirstStepSearchInFile& other) = delete;
+	FirstStepSearchInFile(FirstStepSearchInFile&& other) = delete;
 	
-	void findEntriesOfFirstFragment(std::vector<std::vector<EntryPair>>& entries);
+	void findEntriesOfFirstFragment(std::vector< std::vector<EntryPair> >& entries);
 	
 private:
 	

@@ -74,13 +74,13 @@ private:
 	BuffersForSearch _buffers;
 	
 	/*---- Both the pattern and the text can't be loaded to memory (full file) ------ */
-	/*---- We have to count the size of fragments (it depends on size of "s" buffer) */
+	/*---- We have to count the size of fragments (it depends on size of "s" buffer)  */
 	/*---- And count how many fragments we'll have ---------------------------------- */
 	PatternMetrics _patternMetrics;
 	
-	/*---- The same with the text --------------------------------------------------------------------- */
-	/*---- But to find the pattern correctly in the text we have to impose text fragments on each other */
-	/*---- (pattern fragment entry can be at the junction of the text fragments, so we have to impose)  */
+	/*---- The same with the text -------------------------------------------------------------------------- */
+	/*---- But to find the pattern correctly in the text we have to superimpose text fragments on each other */
+	/*---- (pattern fragment entry can be at the junction of the text fragments, so we have to impose) ----- */
 	TextMetrics _textMetrics;
 	
 	std::vector<PatternStartPosition> _result;
@@ -105,7 +105,7 @@ private:
 	/*================== File Searching */
 	void processFile();
 	
-	void fillResult(const std::vector<std::vector<EntryPair>>& entries);
+	void fillResult(const std::vector< std::vector<EntryPair> >& entries);
 	void printResultToFile();
 	
 	

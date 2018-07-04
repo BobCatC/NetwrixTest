@@ -10,18 +10,6 @@
 #include "../../FileSystem/FileSystem.hpp"
 
 
-/* ---------------------------------------- BuffersForSearch countDefaultMetrics ------------- */
-/* ---------------------------------------- length of "pi" and "s" is equal, but size is not   */
-
-void BuffersForSearch::countDefaultMetrics(const size_t cbMaxBufSize)
-{
-	piArraySize = (cbMaxBufSize * 4) / 5;
-	piArrayLen = piArraySize / sizeof(*pi);
-	
-	sArraySize = (cbMaxBufSize * 1) / 5;
-	sArrayLen = sArraySize / sizeof(*s);
-}
-
 
 /* ---------------------------------------- BuffersForSearch initBuffers  ------------------------------ */
 /* ---------------------------------------- allocates memory in "buf" and distributes it to "s" and "pi" */
@@ -47,6 +35,17 @@ void BuffersForSearch::initBuffers(const size_t cbMaxBufSize, void* pointerPatte
 }
 
 
+/* ---------------------------------------- BuffersForSearch countDefaultMetrics ------------- */
+/* ---------------------------------------- length of "pi" and "s" is equal, but size is not   */
+
+void BuffersForSearch::countDefaultMetrics(const size_t cbMaxBufSize)
+{
+	piArraySize = (cbMaxBufSize * 4) / 5;
+	piArrayLen = piArraySize / sizeof(*pi);
+	
+	sArraySize = (cbMaxBufSize * 1) / 5;
+	sArrayLen = sArraySize / sizeof(*s);
+}
 
 
 /* ---------------------------------------- PatternMetrics countPatternMetrics ----------------------------------------------------- */
@@ -117,3 +116,12 @@ size_t TextMetrics::getRealFragmentLen(const uint iTextFragment) const
 	}
 	return realTextFragmentLen;
 }
+
+
+
+
+
+
+
+
+

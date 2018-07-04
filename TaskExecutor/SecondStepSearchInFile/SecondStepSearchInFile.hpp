@@ -22,6 +22,8 @@ public:
 						   const TextMetrics& textMetrics,
 						   FILE* patternFile,
 						   FILE* textFile);
+	SecondStepSearchInFile(const SecondStepSearchInFile& other) = delete;
+	SecondStepSearchInFile(SecondStepSearchInFile&& other) = delete;
 	
 	void siftEntries(std::vector<std::vector<EntryPair>>& entries);
 	

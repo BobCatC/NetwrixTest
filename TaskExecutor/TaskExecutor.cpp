@@ -57,10 +57,6 @@ void TaskExecutor::openDefaultFiles()
 }
 
 
-
-
-
-
 /* ---------------------------------------- TaskExecutor countPiForFirstPatternFragment --------------------------------------------------- */
 /* ---------------------------------------- As We Always Count PrefixFunc For Combination Of First Pattern Fragment And Some Text Fragment, */
 /* ---------------------------------------- We Can Save Result Of PrefixFunc For First Patter Fragment In File -----------------------------*/
@@ -189,6 +185,10 @@ void TaskExecutor::printError()
 	}
 	
 }
+
+
+
+
 
 
 

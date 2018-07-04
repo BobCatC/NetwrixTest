@@ -14,7 +14,6 @@
 class Request {
 	
 public:
-	Request();
 	
 	void parseArguments(const int argc, const char** argv);
 	

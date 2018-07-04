@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-#include "ThreadController.hpp"
+#include "ThreadsController.hpp"
 #include "../ThreadSearcher/ThreadSearcher.hpp"
 
 /* ------------------------------------------------------------------- */
