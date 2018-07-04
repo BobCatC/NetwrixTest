@@ -33,13 +33,13 @@ void TaskExecutor::destributeNewPath(const bfs::path &newFilePath, std::vector<T
 {
 	
 	if(bfs::is_directory(newFilePath)) {
-		newTasksDirectories.push_back(newFilePath);
+		newTasksDirectories.emplace_back(newFilePath);
 	}
 	else {
 		const std::string nativeName = newFilePath.filename().string();
 		
 		if (fileFitsMask(nativeName, _regexMask)) {
-			newTasksFiles.push_back(newFilePath);
+			newTasksFiles.emplace_back(newFilePath);
 		}
 	}
 	

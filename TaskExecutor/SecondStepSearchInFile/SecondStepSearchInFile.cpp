@@ -154,9 +154,8 @@ void SecondStepSearchInFile::filterEntry(const EntryPair& pair,
 										   positionOfNextPatternFragment)) {
 		
 		const CrtFragmentStartPosition crtPosition = iPatternFragment == (_patternMetrics.numberOfFragments - 1) ? pair.second : positionOfNextPatternFragment;
-		EntryPair newPair(pair.first, crtPosition);
 		
-		resultEntries.push_back(newPair);
+		resultEntries.emplace_back(pair.first, crtPosition);
 	}
 	
 }

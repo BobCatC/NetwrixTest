@@ -229,10 +229,8 @@ void TaskExecutor::doTask(const ThreadTask& task, std::vector<ThreadTask> &newTa
 		printError();
 	} catch(const std::string& err) {
 		printError();
-
 	} catch(const char* err) {
 		printError();
-
 	} catch(const std::exception& err) {
 		printError();
 
@@ -243,7 +241,6 @@ void TaskExecutor::doTask(const ThreadTask& task, std::vector<ThreadTask> &newTa
 
 
 /* ---------------------------------------- TaskExecutor printResultToFile ------------------------------ */
-/* ---------------------------------------- Firstly Prints Result Vector To The Buffer (faster) --------- */
 
 void TaskExecutor::printResultToFile()
 {
@@ -256,7 +253,7 @@ void TaskExecutor::printResultToFile()
 
 
 /* ---------------------------------------- TaskExecutor printError ------------------------------ */
-/* ----------------------------------------  --------- */
+/* ---------------------------------------- In Try-Catch Block Checks The Reason Of The Error ---- */
 
 void TaskExecutor::printError()
 {

@@ -141,14 +141,14 @@ void ThreadsController::startThreads()
 	
 	for(unsigned int iThread = 0; iThread < _numberOfThreads; ++iThread) {
 		
-		_threads.push_back(std::thread(threadSearcher,
-									   std::ref(_tasksBank),
-									   iThread,
-									   cbMaxBufSize,
-									   std::ref(_outputFileDirectory),
-									   std::ref(_threadsOutputFilesNames[iThread]),
-									   _request.patternFileName,
-									   std::ref(regexMask)));
+		_threads.emplace_back(threadSearcher,
+							  std::ref(_tasksBank),
+							  iThread,
+							  cbMaxBufSize,
+							  std::ref(_outputFileDirectory),
+							  std::ref(_threadsOutputFilesNames[iThread]),
+							  _request.patternFileName,
+							  std::ref(regexMask));
 		
 	}
 }

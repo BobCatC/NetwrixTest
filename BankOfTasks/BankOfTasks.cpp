@@ -27,7 +27,7 @@ _numberOfThreads(numberOfThreads)
 
 void BankOfTasks::initFirstTask(const Request& request)
 {
-	_allTasksDirectories.push_back(bfs::path(request.startDirectory));
+	_allTasksDirectories.emplace_back(request.startDirectory);
 }
 
 
@@ -114,7 +114,8 @@ void BankOfTasks::fillNewTasks(std::vector<ThreadTask>& tasksResult, std::vector
 	
 	for(int i = 0; i < tasksToGive; ++i) {
 		// take the last one
-		tasksResult.push_back(ThreadTask(tasksBank[crtTasksCount - 1 - i]));
+		tasksResult.emplace_back(tasksBank[crtTasksCount - 1 - i]);
+
 		tasksBank.pop_back();
 	}
 }
