@@ -29,9 +29,9 @@ _textFile(textFile)
 
 
 
-
-void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from);
-
+namespace NetwrixTest {
+	void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from);
+}
 
 
 /* ---------------------------------------- FirstStepSearchInFile findEntriesOfFirstFragment ------------------------------ */
@@ -91,7 +91,7 @@ bool FirstStepSearchInFile::searchWithPrefixFunc(const size_t realPatternFragmen
 										std::vector<EntryPair>& result)
 {
 	// Prefix function will start counting from "realPatternFragmentLen", as "pi" from Zero to "realPatternFragmentLen" was downloaded
-	prefixFunction(_buffers.s, _buffers.pi, len, (int)realPatternFragmentLen);
+	NetwrixTest::prefixFunction(_buffers.s, _buffers.pi, len, (int)realPatternFragmentLen);
 	
 	bool goOnSearching = true;
 	size_t i = 2 * realPatternFragmentLen;
@@ -152,7 +152,7 @@ bool FirstStepSearchInFile::firstPatternFragmentCanBeOnPosition(const size_t pos
 
 
 
-
+namespace NetwrixTest {
 /* ======================================== Prefix Function ======================================================================= */
 
 void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from)
@@ -167,6 +167,7 @@ void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from
 		}
 		pi[i] = j;
 	}
+}
 }
 
 

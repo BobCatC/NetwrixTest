@@ -13,8 +13,9 @@
 
 #include "TaskExecutor.hpp"
 
-void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from);
-
+namespace NetwrixTest {
+	void prefixFunction(const char* s, int32_t* pi, const size_t len, const int from);
+}
 
 /* ---------------------------------------- TaskExecutor Constructor  */
 
@@ -66,7 +67,7 @@ void TaskExecutor::countPiForFirstPatternFragment()
 	downloadFragment(_patternFile, 0, _patternMetrics.fragmentLen, _buffers.s);
 	
 	_buffers.pi[0] = 0;
-	prefixFunction(_buffers.s, _buffers.pi, _patternMetrics.fragmentLen, 1);
+	NetwrixTest::prefixFunction(_buffers.s, _buffers.pi, _patternMetrics.fragmentLen, 1);
 	
 	savePiForFirstPatternFragment();
 }
