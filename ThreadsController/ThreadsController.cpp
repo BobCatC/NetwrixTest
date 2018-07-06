@@ -75,7 +75,7 @@ void ThreadsController::initThreadsOutputFilesNames()
 	_outputFileDirectory = bfs::path(_request.outputFileName).parent_path().string();
 	
 	if(_outputFileDirectory != "") {
-		_outputFileDirectory += preferred_separator;
+		_outputFileDirectory += NetwrixTest::preferred_separator;
 	}
 	
 	_threadsOutputFilesNames.resize(_numberOfThreads);

@@ -12,9 +12,11 @@
 
 #include "FileSystem.hpp"
 
-// bfs::path::preferred_separator hasn't method to convert to std::string
-const std::string preferred_separator = bfs::path(bfs::path::string_type(&bfs::path::preferred_separator)).string();
-
+namespace NetwrixTest
+{
+	// bfs::path::preferred_separator hasn't method to convert to std::string
+	const std::string preferred_separator = bfs::path(bfs::path::string_type(&bfs::path::preferred_separator)).string();
+}
 
 /* ---------------------------------------- FileSystem   */
 

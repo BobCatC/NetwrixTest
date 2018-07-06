@@ -35,9 +35,10 @@
 #endif
 
 
-
-extern const std::string preferred_separator;
-
+namespace NetwrixTest
+{
+	extern const std::string preferred_separator;
+}
 
 bool fileWithNameExists(const std::string& path);
 std::string findFreeName(const std::string& pathWithoutExtension, const std::string& extension);
