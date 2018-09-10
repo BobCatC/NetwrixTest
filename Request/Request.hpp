@@ -12,7 +12,7 @@
 #include <string>
 
 class Request {
-	
+
 public:
 	
 	void parseArguments(const int argc, const char** argv);
