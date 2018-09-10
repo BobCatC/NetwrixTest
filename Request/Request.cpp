@@ -14,7 +14,7 @@
 
 /* ---------------------------------------- Request Static Data */
 
-const std::string __exampleRequest = "MyApp.exe -p C:\\Temp -m *.* -i String.txt -o Result.txt";
+const char* __exampleRequest = "MyApp.exe -p C:\\Temp -m *.* -i String.txt -o Result.txt";
 
 
 
